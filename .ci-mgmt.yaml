@@ -33,7 +33,8 @@ publish:
 # Disables a pulumi-internal-only step for running create_docs_build during the release
 publishRegistry: false
 
-# Enables ESC for CI secrets. Optional.
+# Disable Pulumi's ESC (cloud secrets service) — this is a community
+# provider, secrets go through plain GitHub Actions repository secrets.
+# Regenerate the workflows via `make ci-mgmt` after flipping this.
 esc:
-    enabled: true
-    environment: imports/github-secrets
+    enabled: false
