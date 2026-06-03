@@ -32,3 +32,10 @@ publish:
 
 # Disables a pulumi-internal-only step for running create_docs_build during the release
 publishRegistry: false
+# Disable the GitHub App token mint step in every workflow. Without this the
+# generator emits `actions/create-github-app-token` steps that require
+# PULUMI_PROVIDER_AUTOMATION_APP_ID / _PRIVATE_KEY secrets — those belong to a
+# Pulumi-internal GitHub App. Community providers use the auto-provided
+# `${{ github.token }}` instead, which is sufficient for our publish flow.
+github-app:
+    enabled: false
