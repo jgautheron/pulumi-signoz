@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package xyz
+package signoz
 
 import (
 	"path"
@@ -20,185 +20,120 @@ import (
 	// Allow embedding bridge-metadata.json in the provider.
 	_ "embed"
 
+	pftfbridge "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/pf/tfbridge"
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge"
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge/tokens"
-	shimv2 "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfshim/sdk-v2"
-	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
-	xyz "github.com/pulumi/terraform-provider-xyz/provider" // Import the upstream provider
 
-	"github.com/pulumi/pulumi-xyz/provider/pkg/version"
+	signoz "github.com/SigNoz/terraform-provider-signoz/signoz" // Upstream TF provider (Plugin Framework).
+
+	"github.com/jgautheron/pulumi-signoz/provider/pkg/version"
 )
 
-// all of the token components used below.
 const (
-	// This variable controls the default name of the package in the package
-	// registries for nodejs and python:
-	mainPkg = "xyz"
-	// modules:
-	mainMod = "index" // the xyz module
+	mainPkg = "signoz"
+	mainMod = "index"
 )
 
-//go:embed cmd/pulumi-resource-xyz/bridge-metadata.json
+//go:embed cmd/pulumi-resource-signoz/bridge-metadata.json
 var metadata []byte
 
-// Provider returns additional overlaid schema and metadata associated with the provider.
+// Provider returns the bridged Pulumi provider info.
 func Provider() tfbridge.ProviderInfo {
-	// Create a Pulumi provider mapping
 	prov := tfbridge.ProviderInfo{
-		// Instantiate the Terraform provider
+		// SigNoz's upstream provider is built with terraform-plugin-framework. The PF bridge's
+		// ShimProvider wraps it so the rest of tfbridge.ProviderInfo behaves as it does for SDK
+		// v2 providers.
 		//
-		// The [pulumi-terraform-bridge](https://github.com/pulumi/pulumi-terraform-bridge) supports 3
-		// types of Terraform providers:
-		//
-		// 1. Providers written with the terraform-plugin-sdk/v1:
-		//
-		//    If the provider you are bridging is written with the terraform-plugin-sdk/v1, then you
-		//    will need to adapt the boilerplate:
-		//
-		//    - Change the import "shimv2" to "shimv1" and change the associated import to
-		//      "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfshim/sdk-v1".
-		//
-		//    You can then proceed as normal.
-		//
-		// 2. Providers written with terraform-plugin-sdk/v2:
-		//
-		//    This boilerplate is already geared towards providers written with the
-		//    terraform-plugin-sdk/v2, since it is the most common provider framework used. No
-		//    adaptions are needed.
-		//
-		// 3. Providers written with terraform-plugin-framework:
-		//
-		//    If the provider you are bridging is written with the terraform-plugin-framework, then
-		//    you will need to adapt the boilerplate:
-		//
-		//    - Remove the `shimv2` import and add:
-		//
-		//      	pfbridge "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/pf/tfbridge"
-		//
-		//    - Replace `shimv2.NewProvider` with `pfbridge.ShimProvider`.
-		//
-		//    - In provider/cmd/pulumi-tfgen-xyz/main.go, replace the
-		//      "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfgen" import with
-		//      "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/pf/tfgen". Remove the `version.Version`
-		//      argument to `tfgen.Main`.
-		//
-		//    - In provider/cmd/pulumi-resource-xyz/main.go, replace the
-		//      "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge" import with
-		//      "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/pf/tfbridge". Replace the arguments to the
-		//      `tfbridge.Main` so it looks like this:
-		//
-		//      	tfbridge.Main(context.Background(), "xyz", xyz.Provider(),
-		//			tfbridge.ProviderMetadata{PackageSchema: pulumiSchema})
-		//
-		//   Detailed instructions can be found at
-		//   https://pulumi-developer-docs.readthedocs.io/projects/pulumi-terraform-bridge/en/latest/docs/guides/new-pf-provider.html
-		//   After that, you can proceed as normal.
-		//
-		// This is where you give the bridge a handle to the upstream terraform provider. SDKv2
-		// convention is to have a function at "github.com/pulumi/terraform-provider-xyz/provider".New
-		// which takes a version and produces a factory function. The provider you are bridging may
-		// not do that. You will need to find the function (generally called in upstream's main.go)
-		// that produces a:
-		//
-		// - *"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema".Provider (for SDKv2)
-		// - *"github.com/hashicorp/terraform-plugin-sdk/v1/helper/schema".Provider (for SDKv1)
-		// - "github.com/hashicorp/terraform-plugin-framework/provider".Provider (for plugin-framework)
-		//
-		//nolint:lll
-		P: shimv2.NewProvider(xyz.New(version.Version)()),
+		// The upstream exports `New(terraformAgent, version string) func() provider.Provider`;
+		// terraformAgent is forwarded into the User-Agent header on outbound HTTP calls.
+		P: pftfbridge.ShimProvider(signoz.New("pulumi", version.Version)()),
 
-		Name:    "xyz",
-		Version: version.Version,
-		// DisplayName is a way to be able to change the casing of the provider name when being
-		// displayed on the Pulumi registry
-		DisplayName: "",
-		// Change this to your personal name (or a company name) that you would like to be shown in
-		// the Pulumi Registry if this package is published there.
-		Publisher: "Pulumi",
-		// LogoURL is optional but useful to help identify your package in the Pulumi Registry
-		// if this package is published there.
-		//
-		// You may host a logo on a domain you control or add an PNG logo (100x100) for your package
-		// in your repository and use the raw content URL for that file as your logo URL.
-		LogoURL: "",
-		// PluginDownloadURL is an optional URL used to download the Provider
-		// for use in Pulumi programs
-		// e.g. https://github.com/org/pulumi-provider-name/releases/download/v${VERSION}/
-		PluginDownloadURL: "",
-		Description:       "A Pulumi package for creating and managing xyz cloud resources.",
-		// category/cloud tag helps with categorizing the package in the Pulumi Registry.
-		// For all available categories, see `Keywords` in
-		// https://www.pulumi.com/docs/guides/pulumi-packages/schema/#package.
-		Keywords:   []string{"xyz", "category/cloud"},
+		Name:        "signoz",
+		Version:     version.Version,
+		DisplayName: "SigNoz",
+		Publisher:   "jgautheron",
+		LogoURL:     "",
+		Description: "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. " +
+			"Manage SigNoz dashboards and alerts as code.",
+		Keywords:   []string{"signoz", "observability", "monitoring", "tracing", "category/cloud"},
 		License:    "Apache-2.0",
-		Homepage:   "https://www.pulumi.com",
-		Repository: "https://github.com/pulumi/pulumi-xyz",
-		// The GitHub Org for the provider - defaults to `terraform-providers`. Note that this should
-		// match the TF provider module's require directive, not any replace directives.
-		GitHubOrg:    "",
+		Homepage:   "https://signoz.io",
+		Repository: "https://github.com/jgautheron/pulumi-signoz",
+		// Tells the bridge where to fetch upstream docs from for Pulumi SDK doc generation.
+		GitHubOrg: "SigNoz",
+		// Upstream Go module name differs from the GitHub repo slug ("terraform-provider-signoz" vs the
+		// bridge's default of just "signoz"); make it explicit so doc lookups work.
+		UpstreamRepoPath: "./upstream",
+
 		MetadataInfo: tfbridge.NewProviderMetadata(metadata),
+
+		// The PF bridge auto-derives Pulumi config keys from the upstream provider schema (access_token,
+		// endpoint, http_max_retry, http_timeout). Only override here if a Pulumi-specific tweak is
+		// required — e.g. marking access_token as secret.
 		Config: map[string]*tfbridge.SchemaInfo{
-			// Add any required configuration here, or remove the example below if
-			// no additional points are required.
-			"region": {
-				Type: "xyz:region/region:Region",
+			"access_token": {
+				Secret: tfbridge.True(),
 			},
 		},
-		// If extra types are needed for configuration, they can be added here.
-		ExtraTypes: map[string]schema.ComplexTypeSpec{
-			"xyz:region/region:Region": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type: "string",
-				},
-				Enum: []schema.EnumValueSpec{
-					{Name: "here", Value: "HERE"},
-					{Name: "overThere", Value: "OVER_THERE"},
+
+		// Field-level overrides. The bridge's auto-tokenisation handles the resource-level
+		// mapping; entries here just adjust per-field codegen.
+		Resources: map[string]*tfbridge.ResourceInfo{
+			// C# does not allow a property with the same name as its enclosing class. Upstream
+			// schema has an `alert` field (the alert payload/body) inside the `Alert` resource —
+			// rename it for the C# SDK only. Other languages keep `alert`.
+			"signoz_alert": {
+				Fields: map[string]*tfbridge.SchemaInfo{
+					"alert": {CSharpName: "AlertConfig"},
 				},
 			},
 		},
+		DataSources: map[string]*tfbridge.DataSourceInfo{
+			"signoz_alert": {
+				Fields: map[string]*tfbridge.SchemaInfo{
+					"alert": {CSharpName: "AlertConfig"},
+				},
+			},
+		},
+
 		JavaScript: &tfbridge.JavaScriptInfo{
-			// RespectSchemaVersion ensures the SDK is generated linking to the correct version of the provider.
+			PackageName:          "@jgautheron/pulumi-signoz",
 			RespectSchemaVersion: true,
+			Dependencies: map[string]string{
+				"@pulumi/pulumi": "^3.0.0",
+			},
 		},
 		Python: &tfbridge.PythonInfo{
-			// RespectSchemaVersion ensures the SDK is generated linking to the correct version of the provider.
+			PackageName:          "pulumi_signoz_jgautheron",
 			RespectSchemaVersion: true,
-			// Enable modern PyProject support in the generated Python SDK.
-			PyProject: struct{ Enabled bool }{true},
+			PyProject:            struct{ Enabled bool }{true},
 		},
 		Golang: &tfbridge.GolangInfo{
-			// Set where the SDK is going to be published to.
 			ImportBasePath: path.Join(
-				"github.com/pulumi/pulumi-xyz/sdk/",
+				"github.com/jgautheron/pulumi-signoz/sdk/",
 				tfbridge.GetModuleMajorVersion(version.Version),
 				"go",
 				mainPkg,
 			),
-			// Opt in to all available code generation features.
 			GenerateResourceContainerTypes: true,
 			GenerateExtraInputTypes:        true,
-			// RespectSchemaVersion ensures the SDK is generated linking to the correct version of the provider.
-			RespectSchemaVersion: true,
+			RespectSchemaVersion:           true,
 		},
 		CSharp: &tfbridge.CSharpInfo{
-			// RespectSchemaVersion ensures the SDK is generated linking to the correct version of the provider.
+			RootNamespace:        "JGautheron.Pulumi",
 			RespectSchemaVersion: true,
-			// Use a wildcard import so NuGet will prefer the latest possible version.
 			PackageReferences: map[string]string{
 				"Pulumi": "3.*",
 			},
 		},
+		Java: &tfbridge.JavaInfo{
+			BasePackage: "dev.jgautheron",
+		},
 	}
 
-	// MustComputeTokens maps all resources and datasources from the upstream provider into Pulumi.
-	//
-	// tokens.SingleModule puts every upstream item into your provider's main module.
-	//
-	// You shouldn't need to override anything, but if you do, use the [tfbridge.ProviderInfo.Resources]
-	// and [tfbridge.ProviderInfo.DataSources].
-	prov.MustComputeTokens(tokens.SingleModule("xyz_", mainMod,
-		tokens.MakeStandard(mainPkg)))
-
+	// Auto-map upstream symbols. signoz_alert -> Alert, signoz_dashboard -> Dashboard;
+	// data sources get the conventional "get" prefix (signoz_alert -> getAlert).
+	prov.MustComputeTokens(tokens.SingleModule("signoz_", mainMod, tokens.MakeStandard(mainPkg)))
 	prov.MustApplyAutoAliases()
 	prov.SetAutonaming(255, "-")
 

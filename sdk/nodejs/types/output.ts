@@ -4,5 +4,64 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
-import * as enums from "../types/enums";
+
+export interface AlertNotificationSettings {
+    /**
+     * Group by the alert. By default, it is empty, use '__all__' to get different notification for each unique parameters.
+     */
+    groupBies: string[];
+    /**
+     * The alert re-notification settings.
+     */
+    renotify: outputs.AlertNotificationSettingsRenotify;
+    /**
+     * Use policy in the alert. By default, it is false.
+     */
+    usePolicy: boolean;
+}
+
+export interface AlertNotificationSettingsRenotify {
+    /**
+     * For which AlertStates of the alert want to get renotified.
+     */
+    alertStates: string[];
+    /**
+     * To enable the re-notification of the alert.
+     */
+    enabled: boolean;
+    /**
+     * Re-notify interval of the alert.
+     */
+    interval: string;
+}
+
+export interface GetAlertNotificationSettings {
+    /**
+     * Group by labels for notification.
+     */
+    groupBies: string[];
+    /**
+     * Renotify settings for the alert.
+     */
+    renotify: outputs.GetAlertNotificationSettingsRenotify;
+    /**
+     * Whether to use notification policy.
+     */
+    usePolicy: boolean;
+}
+
+export interface GetAlertNotificationSettingsRenotify {
+    /**
+     * Alert states for renotify.
+     */
+    alertStates: string[];
+    /**
+     * Whether renotify is enabled.
+     */
+    enabled: boolean;
+    /**
+     * Interval for renotify.
+     */
+    interval: string;
+}
 

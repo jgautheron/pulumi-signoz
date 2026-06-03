@@ -7,8 +7,8 @@
 # generated Makefile. ci-mgmt never creates `sdk-hooks.mk`; it is opt-in. See
 # `sdk-hooks.mk.example` in pulumi/ci-mgmt for the contract and a worked example.
 
-PACK := xyz
-ORG := pulumi
+PACK := signoz
+ORG := jgautheron
 PROJECT := github.com/$(ORG)/pulumi-$(PACK)
 PROVIDER_PATH := provider
 VERSION_PATH := $(PROVIDER_PATH)/pkg/version.Version

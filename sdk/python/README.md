@@ -1,63 +1,114 @@
-# Terraform Bridge Provider Boilerplate
+# Pulumi SigNoz Provider
 
-This repository is the template for authoring a Pulumi package from an existing Terraform provider as part of the guide for [authoring and publishing Pulumi packages](https://www.pulumi.com/docs/iac/packages-and-automation/pulumi-packages/authoring/).
+A Pulumi provider for [SigNoz](https://signoz.io), bridged from the official
+[SigNoz Terraform provider](https://github.com/SigNoz/terraform-provider-signoz)
+via [pulumi-terraform-bridge](https://github.com/pulumi/pulumi-terraform-bridge).
 
-This repository is initially set up as a fictitious provider named "xyz" to demonstrate a resource, a data source and configuration derived from the [github.com/pulumi/terraform-provider-xyz provider](https://github.com/pulumi/terraform-provider-xyz).
+Manage SigNoz dashboards and alerts as code — versioned in Git, reviewed in PRs,
+deployed alongside your services.
 
-Read the [setup instructions](SETUP.md) for step-by-step instructions on how to bridge a new provider and refer to our complete docs [guide for authoring and publishing a Pulumi Package](https://www.pulumi.com/docs/iac/packages-and-automation/pulumi-packages/authoring/).
+> **Status: early.** Tracks upstream `SigNoz/terraform-provider-signoz` (pre-1.0)
+> and follows its versioning. Schemas may change between minor releases.
 
-# Xyz Resource Provider
+## Resources
 
-The Xyz Resource Provider lets you manage [Xyz](http://example.com) resources.
+| Pulumi token                  | Terraform resource         | Purpose                              |
+| ----------------------------- | -------------------------- | ------------------------------------ |
+| `signoz:index:Alert`          | `signoz_alert`             | Manage alert rules                   |
+| `signoz:index:Dashboard`      | `signoz_dashboard`         | Manage dashboards                    |
+| `signoz:index:getAlert`       | `signoz_alert` (data)      | Look up an existing alert by ID      |
+| `signoz:index:getDashboard`   | `signoz_dashboard` (data)  | Look up an existing dashboard by ID  |
 
 ## Installing
 
-This package is available for several languages/platforms:
-
-### Node.js (JavaScript/TypeScript)
-
-To use from JavaScript or TypeScript in Node.js, install using either `npm`:
+### Node.js (TypeScript / JavaScript)
 
 ```bash
-npm install @pulumi/xyz
-```
-
-or `yarn`:
-
-```bash
-yarn add @pulumi/xyz
+npm install @jgautheron/pulumi-signoz
+# or
+yarn add @jgautheron/pulumi-signoz
 ```
 
 ### Python
 
-To use from Python, install using `pip`:
-
 ```bash
-pip install pulumi_xyz
+pip install pulumi-signoz-jgautheron
 ```
 
 ### Go
 
-To use from Go, use `go get` to grab the latest version of the library:
-
 ```bash
-go get github.com/pulumi/pulumi-xyz/sdk/go/...
+go get github.com/jgautheron/pulumi-signoz/sdk/go/signoz
 ```
 
 ### .NET
 
-To use from .NET, install using `dotnet add package`:
-
 ```bash
-dotnet add package Pulumi.Xyz
+dotnet add package JGautheron.Pulumi.Signoz
 ```
 
 ## Configuration
 
-The following configuration points are available for the `xyz` provider:
+The provider reads the same env vars as the upstream Terraform provider:
 
-- `xyz:region` (environment: `XYZ_REGION`) - the region in which to deploy resources
+| Env var                  | Pulumi config key     | Purpose                                          |
+| ------------------------ | --------------------- | ------------------------------------------------ |
+| `SIGNOZ_ACCESS_TOKEN`    | `signoz:accessToken`  | API key (sensitive, **required**)                |
+| `SIGNOZ_ENDPOINT`        | `signoz:endpoint`     | SigNoz URL (default `http://localhost:3301`)     |
+| `SIGNOZ_HTTP_MAX_RETRY`  | `signoz:httpMaxRetry` | Default `10`                                     |
+| `SIGNOZ_HTTP_TIMEOUT`    | `signoz:httpTimeout`  | Default `35` seconds                             |
 
-## Reference
+Generate an access token in the SigNoz UI: **Settings → Service Accounts → Add →
+Keys → Add Key**.
 
-For detailed reference documentation, please visit [the Pulumi registry](https://www.pulumi.com/registry/packages/xyz/api-docs/).
+## Quick start (TypeScript)
+
+```typescript
+import * as signoz from "@jgautheron/pulumi-signoz";
+
+const provider = new signoz.Provider("signoz", {
+  endpoint: "https://signoz.example.com",
+  accessToken: process.env.SIGNOZ_ACCESS_TOKEN!,
+});
+
+new signoz.Dashboard("app-overview", {
+  data: JSON.stringify({
+    title: "App Overview",
+    // ...full dashboard JSON; export from the SigNoz UI to bootstrap
+  }),
+}, { provider });
+
+new signoz.Alert("app-error-rate", {
+  alertType: "METRIC_BASED_ALERT",
+  // ...rule definition
+}, { provider });
+```
+
+See the [`examples/`](./examples/) directory for runnable samples.
+
+## Versioning
+
+This provider mirrors upstream `SigNoz/terraform-provider-signoz` version
+numbers (e.g. when upstream releases `v0.0.12`, this provider tags `v0.0.12`).
+Patch-suffix `+N` is reserved for bridge-only fixes between upstream releases.
+Both upstream and this wrapper are pre-1.0 — pin exact versions in consumers.
+
+## Contributing / building from source
+
+```bash
+git clone https://github.com/jgautheron/pulumi-signoz
+cd pulumi-signoz
+make tfgen          # generate schema.json from upstream provider
+make provider       # build pulumi-resource-signoz binary
+make build_sdks     # generate SDKs for all supported languages
+```
+
+## License
+
+Apache-2.0. The upstream SigNoz Terraform provider is MPL-2.0.
+
+## Related
+
+- [SigNoz Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz) (upstream)
+- [SigNoz Terraform docs](https://registry.terraform.io/providers/SigNoz/signoz/latest/docs)
+- [Pulumi Terraform Bridge](https://github.com/pulumi/pulumi-terraform-bridge)

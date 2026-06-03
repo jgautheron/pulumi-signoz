@@ -4,5 +4,34 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
-import * as enums from "../types/enums";
+
+export interface AlertNotificationSettings {
+    /**
+     * Group by the alert. By default, it is empty, use '__all__' to get different notification for each unique parameters.
+     */
+    groupBies?: pulumi.Input<pulumi.Input<string>[] | undefined>;
+    /**
+     * The alert re-notification settings.
+     */
+    renotify?: pulumi.Input<inputs.AlertNotificationSettingsRenotify | undefined>;
+    /**
+     * Use policy in the alert. By default, it is false.
+     */
+    usePolicy?: pulumi.Input<boolean | undefined>;
+}
+
+export interface AlertNotificationSettingsRenotify {
+    /**
+     * For which AlertStates of the alert want to get renotified.
+     */
+    alertStates: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * To enable the re-notification of the alert.
+     */
+    enabled?: pulumi.Input<boolean | undefined>;
+    /**
+     * Re-notify interval of the alert.
+     */
+    interval: pulumi.Input<string>;
+}
 

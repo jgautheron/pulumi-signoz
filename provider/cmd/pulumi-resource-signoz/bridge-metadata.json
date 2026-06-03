@@ -1,0 +1,73 @@
+{
+    "auto-aliasing": {
+        "resources": {
+            "signoz_alert": {
+                "current": "signoz:index/alert:Alert",
+                "majorVersion": 1,
+                "fields": {
+                    "notification_settings": {
+                        "fields": {
+                            "group_by": {
+                                "maxItemsOne": false
+                            },
+                            "renotify": {
+                                "fields": {
+                                    "alert_states": {
+                                        "maxItemsOne": false
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "preferred_channels": {
+                        "maxItemsOne": false
+                    }
+                }
+            },
+            "signoz_dashboard": {
+                "current": "signoz:index/dashboard:Dashboard",
+                "majorVersion": 1,
+                "fields": {
+                    "tags": {
+                        "maxItemsOne": false
+                    }
+                }
+            }
+        },
+        "datasources": {
+            "signoz_alert": {
+                "current": "signoz:index/getAlert:getAlert",
+                "majorVersion": 1,
+                "fields": {
+                    "notification_settings": {
+                        "fields": {
+                            "group_by": {
+                                "maxItemsOne": false
+                            },
+                            "renotify": {
+                                "fields": {
+                                    "alert_states": {
+                                        "maxItemsOne": false
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "preferred_channels": {
+                        "maxItemsOne": false
+                    }
+                }
+            },
+            "signoz_dashboard": {
+                "current": "signoz:index/getDashboard:getDashboard",
+                "majorVersion": 1,
+                "fields": {
+                    "tags": {
+                        "maxItemsOne": false
+                    }
+                }
+            }
+        }
+    },
+    "auto-settings": {}
+}

@@ -1,0 +1,1027 @@
+{
+    "name": "signoz",
+    "displayName": "SigNoz",
+    "description": "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.",
+    "keywords": [
+        "signoz",
+        "observability",
+        "monitoring",
+        "tracing",
+        "category/cloud"
+    ],
+    "homepage": "https://signoz.io",
+    "license": "Apache-2.0",
+    "attribution": "This Pulumi package is based on the [`signoz` Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz).",
+    "repository": "https://github.com/jgautheron/pulumi-signoz",
+    "publisher": "jgautheron",
+    "meta": {
+        "moduleFormat": "(.*)(?:/[^/]*)"
+    },
+    "language": {
+        "csharp": {
+            "packageReferences": {
+                "Pulumi": "3.*"
+            },
+            "compatibility": "tfbridge20",
+            "rootNamespace": "JGautheron.Pulumi",
+            "respectSchemaVersion": true
+        },
+        "go": {
+            "importBasePath": "github.com/jgautheron/pulumi-signoz/sdk/go/signoz",
+            "generateResourceContainerTypes": true,
+            "generateExtraInputTypes": true,
+            "respectSchemaVersion": true
+        },
+        "java": {
+            "basePackage": "dev.jgautheron",
+            "buildFiles": "",
+            "gradleNexusPublishPluginVersion": "",
+            "gradleTest": ""
+        },
+        "nodejs": {
+            "packageName": "@jgautheron/pulumi-signoz",
+            "packageDescription": "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.",
+            "readme": "\u003e This provider is a derived work of the [Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz)\n\u003e distributed under [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/). If you encounter a bug or missing feature,\n\u003e first check the [`pulumi-signoz` repo](https://github.com/jgautheron/pulumi-signoz/issues); however, if that doesn't turn up anything,\n\u003e please consult the source [`terraform-provider-signoz` repo](https://github.com/SigNoz/terraform-provider-signoz/issues).",
+            "dependencies": {
+                "@pulumi/pulumi": "^3.0.0"
+            },
+            "compatibility": "tfbridge20",
+            "disableUnionOutputTypes": true,
+            "respectSchemaVersion": true
+        },
+        "python": {
+            "packageName": "pulumi_signoz_jgautheron",
+            "readme": "\u003e This provider is a derived work of the [Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz)\n\u003e distributed under [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/). If you encounter a bug or missing feature,\n\u003e first check the [`pulumi-signoz` repo](https://github.com/jgautheron/pulumi-signoz/issues); however, if that doesn't turn up anything,\n\u003e please consult the source [`terraform-provider-signoz` repo](https://github.com/SigNoz/terraform-provider-signoz/issues).",
+            "compatibility": "tfbridge20",
+            "respectSchemaVersion": true,
+            "pyproject": {
+                "enabled": true
+            }
+        }
+    },
+    "config": {
+        "variables": {
+            "accessToken": {
+                "type": "string",
+                "description": "Access token of the SigNoz API. You can retrieve it from SigNoz UI\nwith Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).\nAlso, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.",
+                "secret": true
+            },
+            "endpoint": {
+                "type": "string",
+                "description": "Endpoint of the SigNoz. It is the root URL of the SigNoz UI.\nAlso, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301."
+            },
+            "httpMaxRetry": {
+                "type": "integer",
+                "description": "Specifies the max retry limit for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10."
+            },
+            "httpTimeout": {
+                "type": "integer",
+                "description": "Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35."
+            }
+        }
+    },
+    "types": {
+        "signoz:index/AlertNotificationSettings:AlertNotificationSettings": {
+            "properties": {
+                "groupBies": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Group by the alert. By default, it is empty, use '__all__' to get different notification for each unique parameters.\n"
+                },
+                "renotify": {
+                    "$ref": "#/types/signoz:index/AlertNotificationSettingsRenotify:AlertNotificationSettingsRenotify",
+                    "description": "The alert re-notification settings.\n"
+                },
+                "usePolicy": {
+                    "type": "boolean",
+                    "description": "Use policy in the alert. By default, it is false.\n"
+                }
+            },
+            "type": "object",
+            "language": {
+                "nodejs": {
+                    "requiredOutputs": [
+                        "groupBies",
+                        "renotify",
+                        "usePolicy"
+                    ]
+                }
+            }
+        },
+        "signoz:index/AlertNotificationSettingsRenotify:AlertNotificationSettingsRenotify": {
+            "properties": {
+                "alertStates": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "For which AlertStates of the alert want to get renotified.\n"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "To enable the re-notification of the alert.\n"
+                },
+                "interval": {
+                    "type": "string",
+                    "description": "Re-notify interval of the alert.\n"
+                }
+            },
+            "type": "object",
+            "required": [
+                "alertStates",
+                "interval"
+            ],
+            "language": {
+                "nodejs": {
+                    "requiredOutputs": [
+                        "alertStates",
+                        "enabled",
+                        "interval"
+                    ]
+                }
+            }
+        },
+        "signoz:index/getAlertNotificationSettings:getAlertNotificationSettings": {
+            "properties": {
+                "groupBies": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Group by labels for notification.\n"
+                },
+                "renotify": {
+                    "$ref": "#/types/signoz:index/getAlertNotificationSettingsRenotify:getAlertNotificationSettingsRenotify",
+                    "description": "Renotify settings for the alert.\n"
+                },
+                "usePolicy": {
+                    "type": "boolean",
+                    "description": "Whether to use notification policy.\n"
+                }
+            },
+            "type": "object",
+            "required": [
+                "groupBies",
+                "renotify",
+                "usePolicy"
+            ],
+            "language": {
+                "nodejs": {
+                    "requiredInputs": []
+                }
+            }
+        },
+        "signoz:index/getAlertNotificationSettingsRenotify:getAlertNotificationSettingsRenotify": {
+            "properties": {
+                "alertStates": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Alert states for renotify.\n"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Whether renotify is enabled.\n"
+                },
+                "interval": {
+                    "type": "string",
+                    "description": "Interval for renotify.\n"
+                }
+            },
+            "type": "object",
+            "required": [
+                "alertStates",
+                "enabled",
+                "interval"
+            ],
+            "language": {
+                "nodejs": {
+                    "requiredInputs": []
+                }
+            }
+        }
+    },
+    "provider": {
+        "description": "The provider type for the signoz package. By default, resources use package-wide configuration\nsettings, however an explicit `Provider` instance may be created and passed during resource\nconstruction to achieve fine-grained programmatic control over provider settings. See the\n[documentation](https://www.pulumi.com/docs/reference/programming-model/#providers) for more information.\n",
+        "properties": {
+            "accessToken": {
+                "type": "string",
+                "description": "Access token of the SigNoz API. You can retrieve it from SigNoz UI\nwith Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).\nAlso, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.",
+                "secret": true
+            },
+            "endpoint": {
+                "type": "string",
+                "description": "Endpoint of the SigNoz. It is the root URL of the SigNoz UI.\nAlso, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301."
+            },
+            "httpMaxRetry": {
+                "type": "integer",
+                "description": "Specifies the max retry limit for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10."
+            },
+            "httpTimeout": {
+                "type": "integer",
+                "description": "Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35."
+            }
+        },
+        "inputProperties": {
+            "accessToken": {
+                "type": "string",
+                "description": "Access token of the SigNoz API. You can retrieve it from SigNoz UI\nwith Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).\nAlso, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.",
+                "secret": true
+            },
+            "endpoint": {
+                "type": "string",
+                "description": "Endpoint of the SigNoz. It is the root URL of the SigNoz UI.\nAlso, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301."
+            },
+            "httpMaxRetry": {
+                "type": "integer",
+                "description": "Specifies the max retry limit for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10."
+            },
+            "httpTimeout": {
+                "type": "integer",
+                "description": "Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35."
+            }
+        },
+        "methods": {
+            "terraformConfig": "pulumi:providers:signoz/terraformConfig"
+        }
+    },
+    "resources": {
+        "signoz:index/alert:Alert": {
+            "properties": {
+                "alert": {
+                    "type": "string",
+                    "description": "Name of the alert.",
+                    "language": {
+                        "csharp": {
+                            "name": "AlertConfig"
+                        }
+                    }
+                },
+                "alertType": {
+                    "type": "string",
+                    "description": "Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT."
+                },
+                "broadcastToAll": {
+                    "type": "boolean",
+                    "description": "Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.",
+                    "deprecationMessage": "This field is no longer needed and will be ignored"
+                },
+                "condition": {
+                    "type": "string",
+                    "description": "Condition of the alert."
+                },
+                "createAt": {
+                    "type": "string",
+                    "description": "Creation time of the alert."
+                },
+                "createBy": {
+                    "type": "string",
+                    "description": "Creator of the alert."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the alert."
+                },
+                "disabled": {
+                    "type": "boolean",
+                    "description": "Whether the alert is disabled."
+                },
+                "evalWindow": {
+                    "type": "string",
+                    "description": "The evaluation window of the alert. By default, it is 5m0s."
+                },
+                "evaluation": {
+                    "type": "string",
+                    "description": "Evaluation settings for the alert (JSON). Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                },
+                "frequency": {
+                    "type": "string",
+                    "description": "The frequency of the alert. By default, it is 1m0s."
+                },
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Labels of the alert. Severity is a required label."
+                },
+                "notificationSettings": {
+                    "$ref": "#/types/signoz:index/AlertNotificationSettings:AlertNotificationSettings",
+                    "description": "Notification settings for the alert. Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                },
+                "preferredChannels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Preferred channels of the alert. By default, it is empty."
+                },
+                "ruleType": {
+                    "type": "string",
+                    "description": "Type of the alert. Possible values are:\u003cspan pulumi-lang-nodejs=\" thresholdRule \" pulumi-lang-dotnet=\" ThresholdRule \" pulumi-lang-go=\" thresholdRule \" pulumi-lang-python=\" threshold_rule \" pulumi-lang-yaml=\" thresholdRule \" pulumi-lang-java=\" thresholdRule \" pulumi-lang-hcl=\" threshold_rule \"\u003e thresholdRule \u003c/span\u003eand promql_rule."
+                },
+                "schemaVersion": {
+                    "type": "string",
+                    "description": "Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and\u003cspan pulumi-lang-nodejs=\" notificationSettings \" pulumi-lang-dotnet=\" NotificationSettings \" pulumi-lang-go=\" notificationSettings \" pulumi-lang-python=\" notification_settings \" pulumi-lang-yaml=\" notificationSettings \" pulumi-lang-java=\" notificationSettings \" pulumi-lang-hcl=\" notification_settings \"\u003e notificationSettings \u003c/span\u003eare supported."
+                },
+                "severity": {
+                    "type": "string",
+                    "description": "Severity of the alert. Possible values are: info, warning, error, and critical."
+                },
+                "source": {
+                    "type": "string",
+                    "description": "Source of the alert. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/alerts."
+                },
+                "state": {
+                    "type": "string",
+                    "description": "State of the alert."
+                },
+                "summary": {
+                    "type": "string",
+                    "description": "Summary of the alert."
+                },
+                "updateAt": {
+                    "type": "string",
+                    "description": "Last update time of the alert."
+                },
+                "updateBy": {
+                    "type": "string",
+                    "description": "Last updater of the alert."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version of the alert. By default, it is v4."
+                }
+            },
+            "required": [
+                "alert",
+                "alertType",
+                "broadcastToAll",
+                "condition",
+                "createAt",
+                "createBy",
+                "description",
+                "disabled",
+                "evalWindow",
+                "evaluation",
+                "frequency",
+                "labels",
+                "notificationSettings",
+                "preferredChannels",
+                "ruleType",
+                "schemaVersion",
+                "severity",
+                "source",
+                "state",
+                "summary",
+                "updateAt",
+                "updateBy",
+                "version"
+            ],
+            "inputProperties": {
+                "alert": {
+                    "type": "string",
+                    "description": "Name of the alert.",
+                    "language": {
+                        "csharp": {
+                            "name": "AlertConfig"
+                        }
+                    }
+                },
+                "alertType": {
+                    "type": "string",
+                    "description": "Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT."
+                },
+                "broadcastToAll": {
+                    "type": "boolean",
+                    "description": "Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.",
+                    "deprecationMessage": "This field is no longer needed and will be ignored"
+                },
+                "condition": {
+                    "type": "string",
+                    "description": "Condition of the alert."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the alert."
+                },
+                "disabled": {
+                    "type": "boolean",
+                    "description": "Whether the alert is disabled."
+                },
+                "evalWindow": {
+                    "type": "string",
+                    "description": "The evaluation window of the alert. By default, it is 5m0s."
+                },
+                "evaluation": {
+                    "type": "string",
+                    "description": "Evaluation settings for the alert (JSON). Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                },
+                "frequency": {
+                    "type": "string",
+                    "description": "The frequency of the alert. By default, it is 1m0s."
+                },
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Labels of the alert. Severity is a required label."
+                },
+                "notificationSettings": {
+                    "$ref": "#/types/signoz:index/AlertNotificationSettings:AlertNotificationSettings",
+                    "description": "Notification settings for the alert. Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                },
+                "preferredChannels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Preferred channels of the alert. By default, it is empty."
+                },
+                "ruleType": {
+                    "type": "string",
+                    "description": "Type of the alert. Possible values are:\u003cspan pulumi-lang-nodejs=\" thresholdRule \" pulumi-lang-dotnet=\" ThresholdRule \" pulumi-lang-go=\" thresholdRule \" pulumi-lang-python=\" threshold_rule \" pulumi-lang-yaml=\" thresholdRule \" pulumi-lang-java=\" thresholdRule \" pulumi-lang-hcl=\" threshold_rule \"\u003e thresholdRule \u003c/span\u003eand promql_rule."
+                },
+                "schemaVersion": {
+                    "type": "string",
+                    "description": "Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and\u003cspan pulumi-lang-nodejs=\" notificationSettings \" pulumi-lang-dotnet=\" NotificationSettings \" pulumi-lang-go=\" notificationSettings \" pulumi-lang-python=\" notification_settings \" pulumi-lang-yaml=\" notificationSettings \" pulumi-lang-java=\" notificationSettings \" pulumi-lang-hcl=\" notification_settings \"\u003e notificationSettings \u003c/span\u003eare supported."
+                },
+                "severity": {
+                    "type": "string",
+                    "description": "Severity of the alert. Possible values are: info, warning, error, and critical."
+                },
+                "source": {
+                    "type": "string",
+                    "description": "Source of the alert. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/alerts."
+                },
+                "summary": {
+                    "type": "string",
+                    "description": "Summary of the alert."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version of the alert. By default, it is v4."
+                }
+            },
+            "requiredInputs": [
+                "alert",
+                "alertType",
+                "condition",
+                "severity"
+            ],
+            "stateInputs": {
+                "description": "Input properties used for looking up and filtering Alert resources.\n",
+                "properties": {
+                    "alert": {
+                        "type": "string",
+                        "description": "Name of the alert.",
+                        "language": {
+                            "csharp": {
+                                "name": "AlertConfig"
+                            }
+                        }
+                    },
+                    "alertType": {
+                        "type": "string",
+                        "description": "Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT."
+                    },
+                    "broadcastToAll": {
+                        "type": "boolean",
+                        "description": "Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.",
+                        "deprecationMessage": "This field is no longer needed and will be ignored"
+                    },
+                    "condition": {
+                        "type": "string",
+                        "description": "Condition of the alert."
+                    },
+                    "createAt": {
+                        "type": "string",
+                        "description": "Creation time of the alert."
+                    },
+                    "createBy": {
+                        "type": "string",
+                        "description": "Creator of the alert."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the alert."
+                    },
+                    "disabled": {
+                        "type": "boolean",
+                        "description": "Whether the alert is disabled."
+                    },
+                    "evalWindow": {
+                        "type": "string",
+                        "description": "The evaluation window of the alert. By default, it is 5m0s."
+                    },
+                    "evaluation": {
+                        "type": "string",
+                        "description": "Evaluation settings for the alert (JSON). Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                    },
+                    "frequency": {
+                        "type": "string",
+                        "description": "The frequency of the alert. By default, it is 1m0s."
+                    },
+                    "labels": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "Labels of the alert. Severity is a required label."
+                    },
+                    "notificationSettings": {
+                        "$ref": "#/types/signoz:index/AlertNotificationSettings:AlertNotificationSettings",
+                        "description": "Notification settings for the alert. Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                    },
+                    "preferredChannels": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Preferred channels of the alert. By default, it is empty."
+                    },
+                    "ruleType": {
+                        "type": "string",
+                        "description": "Type of the alert. Possible values are:\u003cspan pulumi-lang-nodejs=\" thresholdRule \" pulumi-lang-dotnet=\" ThresholdRule \" pulumi-lang-go=\" thresholdRule \" pulumi-lang-python=\" threshold_rule \" pulumi-lang-yaml=\" thresholdRule \" pulumi-lang-java=\" thresholdRule \" pulumi-lang-hcl=\" threshold_rule \"\u003e thresholdRule \u003c/span\u003eand promql_rule."
+                    },
+                    "schemaVersion": {
+                        "type": "string",
+                        "description": "Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and\u003cspan pulumi-lang-nodejs=\" notificationSettings \" pulumi-lang-dotnet=\" NotificationSettings \" pulumi-lang-go=\" notificationSettings \" pulumi-lang-python=\" notification_settings \" pulumi-lang-yaml=\" notificationSettings \" pulumi-lang-java=\" notificationSettings \" pulumi-lang-hcl=\" notification_settings \"\u003e notificationSettings \u003c/span\u003eare supported."
+                    },
+                    "severity": {
+                        "type": "string",
+                        "description": "Severity of the alert. Possible values are: info, warning, error, and critical."
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Source of the alert. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/alerts."
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "State of the alert."
+                    },
+                    "summary": {
+                        "type": "string",
+                        "description": "Summary of the alert."
+                    },
+                    "updateAt": {
+                        "type": "string",
+                        "description": "Last update time of the alert."
+                    },
+                    "updateBy": {
+                        "type": "string",
+                        "description": "Last updater of the alert."
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Version of the alert. By default, it is v4."
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "signoz:index/dashboard:Dashboard": {
+            "properties": {
+                "collapsableRowsMigrated": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "description": "Creation time of the dashboard."
+                },
+                "createdBy": {
+                    "type": "string",
+                    "description": "Creator of the dashboard."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the dashboard."
+                },
+                "layout": {
+                    "type": "string",
+                    "description": "Layout of the dashboard."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the dashboard."
+                },
+                "panelMap": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string",
+                    "description": "Source of the dashboard. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/dashboard."
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Tags of the dashboard."
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Title of the dashboard."
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "description": "Last update time of the dashboard."
+                },
+                "updatedBy": {
+                    "type": "string",
+                    "description": "Last updater of the dashboard."
+                },
+                "uploadedGrafana": {
+                    "type": "boolean"
+                },
+                "variables": {
+                    "type": "string",
+                    "description": "Variables for the dashboard."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version of the dashboard."
+                },
+                "widgets": {
+                    "type": "string",
+                    "description": "Widgets for the dashboard."
+                }
+            },
+            "required": [
+                "collapsableRowsMigrated",
+                "createdAt",
+                "createdBy",
+                "description",
+                "layout",
+                "name",
+                "source",
+                "title",
+                "updatedAt",
+                "updatedBy",
+                "uploadedGrafana",
+                "variables",
+                "version",
+                "widgets"
+            ],
+            "inputProperties": {
+                "collapsableRowsMigrated": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the dashboard."
+                },
+                "layout": {
+                    "type": "string",
+                    "description": "Layout of the dashboard."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the dashboard."
+                },
+                "panelMap": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string",
+                    "description": "Source of the dashboard. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/dashboard."
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Tags of the dashboard."
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Title of the dashboard."
+                },
+                "uploadedGrafana": {
+                    "type": "boolean"
+                },
+                "variables": {
+                    "type": "string",
+                    "description": "Variables for the dashboard."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version of the dashboard."
+                },
+                "widgets": {
+                    "type": "string",
+                    "description": "Widgets for the dashboard."
+                }
+            },
+            "requiredInputs": [
+                "collapsableRowsMigrated",
+                "description",
+                "layout",
+                "title",
+                "uploadedGrafana",
+                "variables",
+                "version",
+                "widgets"
+            ],
+            "stateInputs": {
+                "description": "Input properties used for looking up and filtering Dashboard resources.\n",
+                "properties": {
+                    "collapsableRowsMigrated": {
+                        "type": "boolean"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "description": "Creation time of the dashboard."
+                    },
+                    "createdBy": {
+                        "type": "string",
+                        "description": "Creator of the dashboard."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the dashboard."
+                    },
+                    "layout": {
+                        "type": "string",
+                        "description": "Layout of the dashboard."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the dashboard."
+                    },
+                    "panelMap": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Source of the dashboard. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/dashboard."
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Tags of the dashboard."
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Title of the dashboard."
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "description": "Last update time of the dashboard."
+                    },
+                    "updatedBy": {
+                        "type": "string",
+                        "description": "Last updater of the dashboard."
+                    },
+                    "uploadedGrafana": {
+                        "type": "boolean"
+                    },
+                    "variables": {
+                        "type": "string",
+                        "description": "Variables for the dashboard."
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Version of the dashboard."
+                    },
+                    "widgets": {
+                        "type": "string",
+                        "description": "Widgets for the dashboard."
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "functions": {
+        "pulumi:providers:signoz/terraformConfig": {
+            "description": "This function returns a Terraform config object with terraform-namecased keys,to be used with the Terraform Module Provider.",
+            "inputs": {
+                "properties": {
+                    "__self__": {
+                        "type": "ref",
+                        "$ref": "#/provider"
+                    }
+                },
+                "type": "pulumi:providers:signoz/terraformConfig",
+                "required": [
+                    "__self__"
+                ]
+            },
+            "outputs": {
+                "properties": {
+                    "result": {
+                        "additionalProperties": {
+                            "$ref": "pulumi.json#/Any"
+                        },
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "result"
+                ],
+                "type": "object"
+            }
+        },
+        "signoz:index/getAlert:getAlert": {
+            "inputs": {
+                "description": "A collection of arguments for invoking getAlert.\n",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id"
+                ]
+            },
+            "outputs": {
+                "description": "A collection of values returned by getAlert.\n",
+                "properties": {
+                    "alert": {
+                        "language": {
+                            "csharp": {
+                                "name": "AlertConfig"
+                            }
+                        },
+                        "type": "string"
+                    },
+                    "alertType": {
+                        "type": "string"
+                    },
+                    "broadcastToAll": {
+                        "deprecationMessage": "This field is no longer needed and will be ignored",
+                        "type": "boolean"
+                    },
+                    "condition": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "disabled": {
+                        "type": "boolean"
+                    },
+                    "evalWindow": {
+                        "type": "string"
+                    },
+                    "evaluation": {
+                        "type": "string"
+                    },
+                    "frequency": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "labels": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object"
+                    },
+                    "notificationSettings": {
+                        "$ref": "#/types/signoz:index/getAlertNotificationSettings:getAlertNotificationSettings"
+                    },
+                    "preferredChannels": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "ruleType": {
+                        "type": "string"
+                    },
+                    "schemaVersion": {
+                        "type": "string"
+                    },
+                    "severity": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string"
+                    },
+                    "summary": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "alert",
+                    "alertType",
+                    "broadcastToAll",
+                    "condition",
+                    "description",
+                    "disabled",
+                    "evalWindow",
+                    "evaluation",
+                    "frequency",
+                    "id",
+                    "labels",
+                    "notificationSettings",
+                    "preferredChannels",
+                    "ruleType",
+                    "schemaVersion",
+                    "severity",
+                    "source",
+                    "state",
+                    "summary",
+                    "version"
+                ],
+                "type": "object"
+            }
+        },
+        "signoz:index/getDashboard:getDashboard": {
+            "inputs": {
+                "description": "A collection of arguments for invoking getDashboard.\n",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id"
+                ]
+            },
+            "outputs": {
+                "description": "A collection of values returned by getDashboard.\n",
+                "properties": {
+                    "collapsableRowsMigrated": {
+                        "type": "boolean"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "layout": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "panelMap": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "uploadedGrafana": {
+                        "type": "boolean"
+                    },
+                    "variables": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    },
+                    "widgets": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "collapsableRowsMigrated",
+                    "description",
+                    "id",
+                    "layout",
+                    "name",
+                    "panelMap",
+                    "source",
+                    "tags",
+                    "title",
+                    "uploadedGrafana",
+                    "variables",
+                    "version",
+                    "widgets"
+                ],
+                "type": "object"
+            }
+        }
+    }
+}

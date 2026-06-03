@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Pulumi.Xyz
+namespace JGautheron.Pulumi.Signoz
 {
     public static class Config
     {
@@ -30,16 +30,51 @@ namespace Pulumi.Xyz
             }
         }
 
-        private static readonly global::Pulumi.Config __config = new global::Pulumi.Config("xyz");
+        private static readonly global::Pulumi.Config __config = new global::Pulumi.Config("signoz");
 
-        private static readonly __Value<Pulumi.Xyz.Region.Region?> _region = new __Value<Pulumi.Xyz.Region.Region?>(() => __config.GetObject<Pulumi.Xyz.Region.Region>("region"));
+        private static readonly __Value<string?> _accessToken = new __Value<string?>(() => __config.Get("accessToken"));
         /// <summary>
-        /// A region which should be used.
+        /// Access token of the SigNoz API. You can retrieve it from SigNoz UI
+        /// with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
+        /// Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
         /// </summary>
-        public static Pulumi.Xyz.Region.Region? Region
+        public static string? AccessToken
         {
-            get => _region.Get();
-            set => _region.Set(value);
+            get => _accessToken.Get();
+            set => _accessToken.Set(value);
+        }
+
+        private static readonly __Value<string?> _endpoint = new __Value<string?>(() => __config.Get("endpoint"));
+        /// <summary>
+        /// Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
+        /// Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+        /// </summary>
+        public static string? Endpoint
+        {
+            get => _endpoint.Get();
+            set => _endpoint.Set(value);
+        }
+
+        private static readonly __Value<int?> _httpMaxRetry = new __Value<int?>(() => __config.GetInt32("httpMaxRetry"));
+        /// <summary>
+        /// Specifies the max retry limit for the HTTP requests made to SigNoz.
+        /// Also, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10.
+        /// </summary>
+        public static int? HttpMaxRetry
+        {
+            get => _httpMaxRetry.Get();
+            set => _httpMaxRetry.Set(value);
+        }
+
+        private static readonly __Value<int?> _httpTimeout = new __Value<int?>(() => __config.GetInt32("httpTimeout"));
+        /// <summary>
+        /// Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.
+        /// Also, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35.
+        /// </summary>
+        public static int? HttpTimeout
+        {
+            get => _httpTimeout.Get();
+            set => _httpTimeout.Set(value);
         }
 
     }

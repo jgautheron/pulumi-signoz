@@ -2,20 +2,17 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import * as inputs from "./types/input";
-import * as outputs from "./types/output";
-import * as enums from "./types/enums";
 import * as utilities from "./utilities";
 
 /**
- * The provider type for the xyz package. By default, resources use package-wide configuration
+ * The provider type for the signoz package. By default, resources use package-wide configuration
  * settings, however an explicit `Provider` instance may be created and passed during resource
  * construction to achieve fine-grained programmatic control over provider settings. See the
  * [documentation](https://www.pulumi.com/docs/reference/programming-model/#providers) for more information.
  */
 export class Provider extends pulumi.ProviderResource {
     /** @internal */
-    public static readonly __pulumiType = 'xyz';
+    public static readonly __pulumiType = 'signoz';
 
     /**
      * Returns true if the given object is an instance of Provider.  This is designed to work even
@@ -28,6 +25,17 @@ export class Provider extends pulumi.ProviderResource {
         return obj['__pulumiType'] === "pulumi:providers:" + Provider.__pulumiType;
     }
 
+    /**
+     * Access token of the SigNoz API. You can retrieve it from SigNoz UI
+     * with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
+     * Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+     */
+    declare public readonly accessToken: pulumi.Output<string | undefined>;
+    /**
+     * Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
+     * Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+     */
+    declare public readonly endpoint: pulumi.Output<string | undefined>;
 
     /**
      * Create a Provider resource with the given unique name, arguments, and options.
@@ -40,9 +48,14 @@ export class Provider extends pulumi.ProviderResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         {
-            resourceInputs["region"] = args?.region;
+            resourceInputs["accessToken"] = args?.accessToken ? pulumi.secret(args.accessToken) : undefined;
+            resourceInputs["endpoint"] = args?.endpoint;
+            resourceInputs["httpMaxRetry"] = pulumi.output(args?.httpMaxRetry).apply(JSON.stringify);
+            resourceInputs["httpTimeout"] = pulumi.output(args?.httpTimeout).apply(JSON.stringify);
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
+        const secretOpts = { additionalSecretOutputs: ["accessToken"] };
+        opts = pulumi.mergeOptions(opts, secretOpts);
         super(Provider.__pulumiType, name, resourceInputs, opts);
     }
 
@@ -50,7 +63,7 @@ export class Provider extends pulumi.ProviderResource {
      * This function returns a Terraform config object with terraform-namecased keys,to be used with the Terraform Module Provider.
      */
     terraformConfig(): pulumi.Output<Provider.TerraformConfigResult> {
-        return pulumi.runtime.call("pulumi:providers:xyz/terraformConfig", {
+        return pulumi.runtime.call("pulumi:providers:signoz/terraformConfig", {
             "__self__": this,
         }, this);
     }
@@ -61,9 +74,26 @@ export class Provider extends pulumi.ProviderResource {
  */
 export interface ProviderArgs {
     /**
-     * A region which should be used.
+     * Access token of the SigNoz API. You can retrieve it from SigNoz UI
+     * with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
+     * Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
      */
-    region?: pulumi.Input<enums.region.Region | undefined>;
+    accessToken?: pulumi.Input<string | undefined>;
+    /**
+     * Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
+     * Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+     */
+    endpoint?: pulumi.Input<string | undefined>;
+    /**
+     * Specifies the max retry limit for the HTTP requests made to SigNoz.
+     * Also, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10.
+     */
+    httpMaxRetry?: pulumi.Input<number | undefined>;
+    /**
+     * Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.
+     * Also, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35.
+     */
+    httpTimeout?: pulumi.Input<number | undefined>;
 }
 
 export namespace Provider {

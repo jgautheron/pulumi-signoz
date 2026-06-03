@@ -2,21 +2,56 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import * as inputs from "../types/input";
-import * as outputs from "../types/output";
-import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 declare var exports: any;
-const __config = new pulumi.Config("xyz");
+const __config = new pulumi.Config("signoz");
 
 /**
- * A region which should be used.
+ * Access token of the SigNoz API. You can retrieve it from SigNoz UI
+ * with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
+ * Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
  */
-export declare const region: enums.region.Region | undefined;
-Object.defineProperty(exports, "region", {
+export declare const accessToken: string | undefined;
+Object.defineProperty(exports, "accessToken", {
     get() {
-        return __config.getObject<enums.region.Region>("region");
+        return __config.get("accessToken");
+    },
+    enumerable: true,
+});
+
+/**
+ * Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
+ * Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+ */
+export declare const endpoint: string | undefined;
+Object.defineProperty(exports, "endpoint", {
+    get() {
+        return __config.get("endpoint");
+    },
+    enumerable: true,
+});
+
+/**
+ * Specifies the max retry limit for the HTTP requests made to SigNoz.
+ * Also, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10.
+ */
+export declare const httpMaxRetry: number | undefined;
+Object.defineProperty(exports, "httpMaxRetry", {
+    get() {
+        return __config.getObject<number>("httpMaxRetry");
+    },
+    enumerable: true,
+});
+
+/**
+ * Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.
+ * Also, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35.
+ */
+export declare const httpTimeout: number | undefined;
+Object.defineProperty(exports, "httpTimeout", {
+    get() {
+        return __config.getObject<number>("httpTimeout");
     },
     enumerable: true,
 });

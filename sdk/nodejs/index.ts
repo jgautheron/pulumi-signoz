@@ -5,28 +5,36 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
-export { GetDataSourceArgs, GetDataSourceResult, GetDataSourceOutputArgs } from "./getDataSource";
-export const getDataSource: typeof import("./getDataSource").getDataSource = null as any;
-export const getDataSourceOutput: typeof import("./getDataSource").getDataSourceOutput = null as any;
-utilities.lazyLoad(exports, ["getDataSource","getDataSourceOutput"], () => require("./getDataSource"));
+export { AlertArgs, AlertState } from "./alert";
+export type Alert = import("./alert").Alert;
+export const Alert: typeof import("./alert").Alert = null as any;
+utilities.lazyLoad(exports, ["Alert"], () => require("./alert"));
+
+export { DashboardArgs, DashboardState } from "./dashboard";
+export type Dashboard = import("./dashboard").Dashboard;
+export const Dashboard: typeof import("./dashboard").Dashboard = null as any;
+utilities.lazyLoad(exports, ["Dashboard"], () => require("./dashboard"));
+
+export { GetAlertArgs, GetAlertResult, GetAlertOutputArgs } from "./getAlert";
+export const getAlert: typeof import("./getAlert").getAlert = null as any;
+export const getAlertOutput: typeof import("./getAlert").getAlertOutput = null as any;
+utilities.lazyLoad(exports, ["getAlert","getAlertOutput"], () => require("./getAlert"));
+
+export { GetDashboardArgs, GetDashboardResult, GetDashboardOutputArgs } from "./getDashboard";
+export const getDashboard: typeof import("./getDashboard").getDashboard = null as any;
+export const getDashboardOutput: typeof import("./getDashboard").getDashboardOutput = null as any;
+utilities.lazyLoad(exports, ["getDashboard","getDashboardOutput"], () => require("./getDashboard"));
 
 export * from "./provider";
 import { Provider } from "./provider";
 
-export { ResourceArgs, ResourceState } from "./resource";
-export type Resource = import("./resource").Resource;
-export const Resource: typeof import("./resource").Resource = null as any;
-utilities.lazyLoad(exports, ["Resource"], () => require("./resource"));
-
 
 // Export sub-modules:
 import * as config from "./config";
-import * as region from "./region";
 import * as types from "./types";
 
 export {
     config,
-    region,
     types,
 };
 
@@ -34,18 +42,21 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
-            case "xyz:index/resource:Resource":
-                return new Resource(name, <any>undefined, { urn })
+            case "signoz:index/alert:Alert":
+                return new Alert(name, <any>undefined, { urn })
+            case "signoz:index/dashboard:Dashboard":
+                return new Dashboard(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }
     },
 };
-pulumi.runtime.registerResourceModule("xyz", "index/resource", _module)
-pulumi.runtime.registerResourcePackage("xyz", {
+pulumi.runtime.registerResourceModule("signoz", "index/alert", _module)
+pulumi.runtime.registerResourceModule("signoz", "index/dashboard", _module)
+pulumi.runtime.registerResourcePackage("signoz", {
     version: utilities.getVersion(),
     constructProvider: (name: string, type: string, urn: string): pulumi.ProviderResource => {
-        if (type !== "pulumi:providers:xyz") {
+        if (type !== "pulumi:providers:signoz") {
             throw new Error(`unknown provider type ${type}`);
         }
         return new Provider(name, <any>undefined, { urn });

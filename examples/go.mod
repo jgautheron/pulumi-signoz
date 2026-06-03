@@ -1,4 +1,4 @@
-module github.com/pulumi/pulumi-xyz/examples
+module github.com/jgautheron/pulumi-signoz/examples
 
 go 1.25.8
 
