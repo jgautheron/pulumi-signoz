@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace JGautheron.Pulumi.Signoz.Outputs
+namespace Jooon.Pulumi.Signoz.Outputs
 {
 
     [OutputType]

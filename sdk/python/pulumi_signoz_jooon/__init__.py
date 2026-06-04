@@ -16,10 +16,10 @@ from . import outputs
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
-    import pulumi_signoz_jgautheron.config as __config
+    import pulumi_signoz_jooon.config as __config
     config = __config
 else:
-    config = _utilities.lazy_import('pulumi_signoz_jgautheron.config')
+    config = _utilities.lazy_import('pulumi_signoz_jooon.config')
 
 _utilities.register(
     resource_modules="""
@@ -27,7 +27,7 @@ _utilities.register(
  {
   "pkg": "signoz",
   "mod": "index/alert",
-  "fqn": "pulumi_signoz_jgautheron",
+  "fqn": "pulumi_signoz_jooon",
   "classes": {
    "signoz:index/alert:Alert": "Alert"
   }
@@ -35,7 +35,7 @@ _utilities.register(
  {
   "pkg": "signoz",
   "mod": "index/dashboard",
-  "fqn": "pulumi_signoz_jgautheron",
+  "fqn": "pulumi_signoz_jooon",
   "classes": {
    "signoz:index/dashboard:Dashboard": "Dashboard"
   }
@@ -47,7 +47,7 @@ _utilities.register(
  {
   "pkg": "signoz",
   "token": "pulumi:providers:signoz",
-  "fqn": "pulumi_signoz_jgautheron",
+  "fqn": "pulumi_signoz_jooon",
   "class": "Provider"
  }
 ]

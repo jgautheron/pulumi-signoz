@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace JGautheron.Pulumi.Signoz
+namespace Jooon.Pulumi.Signoz
 {
     /// <summary>
     /// The provider type for the signoz package. By default, resources use package-wide configuration

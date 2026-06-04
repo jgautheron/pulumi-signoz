@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace JGautheron.Pulumi.Signoz
+namespace Jooon.Pulumi.Signoz
 {
     [SignozResourceType("signoz:index/alert:Alert")]
     public partial class Alert : global::Pulumi.CustomResource

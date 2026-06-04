@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace JGautheron.Pulumi.Signoz.Inputs
+namespace Jooon.Pulumi.Signoz.Inputs
 {
 
     public sealed class AlertNotificationSettingsRenotifyArgs : global::Pulumi.ResourceArgs

@@ -24,15 +24,15 @@ deployed alongside your services.
 ### Node.js (TypeScript / JavaScript)
 
 ```bash
-npm install @jgautheron/pulumi-signoz
+npm install @jooon/pulumi-signoz
 # or
-yarn add @jgautheron/pulumi-signoz
+yarn add @jooon/pulumi-signoz
 ```
 
 ### Python
 
 ```bash
-pip install pulumi-signoz-jgautheron
+pip install pulumi-signoz-jooon
 ```
 
 ### Go
@@ -44,7 +44,7 @@ go get github.com/jgautheron/pulumi-signoz/sdk/go/signoz
 ### .NET
 
 ```bash
-dotnet add package JGautheron.Pulumi.Signoz
+dotnet add package Jooon.Pulumi.Signoz
 ```
 
 ## Configuration
@@ -64,7 +64,7 @@ Keys → Add Key**.
 ## Quick start (TypeScript)
 
 ```typescript
-import * as signoz from "@jgautheron/pulumi-signoz";
+import * as signoz from "@jooon/pulumi-signoz";
 
 const provider = new signoz.Provider("signoz", {
   endpoint: "https://signoz.example.com",

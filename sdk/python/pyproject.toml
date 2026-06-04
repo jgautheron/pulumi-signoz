@@ -1,11 +1,11 @@
 [project]
-  name = "pulumi_signoz_jgautheron"
+  name = "pulumi_signoz_jooon"
   description = "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code."
   dependencies = ["parver>=0.2.1", "pulumi>=3.231.0,<4.0.0", "semver>=2.8.1", "typing-extensions>=4.11,<5; python_version < \"3.11\""]
   keywords = ["signoz", "observability", "monitoring", "tracing", "category/cloud"]
   readme = "README.md"
   requires-python = ">=3.9"
-  version = "1.0.0a0+dev"
+  version = "0.0.0a0+dev"
   [project.license]
     text = "Apache-2.0"
   [project.urls]
@@ -19,4 +19,4 @@
 [tool]
   [tool.setuptools]
     [tool.setuptools.package-data]
-      pulumi_signoz_jgautheron = ["py.typed", "pulumi-plugin.json"]
+      pulumi_signoz_jooon = ["py.typed", "pulumi-plugin.json"]

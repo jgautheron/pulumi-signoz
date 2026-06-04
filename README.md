@@ -32,7 +32,7 @@ yarn add @jooon/pulumi-signoz
 ### Python
 
 ```bash
-pip install pulumi-signoz-jgautheron
+pip install pulumi-signoz-jooon
 ```
 
 ### Go
@@ -44,7 +44,7 @@ go get github.com/jgautheron/pulumi-signoz/sdk/go/signoz
 ### .NET
 
 ```bash
-dotnet add package JGautheron.Pulumi.Signoz
+dotnet add package Jooon.Pulumi.Signoz
 ```
 
 ## Configuration

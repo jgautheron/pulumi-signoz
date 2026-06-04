@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace JGautheron.Pulumi.Signoz
+namespace Jooon.Pulumi.Signoz
 {
     public static class Config
     {

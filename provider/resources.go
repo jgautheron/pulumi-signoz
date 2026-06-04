@@ -104,7 +104,7 @@ func Provider() tfbridge.ProviderInfo {
 			},
 		},
 		Python: &tfbridge.PythonInfo{
-			PackageName:          "pulumi_signoz_jgautheron",
+			PackageName:          "pulumi_signoz_jooon",
 			RespectSchemaVersion: true,
 			PyProject:            struct{ Enabled bool }{true},
 		},
@@ -120,14 +120,14 @@ func Provider() tfbridge.ProviderInfo {
 			RespectSchemaVersion:           true,
 		},
 		CSharp: &tfbridge.CSharpInfo{
-			RootNamespace:        "JGautheron.Pulumi",
+			RootNamespace:        "Jooon.Pulumi",
 			RespectSchemaVersion: true,
 			PackageReferences: map[string]string{
 				"Pulumi": "3.*",
 			},
 		},
 		Java: &tfbridge.JavaInfo{
-			BasePackage: "dev.jgautheron",
+			BasePackage: "dev.jooon",
 		},
 	}
 
