@@ -6,7 +6,7 @@
         "typescript": "^6.0.3"
     },
     "dependencies": {
-        "@jgautheron/pulumi-signoz": "file:../../sdk/nodejs/bin",
+        "@jooon/pulumi-signoz": "file:../../sdk/nodejs/bin",
         "@pulumi/pulumi": "3.242.0"
     }
 }

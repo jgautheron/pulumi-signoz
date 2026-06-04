@@ -1,7 +1,7 @@
 // Minimal SigNoz Pulumi program: explicit Provider, one alert, one dashboard.
 // Set SIGNOZ_ENDPOINT + SIGNOZ_ACCESS_TOKEN before `pulumi up`, or override via
 // `pulumi config set --secret signoz:accessToken ...`.
-import * as signoz from "@jgautheron/pulumi-signoz";
+import * as signoz from "@jooon/pulumi-signoz";
 
 const provider = new signoz.Provider("signoz", {
   endpoint: process.env.SIGNOZ_ENDPOINT ?? "http://localhost:3301",

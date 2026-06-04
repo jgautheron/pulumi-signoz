@@ -39,7 +39,7 @@
             "gradleTest": ""
         },
         "nodejs": {
-            "packageName": "@jgautheron/pulumi-signoz",
+            "packageName": "@jooon/pulumi-signoz",
             "packageDescription": "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.",
             "readme": "\u003e This provider is a derived work of the [Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz)\n\u003e distributed under [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/). If you encounter a bug or missing feature,\n\u003e first check the [`pulumi-signoz` repo](https://github.com/jgautheron/pulumi-signoz/issues); however, if that doesn't turn up anything,\n\u003e please consult the source [`terraform-provider-signoz` repo](https://github.com/SigNoz/terraform-provider-signoz/issues).",
             "dependencies": {

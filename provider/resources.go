@@ -97,7 +97,7 @@ func Provider() tfbridge.ProviderInfo {
 		},
 
 		JavaScript: &tfbridge.JavaScriptInfo{
-			PackageName:          "@jgautheron/pulumi-signoz",
+			PackageName:          "@jooon/pulumi-signoz",
 			RespectSchemaVersion: true,
 			Dependencies: map[string]string{
 				"@pulumi/pulumi": "^3.0.0",
