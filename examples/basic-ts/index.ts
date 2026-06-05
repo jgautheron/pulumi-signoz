@@ -8,33 +8,72 @@ const provider = new signoz.Provider("signoz", {
   accessToken: process.env.SIGNOZ_ACCESS_TOKEN!,
 });
 
-// Simple metric-based alert. Real alert bodies are large JSON blobs;
-// export from the SigNoz UI ("Edit" → "Show JSON") as a starting point.
+// Logs-based alert using the v5 / v2alpha1 schema. SigNoz >= 0.125 only
+// accepts version "v5" rules; the condition + evaluation bodies are JSON
+// blobs — export from the SigNoz UI ("Edit" → "Show JSON") to adapt.
+//
+// NOTE: SigNoz requires at least one notification channel in the threshold
+// spec's `channels` array. Notification channels are admin-only and the
+// upstream Terraform provider has no channel resource (as of v0.0.11), so
+// create one in the SigNoz UI first and set `channels: ["<your-channel>"]`
+// below — otherwise the create returns 400 "at least one channel is required".
 const alert = new signoz.Alert(
   "pulumi-test-alert",
   {
     alert: "Pulumi smoke-test alert",
-    alertType: "METRIC_BASED_ALERT",
+    alertType: "LOGS_BASED_ALERT",
     description: "Created from pulumi-signoz examples/basic-ts.",
     disabled: true, // disabled so the smoke test doesn't actually fire
     evalWindow: "5m0s",
     frequency: "1m0s",
+    broadcastToAll: false,
+    ruleType: "threshold_rule",
+    version: "v5",
+    schemaVersion: "v2alpha1",
+    severity: "info",
+    source: "https://github.com/jgautheron/pulumi-signoz",
     labels: {
       severity: "info",
       managedBy: "pulumi",
     },
-    severity: "info",
-    source: "https://github.com/jgautheron/pulumi-signoz",
-    // Minimal valid condition body — replace with the real one when adapting.
     condition: JSON.stringify({
       compositeQuery: {
-        queryType: "builder",
+        queries: [
+          {
+            type: "builder_query",
+            spec: {
+              name: "A",
+              stepInterval: 0,
+              signal: "logs",
+              source: "",
+              aggregations: [{ expression: "count()" }],
+              filter: { expression: "" },
+              having: { expression: "" },
+            },
+          },
+        ],
         panelType: "graph",
-        builderQueries: {},
+        queryType: "builder",
       },
-      op: ">",
-      target: 0,
-      matchType: "1",
+      selectedQueryName: "A",
+      thresholds: {
+        kind: "basic",
+        spec: [
+          {
+            name: "info",
+            target: 1000,
+            targetUnit: "",
+            recoveryTarget: null,
+            matchType: "1",
+            op: "1",
+            channels: [],
+          },
+        ],
+      },
+    }),
+    evaluation: JSON.stringify({
+      kind: "rolling",
+      spec: { evalWindow: "5m0s", frequency: "1m0s" },
     }),
   },
   { provider },
