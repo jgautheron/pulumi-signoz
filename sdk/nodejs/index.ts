@@ -15,27 +15,30 @@ export type Dashboard = import("./dashboard").Dashboard;
 export const Dashboard: typeof import("./dashboard").Dashboard = null as any;
 utilities.lazyLoad(exports, ["Dashboard"], () => require("./dashboard"));
 
-export { GetAlertArgs, GetAlertResult, GetAlertOutputArgs } from "./getAlert";
-export const getAlert: typeof import("./getAlert").getAlert = null as any;
-export const getAlertOutput: typeof import("./getAlert").getAlertOutput = null as any;
-utilities.lazyLoad(exports, ["getAlert","getAlertOutput"], () => require("./getAlert"));
+export { LogPipelineArgs, LogPipelineState } from "./logPipeline";
+export type LogPipeline = import("./logPipeline").LogPipeline;
+export const LogPipeline: typeof import("./logPipeline").LogPipeline = null as any;
+utilities.lazyLoad(exports, ["LogPipeline"], () => require("./logPipeline"));
 
-export { GetDashboardArgs, GetDashboardResult, GetDashboardOutputArgs } from "./getDashboard";
-export const getDashboard: typeof import("./getDashboard").getDashboard = null as any;
-export const getDashboardOutput: typeof import("./getDashboard").getDashboardOutput = null as any;
-utilities.lazyLoad(exports, ["getDashboard","getDashboardOutput"], () => require("./getDashboard"));
+export { NotificationChannelArgs, NotificationChannelState } from "./notificationChannel";
+export type NotificationChannel = import("./notificationChannel").NotificationChannel;
+export const NotificationChannel: typeof import("./notificationChannel").NotificationChannel = null as any;
+utilities.lazyLoad(exports, ["NotificationChannel"], () => require("./notificationChannel"));
 
 export * from "./provider";
 import { Provider } from "./provider";
 
+export { SavedViewArgs, SavedViewState } from "./savedView";
+export type SavedView = import("./savedView").SavedView;
+export const SavedView: typeof import("./savedView").SavedView = null as any;
+utilities.lazyLoad(exports, ["SavedView"], () => require("./savedView"));
+
 
 // Export sub-modules:
 import * as config from "./config";
-import * as types from "./types";
 
 export {
     config,
-    types,
 };
 
 const _module = {
@@ -46,6 +49,12 @@ const _module = {
                 return new Alert(name, <any>undefined, { urn })
             case "signoz:index/dashboard:Dashboard":
                 return new Dashboard(name, <any>undefined, { urn })
+            case "signoz:index/logPipeline:LogPipeline":
+                return new LogPipeline(name, <any>undefined, { urn })
+            case "signoz:index/notificationChannel:NotificationChannel":
+                return new NotificationChannel(name, <any>undefined, { urn })
+            case "signoz:index/savedView:SavedView":
+                return new SavedView(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }
@@ -53,6 +62,9 @@ const _module = {
 };
 pulumi.runtime.registerResourceModule("signoz", "index/alert", _module)
 pulumi.runtime.registerResourceModule("signoz", "index/dashboard", _module)
+pulumi.runtime.registerResourceModule("signoz", "index/logPipeline", _module)
+pulumi.runtime.registerResourceModule("signoz", "index/notificationChannel", _module)
+pulumi.runtime.registerResourceModule("signoz", "index/savedView", _module)
 pulumi.runtime.registerResourcePackage("signoz", {
     version: utilities.getVersion(),
     constructProvider: (name: string, type: string, urn: string): pulumi.ProviderResource => {

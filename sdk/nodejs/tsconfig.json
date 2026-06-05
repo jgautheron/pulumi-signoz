@@ -23,13 +23,11 @@
         "config/index.ts",
         "config/vars.ts",
         "dashboard.ts",
-        "getAlert.ts",
-        "getDashboard.ts",
         "index.ts",
+        "logPipeline.ts",
+        "notificationChannel.ts",
         "provider.ts",
-        "types/index.ts",
-        "types/input.ts",
-        "types/output.ts",
+        "savedView.ts",
         "utilities.ts"
     ]
 }

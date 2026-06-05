@@ -12,38 +12,53 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// A SigNoz dashboard. The full dashboard definition is supplied as JSON in `data`; export an existing dashboard from the SigNoz UI to bootstrap it.
+//
+// ## Example Usage
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"encoding/json"
+//
+//	"github.com/jgautheron/pulumi-signoz/sdk/go/signoz"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			tmpJSON0, err := json.Marshal(map[string]interface{}{
+//				"title":       "App Overview",
+//				"description": "Managed by Pulumi",
+//				"tags": []string{
+//					"managed-by:terraform",
+//				},
+//				"layout":  []interface{}{},
+//				"widgets": []interface{}{},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			json0 := string(tmpJSON0)
+//			_, err = signoz.NewDashboard(ctx, "overview", &signoz.DashboardArgs{
+//				Data: pulumi.String(pulumi.String(json0)),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
 type Dashboard struct {
 	pulumi.CustomResourceState
 
-	CollapsableRowsMigrated pulumi.BoolOutput `pulumi:"collapsableRowsMigrated"`
-	// Creation time of the dashboard.
-	CreatedAt pulumi.StringOutput `pulumi:"createdAt"`
-	// Creator of the dashboard.
-	CreatedBy pulumi.StringOutput `pulumi:"createdBy"`
-	// Description of the dashboard.
-	Description pulumi.StringOutput `pulumi:"description"`
-	// Layout of the dashboard.
-	Layout pulumi.StringOutput `pulumi:"layout"`
-	// Name of the dashboard.
-	Name     pulumi.StringOutput    `pulumi:"name"`
-	PanelMap pulumi.StringPtrOutput `pulumi:"panelMap"`
-	// Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-	Source pulumi.StringOutput `pulumi:"source"`
-	// Tags of the dashboard.
-	Tags pulumi.StringArrayOutput `pulumi:"tags"`
-	// Title of the dashboard.
-	Title pulumi.StringOutput `pulumi:"title"`
-	// Last update time of the dashboard.
-	UpdatedAt pulumi.StringOutput `pulumi:"updatedAt"`
-	// Last updater of the dashboard.
-	UpdatedBy       pulumi.StringOutput `pulumi:"updatedBy"`
-	UploadedGrafana pulumi.BoolOutput   `pulumi:"uploadedGrafana"`
-	// Variables for the dashboard.
-	Variables pulumi.StringOutput `pulumi:"variables"`
-	// Version of the dashboard.
-	Version pulumi.StringOutput `pulumi:"version"`
-	// Widgets for the dashboard.
-	Widgets pulumi.StringOutput `pulumi:"widgets"`
+	// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
+	Data pulumi.StringOutput `pulumi:"data"`
 }
 
 // NewDashboard registers a new resource with the given unique name, arguments, and options.
@@ -53,29 +68,8 @@ func NewDashboard(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.CollapsableRowsMigrated == nil {
-		return nil, errors.New("invalid value for required argument 'CollapsableRowsMigrated'")
-	}
-	if args.Description == nil {
-		return nil, errors.New("invalid value for required argument 'Description'")
-	}
-	if args.Layout == nil {
-		return nil, errors.New("invalid value for required argument 'Layout'")
-	}
-	if args.Title == nil {
-		return nil, errors.New("invalid value for required argument 'Title'")
-	}
-	if args.UploadedGrafana == nil {
-		return nil, errors.New("invalid value for required argument 'UploadedGrafana'")
-	}
-	if args.Variables == nil {
-		return nil, errors.New("invalid value for required argument 'Variables'")
-	}
-	if args.Version == nil {
-		return nil, errors.New("invalid value for required argument 'Version'")
-	}
-	if args.Widgets == nil {
-		return nil, errors.New("invalid value for required argument 'Widgets'")
+	if args.Data == nil {
+		return nil, errors.New("invalid value for required argument 'Data'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Dashboard
@@ -100,67 +94,13 @@ func GetDashboard(ctx *pulumi.Context,
 
 // Input properties used for looking up and filtering Dashboard resources.
 type dashboardState struct {
-	CollapsableRowsMigrated *bool `pulumi:"collapsableRowsMigrated"`
-	// Creation time of the dashboard.
-	CreatedAt *string `pulumi:"createdAt"`
-	// Creator of the dashboard.
-	CreatedBy *string `pulumi:"createdBy"`
-	// Description of the dashboard.
-	Description *string `pulumi:"description"`
-	// Layout of the dashboard.
-	Layout *string `pulumi:"layout"`
-	// Name of the dashboard.
-	Name     *string `pulumi:"name"`
-	PanelMap *string `pulumi:"panelMap"`
-	// Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-	Source *string `pulumi:"source"`
-	// Tags of the dashboard.
-	Tags []string `pulumi:"tags"`
-	// Title of the dashboard.
-	Title *string `pulumi:"title"`
-	// Last update time of the dashboard.
-	UpdatedAt *string `pulumi:"updatedAt"`
-	// Last updater of the dashboard.
-	UpdatedBy       *string `pulumi:"updatedBy"`
-	UploadedGrafana *bool   `pulumi:"uploadedGrafana"`
-	// Variables for the dashboard.
-	Variables *string `pulumi:"variables"`
-	// Version of the dashboard.
-	Version *string `pulumi:"version"`
-	// Widgets for the dashboard.
-	Widgets *string `pulumi:"widgets"`
+	// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
+	Data *string `pulumi:"data"`
 }
 
 type DashboardState struct {
-	CollapsableRowsMigrated pulumi.BoolPtrInput
-	// Creation time of the dashboard.
-	CreatedAt pulumi.StringPtrInput
-	// Creator of the dashboard.
-	CreatedBy pulumi.StringPtrInput
-	// Description of the dashboard.
-	Description pulumi.StringPtrInput
-	// Layout of the dashboard.
-	Layout pulumi.StringPtrInput
-	// Name of the dashboard.
-	Name     pulumi.StringPtrInput
-	PanelMap pulumi.StringPtrInput
-	// Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-	Source pulumi.StringPtrInput
-	// Tags of the dashboard.
-	Tags pulumi.StringArrayInput
-	// Title of the dashboard.
-	Title pulumi.StringPtrInput
-	// Last update time of the dashboard.
-	UpdatedAt pulumi.StringPtrInput
-	// Last updater of the dashboard.
-	UpdatedBy       pulumi.StringPtrInput
-	UploadedGrafana pulumi.BoolPtrInput
-	// Variables for the dashboard.
-	Variables pulumi.StringPtrInput
-	// Version of the dashboard.
-	Version pulumi.StringPtrInput
-	// Widgets for the dashboard.
-	Widgets pulumi.StringPtrInput
+	// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
+	Data pulumi.StringPtrInput
 }
 
 func (DashboardState) ElementType() reflect.Type {
@@ -168,52 +108,14 @@ func (DashboardState) ElementType() reflect.Type {
 }
 
 type dashboardArgs struct {
-	CollapsableRowsMigrated bool `pulumi:"collapsableRowsMigrated"`
-	// Description of the dashboard.
-	Description string `pulumi:"description"`
-	// Layout of the dashboard.
-	Layout string `pulumi:"layout"`
-	// Name of the dashboard.
-	Name     *string `pulumi:"name"`
-	PanelMap *string `pulumi:"panelMap"`
-	// Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-	Source *string `pulumi:"source"`
-	// Tags of the dashboard.
-	Tags []string `pulumi:"tags"`
-	// Title of the dashboard.
-	Title           string `pulumi:"title"`
-	UploadedGrafana bool   `pulumi:"uploadedGrafana"`
-	// Variables for the dashboard.
-	Variables string `pulumi:"variables"`
-	// Version of the dashboard.
-	Version string `pulumi:"version"`
-	// Widgets for the dashboard.
-	Widgets string `pulumi:"widgets"`
+	// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
+	Data string `pulumi:"data"`
 }
 
 // The set of arguments for constructing a Dashboard resource.
 type DashboardArgs struct {
-	CollapsableRowsMigrated pulumi.BoolInput
-	// Description of the dashboard.
-	Description pulumi.StringInput
-	// Layout of the dashboard.
-	Layout pulumi.StringInput
-	// Name of the dashboard.
-	Name     pulumi.StringPtrInput
-	PanelMap pulumi.StringPtrInput
-	// Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-	Source pulumi.StringPtrInput
-	// Tags of the dashboard.
-	Tags pulumi.StringArrayInput
-	// Title of the dashboard.
-	Title           pulumi.StringInput
-	UploadedGrafana pulumi.BoolInput
-	// Variables for the dashboard.
-	Variables pulumi.StringInput
-	// Version of the dashboard.
-	Version pulumi.StringInput
-	// Widgets for the dashboard.
-	Widgets pulumi.StringInput
+	// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
+	Data pulumi.StringInput
 }
 
 func (DashboardArgs) ElementType() reflect.Type {
@@ -303,81 +205,9 @@ func (o DashboardOutput) ToDashboardOutputWithContext(ctx context.Context) Dashb
 	return o
 }
 
-func (o DashboardOutput) CollapsableRowsMigrated() pulumi.BoolOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.BoolOutput { return v.CollapsableRowsMigrated }).(pulumi.BoolOutput)
-}
-
-// Creation time of the dashboard.
-func (o DashboardOutput) CreatedAt() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.CreatedAt }).(pulumi.StringOutput)
-}
-
-// Creator of the dashboard.
-func (o DashboardOutput) CreatedBy() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.CreatedBy }).(pulumi.StringOutput)
-}
-
-// Description of the dashboard.
-func (o DashboardOutput) Description() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Description }).(pulumi.StringOutput)
-}
-
-// Layout of the dashboard.
-func (o DashboardOutput) Layout() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Layout }).(pulumi.StringOutput)
-}
-
-// Name of the dashboard.
-func (o DashboardOutput) Name() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Name }).(pulumi.StringOutput)
-}
-
-func (o DashboardOutput) PanelMap() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringPtrOutput { return v.PanelMap }).(pulumi.StringPtrOutput)
-}
-
-// Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-func (o DashboardOutput) Source() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Source }).(pulumi.StringOutput)
-}
-
-// Tags of the dashboard.
-func (o DashboardOutput) Tags() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringArrayOutput { return v.Tags }).(pulumi.StringArrayOutput)
-}
-
-// Title of the dashboard.
-func (o DashboardOutput) Title() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Title }).(pulumi.StringOutput)
-}
-
-// Last update time of the dashboard.
-func (o DashboardOutput) UpdatedAt() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.UpdatedAt }).(pulumi.StringOutput)
-}
-
-// Last updater of the dashboard.
-func (o DashboardOutput) UpdatedBy() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.UpdatedBy }).(pulumi.StringOutput)
-}
-
-func (o DashboardOutput) UploadedGrafana() pulumi.BoolOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.BoolOutput { return v.UploadedGrafana }).(pulumi.BoolOutput)
-}
-
-// Variables for the dashboard.
-func (o DashboardOutput) Variables() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Variables }).(pulumi.StringOutput)
-}
-
-// Version of the dashboard.
-func (o DashboardOutput) Version() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Version }).(pulumi.StringOutput)
-}
-
-// Widgets for the dashboard.
-func (o DashboardOutput) Widgets() pulumi.StringOutput {
-	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Widgets }).(pulumi.StringOutput)
+// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
+func (o DashboardOutput) Data() pulumi.StringOutput {
+	return o.ApplyT(func(v *Dashboard) pulumi.StringOutput { return v.Data }).(pulumi.StringOutput)
 }
 
 type DashboardArrayOutput struct{ *pulumi.OutputState }

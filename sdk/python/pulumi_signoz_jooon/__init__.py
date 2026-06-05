@@ -8,11 +8,10 @@ import typing
 # Export this package's modules as members:
 from .alert import *
 from .dashboard import *
-from .get_alert import *
-from .get_dashboard import *
+from .log_pipeline import *
+from .notification_channel import *
 from .provider import *
-from ._inputs import *
-from . import outputs
+from .saved_view import *
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
@@ -38,6 +37,30 @@ _utilities.register(
   "fqn": "pulumi_signoz_jooon",
   "classes": {
    "signoz:index/dashboard:Dashboard": "Dashboard"
+  }
+ },
+ {
+  "pkg": "signoz",
+  "mod": "index/logPipeline",
+  "fqn": "pulumi_signoz_jooon",
+  "classes": {
+   "signoz:index/logPipeline:LogPipeline": "LogPipeline"
+  }
+ },
+ {
+  "pkg": "signoz",
+  "mod": "index/notificationChannel",
+  "fqn": "pulumi_signoz_jooon",
+  "classes": {
+   "signoz:index/notificationChannel:NotificationChannel": "NotificationChannel"
+  }
+ },
+ {
+  "pkg": "signoz",
+  "mod": "index/savedView",
+  "fqn": "pulumi_signoz_jooon",
+  "classes": {
+   "signoz:index/savedView:SavedView": "SavedView"
   }
  }
 ]

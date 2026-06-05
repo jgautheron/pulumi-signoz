@@ -12,56 +12,135 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// A SigNoz alert rule. Top-level fields are typed; the query `condition`, `evaluation`, and `notificationSettings` are JSON blobs (export from the SigNoz UI to adapt). Defaults target the v5 / v2alpha1 schema required by SigNoz >= 0.125.
+//
+// ## Example Usage
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"encoding/json"
+//
+//	"github.com/jgautheron/pulumi-signoz/sdk/go/signoz"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			tmpJSON0, err := json.Marshal(map[string]interface{}{
+//				"compositeQuery": map[string]interface{}{
+//					"queryType": "builder",
+//					"panelType": "graph",
+//					"queries": []map[string]interface{}{
+//						map[string]interface{}{
+//							"type": "builder_query",
+//							"spec": map[string]interface{}{
+//								"name":         "A",
+//								"signal":       "logs",
+//								"stepInterval": 0,
+//								"aggregations": []map[string]interface{}{
+//									map[string]interface{}{
+//										"expression": "count()",
+//									},
+//								},
+//								"filter": map[string]interface{}{
+//									"expression": "severity_text = 'ERROR'",
+//								},
+//								"having": map[string]interface{}{
+//									"expression": "",
+//								},
+//							},
+//						},
+//					},
+//				},
+//				"selectedQueryName": "A",
+//				"thresholds": map[string]interface{}{
+//					"kind": "basic",
+//					"spec": []map[string]interface{}{
+//						map[string]interface{}{
+//							"name":      "warning",
+//							"target":    100,
+//							"matchType": "1",
+//							"op":        "1",
+//							"channels": []interface{}{
+//								slack.Name,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			json0 := string(tmpJSON0)
+//			tmpJSON1, err := json.Marshal(map[string]interface{}{
+//				"kind": "rolling",
+//				"spec": map[string]interface{}{
+//					"evalWindow": "5m0s",
+//					"frequency":  "1m0s",
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			json1 := string(tmpJSON1)
+//			// A logs-based alert on the v5 / v2alpha1 schema (SigNoz >= 0.125).
+//			// The threshold references a notification channel by name.
+//			_, err = signoz.NewAlert(ctx, "high_error_logs", &signoz.AlertArgs{
+//				Alert:      pulumi.String("High error log volume"),
+//				AlertType:  pulumi.String("LOGS_BASED_ALERT"),
+//				Severity:   pulumi.String("warning"),
+//				Condition:  pulumi.String(pulumi.String(json0)),
+//				Evaluation: pulumi.String(pulumi.String(json1)),
+//				PreferredChannels: pulumi.StringArray{
+//					slack.Name,
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
 type Alert struct {
 	pulumi.CustomResourceState
 
-	// Name of the alert.
+	// Alert name.
 	Alert pulumi.StringOutput `pulumi:"alert"`
-	// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+	// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
 	AlertType pulumi.StringOutput `pulumi:"alertType"`
-	// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-	//
-	// Deprecated: This field is no longer needed and will be ignored
-	BroadcastToAll pulumi.BoolOutput `pulumi:"broadcastToAll"`
-	// Condition of the alert.
+	// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
 	Condition pulumi.StringOutput `pulumi:"condition"`
-	// Creation time of the alert.
-	CreateAt pulumi.StringOutput `pulumi:"createAt"`
-	// Creator of the alert.
-	CreateBy pulumi.StringOutput `pulumi:"createBy"`
-	// Description of the alert.
-	Description pulumi.StringOutput `pulumi:"description"`
-	// Whether the alert is disabled.
+	// Human-readable description.
+	Description pulumi.StringPtrOutput `pulumi:"description"`
+	// Whether the rule is disabled. Defaults to false.
 	Disabled pulumi.BoolOutput `pulumi:"disabled"`
-	// The evaluation window of the alert. By default, it is 5m0s.
+	// Evaluation window (e.g. `5m0s`).
 	EvalWindow pulumi.StringOutput `pulumi:"evalWindow"`
-	// Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
-	Evaluation pulumi.StringOutput `pulumi:"evaluation"`
-	// The frequency of the alert. By default, it is 1m0s.
+	// Evaluation block as JSON (v2alpha1+). Compared semantically.
+	Evaluation pulumi.StringPtrOutput `pulumi:"evaluation"`
+	// Evaluation frequency (e.g. `1m0s`).
 	Frequency pulumi.StringOutput `pulumi:"frequency"`
-	// Labels of the alert. Severity is a required label.
+	// Custom labels attached to the alert.
 	Labels pulumi.StringMapOutput `pulumi:"labels"`
-	// Notification settings for the alert. Only used when schemaVersion is v2 or higher.
-	NotificationSettings AlertNotificationSettingsOutput `pulumi:"notificationSettings"`
-	// Preferred channels of the alert. By default, it is empty.
+	// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+	NotificationSettings pulumi.StringPtrOutput `pulumi:"notificationSettings"`
+	// Notification channel names the alert routes to.
 	PreferredChannels pulumi.StringArrayOutput `pulumi:"preferredChannels"`
-	// Type of the alert. Possible values are: thresholdRule and promql_rule.
+	// Rule engine type: `thresholdRule` (default) or `promqlRule`.
 	RuleType pulumi.StringOutput `pulumi:"ruleType"`
-	// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+	// Alert schema version. Defaults to `v2alpha1`.
 	SchemaVersion pulumi.StringOutput `pulumi:"schemaVersion"`
-	// Severity of the alert. Possible values are: info, warning, error, and critical.
-	Severity pulumi.StringOutput `pulumi:"severity"`
-	// Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
-	Source pulumi.StringOutput `pulumi:"source"`
-	// State of the alert.
-	State pulumi.StringOutput `pulumi:"state"`
-	// Summary of the alert.
-	Summary pulumi.StringOutput `pulumi:"summary"`
-	// Last update time of the alert.
-	UpdateAt pulumi.StringOutput `pulumi:"updateAt"`
-	// Last updater of the alert.
-	UpdateBy pulumi.StringOutput `pulumi:"updateBy"`
-	// Version of the alert. By default, it is v4.
+	// Severity label (e.g. `info`, `warning`, `critical`).
+	Severity pulumi.StringPtrOutput `pulumi:"severity"`
+	// Source URL recorded on the rule.
+	Source pulumi.StringPtrOutput `pulumi:"source"`
+	// Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
 	Version pulumi.StringOutput `pulumi:"version"`
 }
 
@@ -80,9 +159,6 @@ func NewAlert(ctx *pulumi.Context,
 	}
 	if args.Condition == nil {
 		return nil, errors.New("invalid value for required argument 'Condition'")
-	}
-	if args.Severity == nil {
-		return nil, errors.New("invalid value for required argument 'Severity'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Alert
@@ -107,104 +183,72 @@ func GetAlert(ctx *pulumi.Context,
 
 // Input properties used for looking up and filtering Alert resources.
 type alertState struct {
-	// Name of the alert.
+	// Alert name.
 	Alert *string `pulumi:"alert"`
-	// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+	// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
 	AlertType *string `pulumi:"alertType"`
-	// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-	//
-	// Deprecated: This field is no longer needed and will be ignored
-	BroadcastToAll *bool `pulumi:"broadcastToAll"`
-	// Condition of the alert.
+	// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
 	Condition *string `pulumi:"condition"`
-	// Creation time of the alert.
-	CreateAt *string `pulumi:"createAt"`
-	// Creator of the alert.
-	CreateBy *string `pulumi:"createBy"`
-	// Description of the alert.
+	// Human-readable description.
 	Description *string `pulumi:"description"`
-	// Whether the alert is disabled.
+	// Whether the rule is disabled. Defaults to false.
 	Disabled *bool `pulumi:"disabled"`
-	// The evaluation window of the alert. By default, it is 5m0s.
+	// Evaluation window (e.g. `5m0s`).
 	EvalWindow *string `pulumi:"evalWindow"`
-	// Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
+	// Evaluation block as JSON (v2alpha1+). Compared semantically.
 	Evaluation *string `pulumi:"evaluation"`
-	// The frequency of the alert. By default, it is 1m0s.
+	// Evaluation frequency (e.g. `1m0s`).
 	Frequency *string `pulumi:"frequency"`
-	// Labels of the alert. Severity is a required label.
+	// Custom labels attached to the alert.
 	Labels map[string]string `pulumi:"labels"`
-	// Notification settings for the alert. Only used when schemaVersion is v2 or higher.
-	NotificationSettings *AlertNotificationSettings `pulumi:"notificationSettings"`
-	// Preferred channels of the alert. By default, it is empty.
+	// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+	NotificationSettings *string `pulumi:"notificationSettings"`
+	// Notification channel names the alert routes to.
 	PreferredChannels []string `pulumi:"preferredChannels"`
-	// Type of the alert. Possible values are: thresholdRule and promql_rule.
+	// Rule engine type: `thresholdRule` (default) or `promqlRule`.
 	RuleType *string `pulumi:"ruleType"`
-	// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+	// Alert schema version. Defaults to `v2alpha1`.
 	SchemaVersion *string `pulumi:"schemaVersion"`
-	// Severity of the alert. Possible values are: info, warning, error, and critical.
+	// Severity label (e.g. `info`, `warning`, `critical`).
 	Severity *string `pulumi:"severity"`
-	// Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+	// Source URL recorded on the rule.
 	Source *string `pulumi:"source"`
-	// State of the alert.
-	State *string `pulumi:"state"`
-	// Summary of the alert.
-	Summary *string `pulumi:"summary"`
-	// Last update time of the alert.
-	UpdateAt *string `pulumi:"updateAt"`
-	// Last updater of the alert.
-	UpdateBy *string `pulumi:"updateBy"`
-	// Version of the alert. By default, it is v4.
+	// Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
 	Version *string `pulumi:"version"`
 }
 
 type AlertState struct {
-	// Name of the alert.
+	// Alert name.
 	Alert pulumi.StringPtrInput
-	// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+	// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
 	AlertType pulumi.StringPtrInput
-	// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-	//
-	// Deprecated: This field is no longer needed and will be ignored
-	BroadcastToAll pulumi.BoolPtrInput
-	// Condition of the alert.
+	// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
 	Condition pulumi.StringPtrInput
-	// Creation time of the alert.
-	CreateAt pulumi.StringPtrInput
-	// Creator of the alert.
-	CreateBy pulumi.StringPtrInput
-	// Description of the alert.
+	// Human-readable description.
 	Description pulumi.StringPtrInput
-	// Whether the alert is disabled.
+	// Whether the rule is disabled. Defaults to false.
 	Disabled pulumi.BoolPtrInput
-	// The evaluation window of the alert. By default, it is 5m0s.
+	// Evaluation window (e.g. `5m0s`).
 	EvalWindow pulumi.StringPtrInput
-	// Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
+	// Evaluation block as JSON (v2alpha1+). Compared semantically.
 	Evaluation pulumi.StringPtrInput
-	// The frequency of the alert. By default, it is 1m0s.
+	// Evaluation frequency (e.g. `1m0s`).
 	Frequency pulumi.StringPtrInput
-	// Labels of the alert. Severity is a required label.
+	// Custom labels attached to the alert.
 	Labels pulumi.StringMapInput
-	// Notification settings for the alert. Only used when schemaVersion is v2 or higher.
-	NotificationSettings AlertNotificationSettingsPtrInput
-	// Preferred channels of the alert. By default, it is empty.
+	// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+	NotificationSettings pulumi.StringPtrInput
+	// Notification channel names the alert routes to.
 	PreferredChannels pulumi.StringArrayInput
-	// Type of the alert. Possible values are: thresholdRule and promql_rule.
+	// Rule engine type: `thresholdRule` (default) or `promqlRule`.
 	RuleType pulumi.StringPtrInput
-	// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+	// Alert schema version. Defaults to `v2alpha1`.
 	SchemaVersion pulumi.StringPtrInput
-	// Severity of the alert. Possible values are: info, warning, error, and critical.
+	// Severity label (e.g. `info`, `warning`, `critical`).
 	Severity pulumi.StringPtrInput
-	// Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+	// Source URL recorded on the rule.
 	Source pulumi.StringPtrInput
-	// State of the alert.
-	State pulumi.StringPtrInput
-	// Summary of the alert.
-	Summary pulumi.StringPtrInput
-	// Last update time of the alert.
-	UpdateAt pulumi.StringPtrInput
-	// Last updater of the alert.
-	UpdateBy pulumi.StringPtrInput
-	// Version of the alert. By default, it is v4.
+	// Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
 	Version pulumi.StringPtrInput
 }
 
@@ -213,85 +257,73 @@ func (AlertState) ElementType() reflect.Type {
 }
 
 type alertArgs struct {
-	// Name of the alert.
+	// Alert name.
 	Alert string `pulumi:"alert"`
-	// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+	// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
 	AlertType string `pulumi:"alertType"`
-	// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-	//
-	// Deprecated: This field is no longer needed and will be ignored
-	BroadcastToAll *bool `pulumi:"broadcastToAll"`
-	// Condition of the alert.
+	// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
 	Condition string `pulumi:"condition"`
-	// Description of the alert.
+	// Human-readable description.
 	Description *string `pulumi:"description"`
-	// Whether the alert is disabled.
+	// Whether the rule is disabled. Defaults to false.
 	Disabled *bool `pulumi:"disabled"`
-	// The evaluation window of the alert. By default, it is 5m0s.
+	// Evaluation window (e.g. `5m0s`).
 	EvalWindow *string `pulumi:"evalWindow"`
-	// Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
+	// Evaluation block as JSON (v2alpha1+). Compared semantically.
 	Evaluation *string `pulumi:"evaluation"`
-	// The frequency of the alert. By default, it is 1m0s.
+	// Evaluation frequency (e.g. `1m0s`).
 	Frequency *string `pulumi:"frequency"`
-	// Labels of the alert. Severity is a required label.
+	// Custom labels attached to the alert.
 	Labels map[string]string `pulumi:"labels"`
-	// Notification settings for the alert. Only used when schemaVersion is v2 or higher.
-	NotificationSettings *AlertNotificationSettings `pulumi:"notificationSettings"`
-	// Preferred channels of the alert. By default, it is empty.
+	// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+	NotificationSettings *string `pulumi:"notificationSettings"`
+	// Notification channel names the alert routes to.
 	PreferredChannels []string `pulumi:"preferredChannels"`
-	// Type of the alert. Possible values are: thresholdRule and promql_rule.
+	// Rule engine type: `thresholdRule` (default) or `promqlRule`.
 	RuleType *string `pulumi:"ruleType"`
-	// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+	// Alert schema version. Defaults to `v2alpha1`.
 	SchemaVersion *string `pulumi:"schemaVersion"`
-	// Severity of the alert. Possible values are: info, warning, error, and critical.
-	Severity string `pulumi:"severity"`
-	// Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+	// Severity label (e.g. `info`, `warning`, `critical`).
+	Severity *string `pulumi:"severity"`
+	// Source URL recorded on the rule.
 	Source *string `pulumi:"source"`
-	// Summary of the alert.
-	Summary *string `pulumi:"summary"`
-	// Version of the alert. By default, it is v4.
+	// Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
 	Version *string `pulumi:"version"`
 }
 
 // The set of arguments for constructing a Alert resource.
 type AlertArgs struct {
-	// Name of the alert.
+	// Alert name.
 	Alert pulumi.StringInput
-	// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+	// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
 	AlertType pulumi.StringInput
-	// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-	//
-	// Deprecated: This field is no longer needed and will be ignored
-	BroadcastToAll pulumi.BoolPtrInput
-	// Condition of the alert.
+	// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
 	Condition pulumi.StringInput
-	// Description of the alert.
+	// Human-readable description.
 	Description pulumi.StringPtrInput
-	// Whether the alert is disabled.
+	// Whether the rule is disabled. Defaults to false.
 	Disabled pulumi.BoolPtrInput
-	// The evaluation window of the alert. By default, it is 5m0s.
+	// Evaluation window (e.g. `5m0s`).
 	EvalWindow pulumi.StringPtrInput
-	// Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
+	// Evaluation block as JSON (v2alpha1+). Compared semantically.
 	Evaluation pulumi.StringPtrInput
-	// The frequency of the alert. By default, it is 1m0s.
+	// Evaluation frequency (e.g. `1m0s`).
 	Frequency pulumi.StringPtrInput
-	// Labels of the alert. Severity is a required label.
+	// Custom labels attached to the alert.
 	Labels pulumi.StringMapInput
-	// Notification settings for the alert. Only used when schemaVersion is v2 or higher.
-	NotificationSettings AlertNotificationSettingsPtrInput
-	// Preferred channels of the alert. By default, it is empty.
+	// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+	NotificationSettings pulumi.StringPtrInput
+	// Notification channel names the alert routes to.
 	PreferredChannels pulumi.StringArrayInput
-	// Type of the alert. Possible values are: thresholdRule and promql_rule.
+	// Rule engine type: `thresholdRule` (default) or `promqlRule`.
 	RuleType pulumi.StringPtrInput
-	// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+	// Alert schema version. Defaults to `v2alpha1`.
 	SchemaVersion pulumi.StringPtrInput
-	// Severity of the alert. Possible values are: info, warning, error, and critical.
-	Severity pulumi.StringInput
-	// Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+	// Severity label (e.g. `info`, `warning`, `critical`).
+	Severity pulumi.StringPtrInput
+	// Source URL recorded on the rule.
 	Source pulumi.StringPtrInput
-	// Summary of the alert.
-	Summary pulumi.StringPtrInput
-	// Version of the alert. By default, it is v4.
+	// Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
 	Version pulumi.StringPtrInput
 }
 
@@ -382,119 +414,82 @@ func (o AlertOutput) ToAlertOutputWithContext(ctx context.Context) AlertOutput {
 	return o
 }
 
-// Name of the alert.
+// Alert name.
 func (o AlertOutput) Alert() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Alert }).(pulumi.StringOutput)
 }
 
-// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
 func (o AlertOutput) AlertType() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.AlertType }).(pulumi.StringOutput)
 }
 
-// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-//
-// Deprecated: This field is no longer needed and will be ignored
-func (o AlertOutput) BroadcastToAll() pulumi.BoolOutput {
-	return o.ApplyT(func(v *Alert) pulumi.BoolOutput { return v.BroadcastToAll }).(pulumi.BoolOutput)
-}
-
-// Condition of the alert.
+// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
 func (o AlertOutput) Condition() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Condition }).(pulumi.StringOutput)
 }
 
-// Creation time of the alert.
-func (o AlertOutput) CreateAt() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.CreateAt }).(pulumi.StringOutput)
+// Human-readable description.
+func (o AlertOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Alert) pulumi.StringPtrOutput { return v.Description }).(pulumi.StringPtrOutput)
 }
 
-// Creator of the alert.
-func (o AlertOutput) CreateBy() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.CreateBy }).(pulumi.StringOutput)
-}
-
-// Description of the alert.
-func (o AlertOutput) Description() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Description }).(pulumi.StringOutput)
-}
-
-// Whether the alert is disabled.
+// Whether the rule is disabled. Defaults to false.
 func (o AlertOutput) Disabled() pulumi.BoolOutput {
 	return o.ApplyT(func(v *Alert) pulumi.BoolOutput { return v.Disabled }).(pulumi.BoolOutput)
 }
 
-// The evaluation window of the alert. By default, it is 5m0s.
+// Evaluation window (e.g. `5m0s`).
 func (o AlertOutput) EvalWindow() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.EvalWindow }).(pulumi.StringOutput)
 }
 
-// Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
-func (o AlertOutput) Evaluation() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Evaluation }).(pulumi.StringOutput)
+// Evaluation block as JSON (v2alpha1+). Compared semantically.
+func (o AlertOutput) Evaluation() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Alert) pulumi.StringPtrOutput { return v.Evaluation }).(pulumi.StringPtrOutput)
 }
 
-// The frequency of the alert. By default, it is 1m0s.
+// Evaluation frequency (e.g. `1m0s`).
 func (o AlertOutput) Frequency() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Frequency }).(pulumi.StringOutput)
 }
 
-// Labels of the alert. Severity is a required label.
+// Custom labels attached to the alert.
 func (o AlertOutput) Labels() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringMapOutput { return v.Labels }).(pulumi.StringMapOutput)
 }
 
-// Notification settings for the alert. Only used when schemaVersion is v2 or higher.
-func (o AlertOutput) NotificationSettings() AlertNotificationSettingsOutput {
-	return o.ApplyT(func(v *Alert) AlertNotificationSettingsOutput { return v.NotificationSettings }).(AlertNotificationSettingsOutput)
+// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+func (o AlertOutput) NotificationSettings() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Alert) pulumi.StringPtrOutput { return v.NotificationSettings }).(pulumi.StringPtrOutput)
 }
 
-// Preferred channels of the alert. By default, it is empty.
+// Notification channel names the alert routes to.
 func (o AlertOutput) PreferredChannels() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringArrayOutput { return v.PreferredChannels }).(pulumi.StringArrayOutput)
 }
 
-// Type of the alert. Possible values are: thresholdRule and promql_rule.
+// Rule engine type: `thresholdRule` (default) or `promqlRule`.
 func (o AlertOutput) RuleType() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.RuleType }).(pulumi.StringOutput)
 }
 
-// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+// Alert schema version. Defaults to `v2alpha1`.
 func (o AlertOutput) SchemaVersion() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.SchemaVersion }).(pulumi.StringOutput)
 }
 
-// Severity of the alert. Possible values are: info, warning, error, and critical.
-func (o AlertOutput) Severity() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Severity }).(pulumi.StringOutput)
+// Severity label (e.g. `info`, `warning`, `critical`).
+func (o AlertOutput) Severity() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Alert) pulumi.StringPtrOutput { return v.Severity }).(pulumi.StringPtrOutput)
 }
 
-// Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
-func (o AlertOutput) Source() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Source }).(pulumi.StringOutput)
+// Source URL recorded on the rule.
+func (o AlertOutput) Source() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Alert) pulumi.StringPtrOutput { return v.Source }).(pulumi.StringPtrOutput)
 }
 
-// State of the alert.
-func (o AlertOutput) State() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.State }).(pulumi.StringOutput)
-}
-
-// Summary of the alert.
-func (o AlertOutput) Summary() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Summary }).(pulumi.StringOutput)
-}
-
-// Last update time of the alert.
-func (o AlertOutput) UpdateAt() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.UpdateAt }).(pulumi.StringOutput)
-}
-
-// Last updater of the alert.
-func (o AlertOutput) UpdateBy() pulumi.StringOutput {
-	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.UpdateBy }).(pulumi.StringOutput)
-}
-
-// Version of the alert. By default, it is v4.
+// Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
 func (o AlertOutput) Version() pulumi.StringOutput {
 	return o.ApplyT(func(v *Alert) pulumi.StringOutput { return v.Version }).(pulumi.StringOutput)
 }

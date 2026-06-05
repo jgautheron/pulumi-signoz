@@ -1,23 +1,25 @@
 # Pulumi SigNoz Provider
 
-A Pulumi provider for [SigNoz](https://signoz.io), bridged from the official
-[SigNoz Terraform provider](https://github.com/SigNoz/terraform-provider-signoz)
+A Pulumi provider for [SigNoz](https://signoz.io), bridged from
+[jgautheron/terraform-provider-signoz](https://github.com/jgautheron/terraform-provider-signoz)
 via [pulumi-terraform-bridge](https://github.com/pulumi/pulumi-terraform-bridge).
 
-Manage SigNoz dashboards and alerts as code — versioned in Git, reviewed in PRs,
-deployed alongside your services.
+Manage SigNoz dashboards, alerts, notification channels, saved views, and log
+pipelines as code — versioned in Git, reviewed in PRs, deployed alongside your
+services.
 
-> **Status: early.** Tracks upstream `SigNoz/terraform-provider-signoz` (pre-1.0)
-> and follows its versioning. Schemas may change between minor releases.
+> **Status: early (v0.x).** Targets SigNoz Community >= 0.125. Complex nested
+> bodies (alert conditions, dashboard definitions) are modeled as JSON strings.
 
 ## Resources
 
-| Pulumi token                  | Terraform resource         | Purpose                              |
-| ----------------------------- | -------------------------- | ------------------------------------ |
-| `signoz:index:Alert`          | `signoz_alert`             | Manage alert rules                   |
-| `signoz:index:Dashboard`      | `signoz_dashboard`         | Manage dashboards                    |
-| `signoz:index:getAlert`       | `signoz_alert` (data)      | Look up an existing alert by ID      |
-| `signoz:index:getDashboard`   | `signoz_dashboard` (data)  | Look up an existing dashboard by ID  |
+| Pulumi token                       | Terraform resource             | Purpose                                  |
+| ---------------------------------- | ------------------------------ | ---------------------------------------- |
+| `signoz:index:Dashboard`           | `signoz_dashboard`             | Dashboards (full definition as JSON)     |
+| `signoz:index:Alert`               | `signoz_alert`                 | Alert rules (v5/v2alpha1)                |
+| `signoz:index:NotificationChannel` | `signoz_notification_channel`  | Notification channels (**admin token**)  |
+| `signoz:index:SavedView`           | `signoz_saved_view`            | Logs/traces explorer saved views         |
+| `signoz:index:LogPipeline`         | `signoz_log_pipeline`          | Log-processing pipeline set (singleton)  |
 
 ## Installing
 

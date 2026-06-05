@@ -1,2 +1,2 @@
-// A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.
+// A Pulumi provider for SigNoz. Manage SigNoz dashboards, alerts, notification channels, saved views, and log pipelines as code.
 package signoz

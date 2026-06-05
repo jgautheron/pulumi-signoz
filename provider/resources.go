@@ -19,7 +19,7 @@ import (
 	_ "embed"
 	"path"
 
-	signoz "github.com/SigNoz/terraform-provider-signoz/signoz" // Upstream TF provider (Plugin Framework).
+	signoz "github.com/jgautheron/terraform-provider-signoz/provider" // Our TF provider (Plugin Framework).
 	pftfbridge "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/pf/tfbridge"
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge"
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge/tokens"
@@ -38,30 +38,26 @@ var metadata []byte
 // Provider returns the bridged Pulumi provider info.
 func Provider() tfbridge.ProviderInfo {
 	prov := tfbridge.ProviderInfo{
-		// SigNoz's upstream provider is built with terraform-plugin-framework. The PF bridge's
-		// ShimProvider wraps it so the rest of tfbridge.ProviderInfo behaves as it does for SDK
-		// v2 providers.
+		// The SigNoz TF provider is built with terraform-plugin-framework. The PF
+		// bridge's ShimProvider wraps it so the rest of tfbridge.ProviderInfo
+		// behaves as it does for SDK v2 providers.
 		//
-		// The upstream exports `New(terraformAgent, version string) func() provider.Provider`;
-		// terraformAgent is forwarded into the User-Agent header on outbound HTTP calls.
-		P: pftfbridge.ShimProvider(signoz.New("pulumi", version.Version)()),
+		// It exports `New(version string) func() provider.Provider`.
+		P: pftfbridge.ShimProvider(signoz.New(version.Version)()),
 
 		Name:        "signoz",
 		Version:     version.Version,
 		DisplayName: "SigNoz",
 		Publisher:   "jgautheron",
 		LogoURL:     "",
-		Description: "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. " +
-			"Manage SigNoz dashboards and alerts as code.",
+		Description: "A Pulumi provider for SigNoz. Manage SigNoz dashboards, alerts, " +
+			"notification channels, saved views, and log pipelines as code.",
 		Keywords:   []string{"signoz", "observability", "monitoring", "tracing", "category/cloud"},
 		License:    "Apache-2.0",
 		Homepage:   "https://signoz.io",
 		Repository: "https://github.com/jgautheron/pulumi-signoz",
-		// Tells the bridge where to fetch upstream docs from for Pulumi SDK doc generation.
-		GitHubOrg: "SigNoz",
-		// Upstream Go module name differs from the GitHub repo slug ("terraform-provider-signoz" vs the
-		// bridge's default of just "signoz"); make it explicit so doc lookups work.
-		UpstreamRepoPath: "./upstream",
+		// Fetch docs from our TF provider repo for Pulumi SDK doc generation.
+		GitHubOrg: "jgautheron",
 
 		MetadataInfo: tfbridge.NewProviderMetadata(metadata),
 

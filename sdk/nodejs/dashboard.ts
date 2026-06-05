@@ -4,6 +4,24 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
+/**
+ * A SigNoz dashboard. The full dashboard definition is supplied as JSON in `data`; export an existing dashboard from the SigNoz UI to bootstrap it.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as signoz from "@jooon/pulumi-signoz";
+ *
+ * const overview = new signoz.Dashboard("overview", {data: JSON.stringify({
+ *     title: "App Overview",
+ *     description: "Managed by Pulumi",
+ *     tags: ["managed-by:terraform"],
+ *     layout: [],
+ *     widgets: [],
+ * })});
+ * ```
+ */
 export class Dashboard extends pulumi.CustomResource {
     /**
      * Get an existing Dashboard resource's state with the given name, ID, and optional extra
@@ -32,61 +50,10 @@ export class Dashboard extends pulumi.CustomResource {
         return obj['__pulumiType'] === Dashboard.__pulumiType;
     }
 
-    declare public readonly collapsableRowsMigrated: pulumi.Output<boolean>;
     /**
-     * Creation time of the dashboard.
+     * Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
      */
-    declare public /*out*/ readonly createdAt: pulumi.Output<string>;
-    /**
-     * Creator of the dashboard.
-     */
-    declare public /*out*/ readonly createdBy: pulumi.Output<string>;
-    /**
-     * Description of the dashboard.
-     */
-    declare public readonly description: pulumi.Output<string>;
-    /**
-     * Layout of the dashboard.
-     */
-    declare public readonly layout: pulumi.Output<string>;
-    /**
-     * Name of the dashboard.
-     */
-    declare public readonly name: pulumi.Output<string>;
-    declare public readonly panelMap: pulumi.Output<string | undefined>;
-    /**
-     * Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-     */
-    declare public readonly source: pulumi.Output<string>;
-    /**
-     * Tags of the dashboard.
-     */
-    declare public readonly tags: pulumi.Output<string[] | undefined>;
-    /**
-     * Title of the dashboard.
-     */
-    declare public readonly title: pulumi.Output<string>;
-    /**
-     * Last update time of the dashboard.
-     */
-    declare public /*out*/ readonly updatedAt: pulumi.Output<string>;
-    /**
-     * Last updater of the dashboard.
-     */
-    declare public /*out*/ readonly updatedBy: pulumi.Output<string>;
-    declare public readonly uploadedGrafana: pulumi.Output<boolean>;
-    /**
-     * Variables for the dashboard.
-     */
-    declare public readonly variables: pulumi.Output<string>;
-    /**
-     * Version of the dashboard.
-     */
-    declare public readonly version: pulumi.Output<string>;
-    /**
-     * Widgets for the dashboard.
-     */
-    declare public readonly widgets: pulumi.Output<string>;
+    declare public readonly data: pulumi.Output<string>;
 
     /**
      * Create a Dashboard resource with the given unique name, arguments, and options.
@@ -101,64 +68,13 @@ export class Dashboard extends pulumi.CustomResource {
         opts = opts || {};
         if (opts.id) {
             const state = argsOrState as DashboardState | undefined;
-            resourceInputs["collapsableRowsMigrated"] = state?.collapsableRowsMigrated;
-            resourceInputs["createdAt"] = state?.createdAt;
-            resourceInputs["createdBy"] = state?.createdBy;
-            resourceInputs["description"] = state?.description;
-            resourceInputs["layout"] = state?.layout;
-            resourceInputs["name"] = state?.name;
-            resourceInputs["panelMap"] = state?.panelMap;
-            resourceInputs["source"] = state?.source;
-            resourceInputs["tags"] = state?.tags;
-            resourceInputs["title"] = state?.title;
-            resourceInputs["updatedAt"] = state?.updatedAt;
-            resourceInputs["updatedBy"] = state?.updatedBy;
-            resourceInputs["uploadedGrafana"] = state?.uploadedGrafana;
-            resourceInputs["variables"] = state?.variables;
-            resourceInputs["version"] = state?.version;
-            resourceInputs["widgets"] = state?.widgets;
+            resourceInputs["data"] = state?.data;
         } else {
             const args = argsOrState as DashboardArgs | undefined;
-            if (args?.collapsableRowsMigrated === undefined && !opts.urn) {
-                throw new Error("Missing required property 'collapsableRowsMigrated'");
+            if (args?.data === undefined && !opts.urn) {
+                throw new Error("Missing required property 'data'");
             }
-            if (args?.description === undefined && !opts.urn) {
-                throw new Error("Missing required property 'description'");
-            }
-            if (args?.layout === undefined && !opts.urn) {
-                throw new Error("Missing required property 'layout'");
-            }
-            if (args?.title === undefined && !opts.urn) {
-                throw new Error("Missing required property 'title'");
-            }
-            if (args?.uploadedGrafana === undefined && !opts.urn) {
-                throw new Error("Missing required property 'uploadedGrafana'");
-            }
-            if (args?.variables === undefined && !opts.urn) {
-                throw new Error("Missing required property 'variables'");
-            }
-            if (args?.version === undefined && !opts.urn) {
-                throw new Error("Missing required property 'version'");
-            }
-            if (args?.widgets === undefined && !opts.urn) {
-                throw new Error("Missing required property 'widgets'");
-            }
-            resourceInputs["collapsableRowsMigrated"] = args?.collapsableRowsMigrated;
-            resourceInputs["description"] = args?.description;
-            resourceInputs["layout"] = args?.layout;
-            resourceInputs["name"] = args?.name;
-            resourceInputs["panelMap"] = args?.panelMap;
-            resourceInputs["source"] = args?.source;
-            resourceInputs["tags"] = args?.tags;
-            resourceInputs["title"] = args?.title;
-            resourceInputs["uploadedGrafana"] = args?.uploadedGrafana;
-            resourceInputs["variables"] = args?.variables;
-            resourceInputs["version"] = args?.version;
-            resourceInputs["widgets"] = args?.widgets;
-            resourceInputs["createdAt"] = undefined /*out*/;
-            resourceInputs["createdBy"] = undefined /*out*/;
-            resourceInputs["updatedAt"] = undefined /*out*/;
-            resourceInputs["updatedBy"] = undefined /*out*/;
+            resourceInputs["data"] = args?.data;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Dashboard.__pulumiType, name, resourceInputs, opts);
@@ -169,104 +85,18 @@ export class Dashboard extends pulumi.CustomResource {
  * Input properties used for looking up and filtering Dashboard resources.
  */
 export interface DashboardState {
-    collapsableRowsMigrated?: pulumi.Input<boolean | undefined>;
     /**
-     * Creation time of the dashboard.
+     * Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
      */
-    createdAt?: pulumi.Input<string | undefined>;
-    /**
-     * Creator of the dashboard.
-     */
-    createdBy?: pulumi.Input<string | undefined>;
-    /**
-     * Description of the dashboard.
-     */
-    description?: pulumi.Input<string | undefined>;
-    /**
-     * Layout of the dashboard.
-     */
-    layout?: pulumi.Input<string | undefined>;
-    /**
-     * Name of the dashboard.
-     */
-    name?: pulumi.Input<string | undefined>;
-    panelMap?: pulumi.Input<string | undefined>;
-    /**
-     * Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-     */
-    source?: pulumi.Input<string | undefined>;
-    /**
-     * Tags of the dashboard.
-     */
-    tags?: pulumi.Input<pulumi.Input<string>[] | undefined>;
-    /**
-     * Title of the dashboard.
-     */
-    title?: pulumi.Input<string | undefined>;
-    /**
-     * Last update time of the dashboard.
-     */
-    updatedAt?: pulumi.Input<string | undefined>;
-    /**
-     * Last updater of the dashboard.
-     */
-    updatedBy?: pulumi.Input<string | undefined>;
-    uploadedGrafana?: pulumi.Input<boolean | undefined>;
-    /**
-     * Variables for the dashboard.
-     */
-    variables?: pulumi.Input<string | undefined>;
-    /**
-     * Version of the dashboard.
-     */
-    version?: pulumi.Input<string | undefined>;
-    /**
-     * Widgets for the dashboard.
-     */
-    widgets?: pulumi.Input<string | undefined>;
+    data?: pulumi.Input<string | undefined>;
 }
 
 /**
  * The set of arguments for constructing a Dashboard resource.
  */
 export interface DashboardArgs {
-    collapsableRowsMigrated: pulumi.Input<boolean>;
     /**
-     * Description of the dashboard.
+     * Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
      */
-    description: pulumi.Input<string>;
-    /**
-     * Layout of the dashboard.
-     */
-    layout: pulumi.Input<string>;
-    /**
-     * Name of the dashboard.
-     */
-    name?: pulumi.Input<string | undefined>;
-    panelMap?: pulumi.Input<string | undefined>;
-    /**
-     * Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-     */
-    source?: pulumi.Input<string | undefined>;
-    /**
-     * Tags of the dashboard.
-     */
-    tags?: pulumi.Input<pulumi.Input<string>[] | undefined>;
-    /**
-     * Title of the dashboard.
-     */
-    title: pulumi.Input<string>;
-    uploadedGrafana: pulumi.Input<boolean>;
-    /**
-     * Variables for the dashboard.
-     */
-    variables: pulumi.Input<string>;
-    /**
-     * Version of the dashboard.
-     */
-    version: pulumi.Input<string>;
-    /**
-     * Widgets for the dashboard.
-     */
-    widgets: pulumi.Input<string>;
+    data: pulumi.Input<string>;
 }

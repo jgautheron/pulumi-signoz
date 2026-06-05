@@ -4,64 +4,22 @@
             "signoz_alert": {
                 "current": "signoz:index/alert:Alert",
                 "fields": {
-                    "notification_settings": {
-                        "fields": {
-                            "group_by": {
-                                "maxItemsOne": false
-                            },
-                            "renotify": {
-                                "fields": {
-                                    "alert_states": {
-                                        "maxItemsOne": false
-                                    }
-                                }
-                            }
-                        }
-                    },
                     "preferred_channels": {
                         "maxItemsOne": false
                     }
                 }
             },
             "signoz_dashboard": {
-                "current": "signoz:index/dashboard:Dashboard",
-                "fields": {
-                    "tags": {
-                        "maxItemsOne": false
-                    }
-                }
-            }
-        },
-        "datasources": {
-            "signoz_alert": {
-                "current": "signoz:index/getAlert:getAlert",
-                "fields": {
-                    "notification_settings": {
-                        "fields": {
-                            "group_by": {
-                                "maxItemsOne": false
-                            },
-                            "renotify": {
-                                "fields": {
-                                    "alert_states": {
-                                        "maxItemsOne": false
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "preferred_channels": {
-                        "maxItemsOne": false
-                    }
-                }
+                "current": "signoz:index/dashboard:Dashboard"
             },
-            "signoz_dashboard": {
-                "current": "signoz:index/getDashboard:getDashboard",
-                "fields": {
-                    "tags": {
-                        "maxItemsOne": false
-                    }
-                }
+            "signoz_log_pipeline": {
+                "current": "signoz:index/logPipeline:LogPipeline"
+            },
+            "signoz_notification_channel": {
+                "current": "signoz:index/notificationChannel:NotificationChannel"
+            },
+            "signoz_saved_view": {
+                "current": "signoz:index/savedView:SavedView"
             }
         }
     },

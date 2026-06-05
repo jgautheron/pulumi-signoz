@@ -2,10 +2,68 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import * as inputs from "./types/input";
-import * as outputs from "./types/output";
 import * as utilities from "./utilities";
 
+/**
+ * A SigNoz alert rule. Top-level fields are typed; the query `condition`, `evaluation`, and `notificationSettings` are JSON blobs (export from the SigNoz UI to adapt). Defaults target the v5 / v2alpha1 schema required by SigNoz >= 0.125.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as signoz from "@jooon/pulumi-signoz";
+ *
+ * // A logs-based alert on the v5 / v2alpha1 schema (SigNoz >= 0.125).
+ * // The threshold references a notification channel by name.
+ * const highErrorLogs = new signoz.Alert("high_error_logs", {
+ *     alert: "High error log volume",
+ *     alertType: "LOGS_BASED_ALERT",
+ *     severity: "warning",
+ *     condition: JSON.stringify({
+ *         compositeQuery: {
+ *             queryType: "builder",
+ *             panelType: "graph",
+ *             queries: [{
+ *                 type: "builder_query",
+ *                 spec: {
+ *                     name: "A",
+ *                     signal: "logs",
+ *                     stepInterval: 0,
+ *                     aggregations: [{
+ *                         expression: "count()",
+ *                     }],
+ *                     filter: {
+ *                         expression: "severity_text = 'ERROR'",
+ *                     },
+ *                     having: {
+ *                         expression: "",
+ *                     },
+ *                 },
+ *             }],
+ *         },
+ *         selectedQueryName: "A",
+ *         thresholds: {
+ *             kind: "basic",
+ *             spec: [{
+ *                 name: "warning",
+ *                 target: 100,
+ *                 matchType: "1",
+ *                 op: "1",
+ *                 channels: [slack.name],
+ *             }],
+ *         },
+ *     }),
+ *     evaluation: JSON.stringify({
+ *         kind: "rolling",
+ *         spec: {
+ *             evalWindow: "5m0s",
+ *             frequency: "1m0s",
+ *         },
+ *     }),
+ *     preferredChannels: [slack.name],
+ * });
+ * ```
+ */
 export class Alert extends pulumi.CustomResource {
     /**
      * Get an existing Alert resource's state with the given name, ID, and optional extra
@@ -35,97 +93,67 @@ export class Alert extends pulumi.CustomResource {
     }
 
     /**
-     * Name of the alert.
+     * Alert name.
      */
     declare public readonly alert: pulumi.Output<string>;
     /**
-     * Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+     * One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
      */
     declare public readonly alertType: pulumi.Output<string>;
     /**
-     * Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-     *
-     * @deprecated This field is no longer needed and will be ignored
-     */
-    declare public readonly broadcastToAll: pulumi.Output<boolean>;
-    /**
-     * Condition of the alert.
+     * Query condition as JSON (compositeQuery + thresholds). Compared semantically.
      */
     declare public readonly condition: pulumi.Output<string>;
     /**
-     * Creation time of the alert.
+     * Human-readable description.
      */
-    declare public /*out*/ readonly createAt: pulumi.Output<string>;
+    declare public readonly description: pulumi.Output<string | undefined>;
     /**
-     * Creator of the alert.
-     */
-    declare public /*out*/ readonly createBy: pulumi.Output<string>;
-    /**
-     * Description of the alert.
-     */
-    declare public readonly description: pulumi.Output<string>;
-    /**
-     * Whether the alert is disabled.
+     * Whether the rule is disabled. Defaults to false.
      */
     declare public readonly disabled: pulumi.Output<boolean>;
     /**
-     * The evaluation window of the alert. By default, it is 5m0s.
+     * Evaluation window (e.g. `5m0s`).
      */
     declare public readonly evalWindow: pulumi.Output<string>;
     /**
-     * Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
+     * Evaluation block as JSON (v2alpha1+). Compared semantically.
      */
-    declare public readonly evaluation: pulumi.Output<string>;
+    declare public readonly evaluation: pulumi.Output<string | undefined>;
     /**
-     * The frequency of the alert. By default, it is 1m0s.
+     * Evaluation frequency (e.g. `1m0s`).
      */
     declare public readonly frequency: pulumi.Output<string>;
     /**
-     * Labels of the alert. Severity is a required label.
+     * Custom labels attached to the alert.
      */
-    declare public readonly labels: pulumi.Output<{[key: string]: string}>;
+    declare public readonly labels: pulumi.Output<{[key: string]: string} | undefined>;
     /**
-     * Notification settings for the alert. Only used when schemaVersion is v2 or higher.
+     * Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
      */
-    declare public readonly notificationSettings: pulumi.Output<outputs.AlertNotificationSettings>;
+    declare public readonly notificationSettings: pulumi.Output<string | undefined>;
     /**
-     * Preferred channels of the alert. By default, it is empty.
+     * Notification channel names the alert routes to.
      */
-    declare public readonly preferredChannels: pulumi.Output<string[]>;
+    declare public readonly preferredChannels: pulumi.Output<string[] | undefined>;
     /**
-     * Type of the alert. Possible values are: thresholdRule and promql_rule.
+     * Rule engine type: `thresholdRule` (default) or `promqlRule`.
      */
     declare public readonly ruleType: pulumi.Output<string>;
     /**
-     * Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+     * Alert schema version. Defaults to `v2alpha1`.
      */
     declare public readonly schemaVersion: pulumi.Output<string>;
     /**
-     * Severity of the alert. Possible values are: info, warning, error, and critical.
+     * Severity label (e.g. `info`, `warning`, `critical`).
      */
-    declare public readonly severity: pulumi.Output<string>;
+    declare public readonly severity: pulumi.Output<string | undefined>;
     /**
-     * Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+     * Source URL recorded on the rule.
      */
-    declare public readonly source: pulumi.Output<string>;
+    declare public readonly source: pulumi.Output<string | undefined>;
     /**
-     * State of the alert.
-     */
-    declare public /*out*/ readonly state: pulumi.Output<string>;
-    /**
-     * Summary of the alert.
-     */
-    declare public readonly summary: pulumi.Output<string>;
-    /**
-     * Last update time of the alert.
-     */
-    declare public /*out*/ readonly updateAt: pulumi.Output<string>;
-    /**
-     * Last updater of the alert.
-     */
-    declare public /*out*/ readonly updateBy: pulumi.Output<string>;
-    /**
-     * Version of the alert. By default, it is v4.
+     * Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
      */
     declare public readonly version: pulumi.Output<string>;
 
@@ -144,10 +172,7 @@ export class Alert extends pulumi.CustomResource {
             const state = argsOrState as AlertState | undefined;
             resourceInputs["alert"] = state?.alert;
             resourceInputs["alertType"] = state?.alertType;
-            resourceInputs["broadcastToAll"] = state?.broadcastToAll;
             resourceInputs["condition"] = state?.condition;
-            resourceInputs["createAt"] = state?.createAt;
-            resourceInputs["createBy"] = state?.createBy;
             resourceInputs["description"] = state?.description;
             resourceInputs["disabled"] = state?.disabled;
             resourceInputs["evalWindow"] = state?.evalWindow;
@@ -160,10 +185,6 @@ export class Alert extends pulumi.CustomResource {
             resourceInputs["schemaVersion"] = state?.schemaVersion;
             resourceInputs["severity"] = state?.severity;
             resourceInputs["source"] = state?.source;
-            resourceInputs["state"] = state?.state;
-            resourceInputs["summary"] = state?.summary;
-            resourceInputs["updateAt"] = state?.updateAt;
-            resourceInputs["updateBy"] = state?.updateBy;
             resourceInputs["version"] = state?.version;
         } else {
             const args = argsOrState as AlertArgs | undefined;
@@ -176,12 +197,8 @@ export class Alert extends pulumi.CustomResource {
             if (args?.condition === undefined && !opts.urn) {
                 throw new Error("Missing required property 'condition'");
             }
-            if (args?.severity === undefined && !opts.urn) {
-                throw new Error("Missing required property 'severity'");
-            }
             resourceInputs["alert"] = args?.alert;
             resourceInputs["alertType"] = args?.alertType;
-            resourceInputs["broadcastToAll"] = args?.broadcastToAll;
             resourceInputs["condition"] = args?.condition;
             resourceInputs["description"] = args?.description;
             resourceInputs["disabled"] = args?.disabled;
@@ -195,13 +212,7 @@ export class Alert extends pulumi.CustomResource {
             resourceInputs["schemaVersion"] = args?.schemaVersion;
             resourceInputs["severity"] = args?.severity;
             resourceInputs["source"] = args?.source;
-            resourceInputs["summary"] = args?.summary;
             resourceInputs["version"] = args?.version;
-            resourceInputs["createAt"] = undefined /*out*/;
-            resourceInputs["createBy"] = undefined /*out*/;
-            resourceInputs["state"] = undefined /*out*/;
-            resourceInputs["updateAt"] = undefined /*out*/;
-            resourceInputs["updateBy"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Alert.__pulumiType, name, resourceInputs, opts);
@@ -213,97 +224,67 @@ export class Alert extends pulumi.CustomResource {
  */
 export interface AlertState {
     /**
-     * Name of the alert.
+     * Alert name.
      */
     alert?: pulumi.Input<string | undefined>;
     /**
-     * Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+     * One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
      */
     alertType?: pulumi.Input<string | undefined>;
     /**
-     * Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-     *
-     * @deprecated This field is no longer needed and will be ignored
-     */
-    broadcastToAll?: pulumi.Input<boolean | undefined>;
-    /**
-     * Condition of the alert.
+     * Query condition as JSON (compositeQuery + thresholds). Compared semantically.
      */
     condition?: pulumi.Input<string | undefined>;
     /**
-     * Creation time of the alert.
-     */
-    createAt?: pulumi.Input<string | undefined>;
-    /**
-     * Creator of the alert.
-     */
-    createBy?: pulumi.Input<string | undefined>;
-    /**
-     * Description of the alert.
+     * Human-readable description.
      */
     description?: pulumi.Input<string | undefined>;
     /**
-     * Whether the alert is disabled.
+     * Whether the rule is disabled. Defaults to false.
      */
     disabled?: pulumi.Input<boolean | undefined>;
     /**
-     * The evaluation window of the alert. By default, it is 5m0s.
+     * Evaluation window (e.g. `5m0s`).
      */
     evalWindow?: pulumi.Input<string | undefined>;
     /**
-     * Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
+     * Evaluation block as JSON (v2alpha1+). Compared semantically.
      */
     evaluation?: pulumi.Input<string | undefined>;
     /**
-     * The frequency of the alert. By default, it is 1m0s.
+     * Evaluation frequency (e.g. `1m0s`).
      */
     frequency?: pulumi.Input<string | undefined>;
     /**
-     * Labels of the alert. Severity is a required label.
+     * Custom labels attached to the alert.
      */
     labels?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
-     * Notification settings for the alert. Only used when schemaVersion is v2 or higher.
+     * Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
      */
-    notificationSettings?: pulumi.Input<inputs.AlertNotificationSettings | undefined>;
+    notificationSettings?: pulumi.Input<string | undefined>;
     /**
-     * Preferred channels of the alert. By default, it is empty.
+     * Notification channel names the alert routes to.
      */
     preferredChannels?: pulumi.Input<pulumi.Input<string>[] | undefined>;
     /**
-     * Type of the alert. Possible values are: thresholdRule and promql_rule.
+     * Rule engine type: `thresholdRule` (default) or `promqlRule`.
      */
     ruleType?: pulumi.Input<string | undefined>;
     /**
-     * Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+     * Alert schema version. Defaults to `v2alpha1`.
      */
     schemaVersion?: pulumi.Input<string | undefined>;
     /**
-     * Severity of the alert. Possible values are: info, warning, error, and critical.
+     * Severity label (e.g. `info`, `warning`, `critical`).
      */
     severity?: pulumi.Input<string | undefined>;
     /**
-     * Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+     * Source URL recorded on the rule.
      */
     source?: pulumi.Input<string | undefined>;
     /**
-     * State of the alert.
-     */
-    state?: pulumi.Input<string | undefined>;
-    /**
-     * Summary of the alert.
-     */
-    summary?: pulumi.Input<string | undefined>;
-    /**
-     * Last update time of the alert.
-     */
-    updateAt?: pulumi.Input<string | undefined>;
-    /**
-     * Last updater of the alert.
-     */
-    updateBy?: pulumi.Input<string | undefined>;
-    /**
-     * Version of the alert. By default, it is v4.
+     * Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
      */
     version?: pulumi.Input<string | undefined>;
 }
@@ -313,77 +294,67 @@ export interface AlertState {
  */
 export interface AlertArgs {
     /**
-     * Name of the alert.
+     * Alert name.
      */
     alert: pulumi.Input<string>;
     /**
-     * Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+     * One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
      */
     alertType: pulumi.Input<string>;
     /**
-     * Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-     *
-     * @deprecated This field is no longer needed and will be ignored
-     */
-    broadcastToAll?: pulumi.Input<boolean | undefined>;
-    /**
-     * Condition of the alert.
+     * Query condition as JSON (compositeQuery + thresholds). Compared semantically.
      */
     condition: pulumi.Input<string>;
     /**
-     * Description of the alert.
+     * Human-readable description.
      */
     description?: pulumi.Input<string | undefined>;
     /**
-     * Whether the alert is disabled.
+     * Whether the rule is disabled. Defaults to false.
      */
     disabled?: pulumi.Input<boolean | undefined>;
     /**
-     * The evaluation window of the alert. By default, it is 5m0s.
+     * Evaluation window (e.g. `5m0s`).
      */
     evalWindow?: pulumi.Input<string | undefined>;
     /**
-     * Evaluation settings for the alert (JSON). Only used when schemaVersion is v2 or higher.
+     * Evaluation block as JSON (v2alpha1+). Compared semantically.
      */
     evaluation?: pulumi.Input<string | undefined>;
     /**
-     * The frequency of the alert. By default, it is 1m0s.
+     * Evaluation frequency (e.g. `1m0s`).
      */
     frequency?: pulumi.Input<string | undefined>;
     /**
-     * Labels of the alert. Severity is a required label.
+     * Custom labels attached to the alert.
      */
     labels?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
-     * Notification settings for the alert. Only used when schemaVersion is v2 or higher.
+     * Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
      */
-    notificationSettings?: pulumi.Input<inputs.AlertNotificationSettings | undefined>;
+    notificationSettings?: pulumi.Input<string | undefined>;
     /**
-     * Preferred channels of the alert. By default, it is empty.
+     * Notification channel names the alert routes to.
      */
     preferredChannels?: pulumi.Input<pulumi.Input<string>[] | undefined>;
     /**
-     * Type of the alert. Possible values are: thresholdRule and promql_rule.
+     * Rule engine type: `thresholdRule` (default) or `promqlRule`.
      */
     ruleType?: pulumi.Input<string | undefined>;
     /**
-     * Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notificationSettings are supported.
+     * Alert schema version. Defaults to `v2alpha1`.
      */
     schemaVersion?: pulumi.Input<string | undefined>;
     /**
-     * Severity of the alert. Possible values are: info, warning, error, and critical.
+     * Severity label (e.g. `info`, `warning`, `critical`).
      */
-    severity: pulumi.Input<string>;
+    severity?: pulumi.Input<string | undefined>;
     /**
-     * Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+     * Source URL recorded on the rule.
      */
     source?: pulumi.Input<string | undefined>;
     /**
-     * Summary of the alert.
-     */
-    summary?: pulumi.Input<string | undefined>;
-    /**
-     * Version of the alert. By default, it is v4.
+     * Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
      */
     version?: pulumi.Input<string | undefined>;
 }

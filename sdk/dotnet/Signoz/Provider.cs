@@ -20,16 +20,13 @@ namespace Jooon.Pulumi.Signoz
     public partial class Provider : global::Pulumi.ProviderResource
     {
         /// <summary>
-        /// Access token of the SigNoz API. You can retrieve it from SigNoz UI
-        /// with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-        /// Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+        /// SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
         /// </summary>
         [Output("accessToken")]
         public Output<string?> AccessToken { get; private set; } = null!;
 
         /// <summary>
-        /// Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-        /// Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+        /// Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
         /// </summary>
         [Output("endpoint")]
         public Output<string?> Endpoint { get; private set; } = null!;
@@ -76,9 +73,7 @@ namespace Jooon.Pulumi.Signoz
         private Input<string>? _accessToken;
 
         /// <summary>
-        /// Access token of the SigNoz API. You can retrieve it from SigNoz UI
-        /// with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-        /// Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+        /// SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
         /// </summary>
         public Input<string>? AccessToken
         {
@@ -91,22 +86,19 @@ namespace Jooon.Pulumi.Signoz
         }
 
         /// <summary>
-        /// Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-        /// Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+        /// Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
         /// </summary>
         [Input("endpoint")]
         public Input<string>? Endpoint { get; set; }
 
         /// <summary>
-        /// Specifies the max retry limit for the HTTP requests made to SigNoz.
-        /// Also, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10.
+        /// Maximum retries for transient (5xx / network) failures. Defaults to 3. May also be set via `SIGNOZ_HTTP_MAX_RETRY`.
         /// </summary>
         [Input("httpMaxRetry", json: true)]
         public Input<int>? HttpMaxRetry { get; set; }
 
         /// <summary>
-        /// Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.
-        /// Also, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35.
+        /// Per-request HTTP timeout in seconds. Defaults to 35. May also be set via `SIGNOZ_HTTP_TIMEOUT`.
         /// </summary>
         [Input("httpTimeout", json: true)]
         public Input<int>? HttpTimeout { get; set; }

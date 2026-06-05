@@ -10,143 +10,195 @@ using Pulumi;
 
 namespace Jooon.Pulumi.Signoz
 {
+    /// <summary>
+    /// A SigNoz alert rule. Top-level fields are typed; the query `Condition`, `Evaluation`, and `NotificationSettings` are JSON blobs (export from the SigNoz UI to adapt). Defaults target the v5 / v2alpha1 schema required by SigNoz &gt;= 0.125.
+    /// 
+    /// ## Example Usage
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using System.Text.Json;
+    /// using Pulumi;
+    /// using Signoz = Jooon.Pulumi.Signoz;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     // A logs-based alert on the v5 / v2alpha1 schema (SigNoz &gt;= 0.125).
+    ///     // The threshold references a notification channel by name.
+    ///     var highErrorLogs = new Signoz.Alert("high_error_logs", new()
+    ///     {
+    ///         AlertConfig = "High error log volume",
+    ///         AlertType = "LOGS_BASED_ALERT",
+    ///         Severity = "warning",
+    ///         Condition = JsonSerializer.Serialize(new Dictionary&lt;string, object?&gt;
+    ///         {
+    ///             ["compositeQuery"] = new Dictionary&lt;string, object?&gt;
+    ///             {
+    ///                 ["queryType"] = "builder",
+    ///                 ["panelType"] = "graph",
+    ///                 ["queries"] = new[]
+    ///                 {
+    ///                     new Dictionary&lt;string, object?&gt;
+    ///                     {
+    ///                         ["type"] = "builder_query",
+    ///                         ["spec"] = new Dictionary&lt;string, object?&gt;
+    ///                         {
+    ///                             ["name"] = "A",
+    ///                             ["signal"] = "logs",
+    ///                             ["stepInterval"] = 0,
+    ///                             ["aggregations"] = new[]
+    ///                             {
+    ///                                 new Dictionary&lt;string, object?&gt;
+    ///                                 {
+    ///                                     ["expression"] = "count()",
+    ///                                 },
+    ///                             },
+    ///                             ["filter"] = new Dictionary&lt;string, object?&gt;
+    ///                             {
+    ///                                 ["expression"] = "severity_text = 'ERROR'",
+    ///                             },
+    ///                             ["having"] = new Dictionary&lt;string, object?&gt;
+    ///                             {
+    ///                                 ["expression"] = "",
+    ///                             },
+    ///                         },
+    ///                     },
+    ///                 },
+    ///             },
+    ///             ["selectedQueryName"] = "A",
+    ///             ["thresholds"] = new Dictionary&lt;string, object?&gt;
+    ///             {
+    ///                 ["kind"] = "basic",
+    ///                 ["spec"] = new[]
+    ///                 {
+    ///                     new Dictionary&lt;string, object?&gt;
+    ///                     {
+    ///                         ["name"] = "warning",
+    ///                         ["target"] = 100,
+    ///                         ["matchType"] = "1",
+    ///                         ["op"] = "1",
+    ///                         ["channels"] = new[]
+    ///                         {
+    ///                             slack.Name,
+    ///                         },
+    ///                     },
+    ///                 },
+    ///             },
+    ///         }),
+    ///         Evaluation = JsonSerializer.Serialize(new Dictionary&lt;string, object?&gt;
+    ///         {
+    ///             ["kind"] = "rolling",
+    ///             ["spec"] = new Dictionary&lt;string, object?&gt;
+    ///             {
+    ///                 ["evalWindow"] = "5m0s",
+    ///                 ["frequency"] = "1m0s",
+    ///             },
+    ///         }),
+    ///         PreferredChannels = new[]
+    ///         {
+    ///             slack.Name,
+    ///         },
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// </summary>
     [SignozResourceType("signoz:index/alert:Alert")]
     public partial class Alert : global::Pulumi.CustomResource
     {
         /// <summary>
-        /// Name of the alert.
+        /// Alert name.
         /// </summary>
         [Output("alert")]
         public Output<string> AlertConfig { get; private set; } = null!;
 
         /// <summary>
-        /// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+        /// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
         /// </summary>
         [Output("alertType")]
         public Output<string> AlertType { get; private set; } = null!;
 
         /// <summary>
-        /// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        /// </summary>
-        [Output("broadcastToAll")]
-        public Output<bool> BroadcastToAll { get; private set; } = null!;
-
-        /// <summary>
-        /// Condition of the alert.
+        /// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
         /// </summary>
         [Output("condition")]
         public Output<string> Condition { get; private set; } = null!;
 
         /// <summary>
-        /// Creation time of the alert.
-        /// </summary>
-        [Output("createAt")]
-        public Output<string> CreateAt { get; private set; } = null!;
-
-        /// <summary>
-        /// Creator of the alert.
-        /// </summary>
-        [Output("createBy")]
-        public Output<string> CreateBy { get; private set; } = null!;
-
-        /// <summary>
-        /// Description of the alert.
+        /// Human-readable description.
         /// </summary>
         [Output("description")]
-        public Output<string> Description { get; private set; } = null!;
+        public Output<string?> Description { get; private set; } = null!;
 
         /// <summary>
-        /// Whether the alert is disabled.
+        /// Whether the rule is disabled. Defaults to false.
         /// </summary>
         [Output("disabled")]
         public Output<bool> Disabled { get; private set; } = null!;
 
         /// <summary>
-        /// The evaluation window of the alert. By default, it is 5m0s.
+        /// Evaluation window (e.g. `5m0s`).
         /// </summary>
         [Output("evalWindow")]
         public Output<string> EvalWindow { get; private set; } = null!;
 
         /// <summary>
-        /// Evaluation settings for the alert (JSON). Only used when SchemaVersion is v2 or higher.
+        /// Evaluation block as JSON (v2alpha1+). Compared semantically.
         /// </summary>
         [Output("evaluation")]
-        public Output<string> Evaluation { get; private set; } = null!;
+        public Output<string?> Evaluation { get; private set; } = null!;
 
         /// <summary>
-        /// The frequency of the alert. By default, it is 1m0s.
+        /// Evaluation frequency (e.g. `1m0s`).
         /// </summary>
         [Output("frequency")]
         public Output<string> Frequency { get; private set; } = null!;
 
         /// <summary>
-        /// Labels of the alert. Severity is a required label.
+        /// Custom labels attached to the alert.
         /// </summary>
         [Output("labels")]
-        public Output<ImmutableDictionary<string, string>> Labels { get; private set; } = null!;
+        public Output<ImmutableDictionary<string, string>?> Labels { get; private set; } = null!;
 
         /// <summary>
-        /// Notification settings for the alert. Only used when SchemaVersion is v2 or higher.
+        /// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
         /// </summary>
         [Output("notificationSettings")]
-        public Output<Outputs.AlertNotificationSettings> NotificationSettings { get; private set; } = null!;
+        public Output<string?> NotificationSettings { get; private set; } = null!;
 
         /// <summary>
-        /// Preferred channels of the alert. By default, it is empty.
+        /// Notification channel names the alert routes to.
         /// </summary>
         [Output("preferredChannels")]
         public Output<ImmutableArray<string>> PreferredChannels { get; private set; } = null!;
 
         /// <summary>
-        /// Type of the alert. Possible values are: ThresholdRule and promql_rule.
+        /// Rule engine type: `ThresholdRule` (default) or `PromqlRule`.
         /// </summary>
         [Output("ruleType")]
         public Output<string> RuleType { get; private set; } = null!;
 
         /// <summary>
-        /// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and NotificationSettings are supported.
+        /// Alert schema version. Defaults to `V2alpha1`.
         /// </summary>
         [Output("schemaVersion")]
         public Output<string> SchemaVersion { get; private set; } = null!;
 
         /// <summary>
-        /// Severity of the alert. Possible values are: info, warning, error, and critical.
+        /// Severity label (e.g. `Info`, `Warning`, `Critical`).
         /// </summary>
         [Output("severity")]
-        public Output<string> Severity { get; private set; } = null!;
+        public Output<string?> Severity { get; private set; } = null!;
 
         /// <summary>
-        /// Source of the alert. By default, it is &lt;SIGNOZ_ENDPOINT&gt;/alerts.
+        /// Source URL recorded on the rule.
         /// </summary>
         [Output("source")]
-        public Output<string> Source { get; private set; } = null!;
+        public Output<string?> Source { get; private set; } = null!;
 
         /// <summary>
-        /// State of the alert.
-        /// </summary>
-        [Output("state")]
-        public Output<string> State { get; private set; } = null!;
-
-        /// <summary>
-        /// Summary of the alert.
-        /// </summary>
-        [Output("summary")]
-        public Output<string> Summary { get; private set; } = null!;
-
-        /// <summary>
-        /// Last update time of the alert.
-        /// </summary>
-        [Output("updateAt")]
-        public Output<string> UpdateAt { get; private set; } = null!;
-
-        /// <summary>
-        /// Last updater of the alert.
-        /// </summary>
-        [Output("updateBy")]
-        public Output<string> UpdateBy { get; private set; } = null!;
-
-        /// <summary>
-        /// Version of the alert. By default, it is v4.
+        /// Alert API version. Defaults to `V5` (required by SigNoz &gt;= 0.125).
         /// </summary>
         [Output("version")]
         public Output<string> Version { get; private set; } = null!;
@@ -198,55 +250,49 @@ namespace Jooon.Pulumi.Signoz
     public sealed class AlertArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// Name of the alert.
+        /// Alert name.
         /// </summary>
         [Input("alert", required: true)]
         public Input<string> AlertConfig { get; set; } = null!;
 
         /// <summary>
-        /// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+        /// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
         /// </summary>
         [Input("alertType", required: true)]
         public Input<string> AlertType { get; set; } = null!;
 
         /// <summary>
-        /// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        /// </summary>
-        [Input("broadcastToAll")]
-        public Input<bool>? BroadcastToAll { get; set; }
-
-        /// <summary>
-        /// Condition of the alert.
+        /// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
         /// </summary>
         [Input("condition", required: true)]
         public Input<string> Condition { get; set; } = null!;
 
         /// <summary>
-        /// Description of the alert.
+        /// Human-readable description.
         /// </summary>
         [Input("description")]
         public Input<string>? Description { get; set; }
 
         /// <summary>
-        /// Whether the alert is disabled.
+        /// Whether the rule is disabled. Defaults to false.
         /// </summary>
         [Input("disabled")]
         public Input<bool>? Disabled { get; set; }
 
         /// <summary>
-        /// The evaluation window of the alert. By default, it is 5m0s.
+        /// Evaluation window (e.g. `5m0s`).
         /// </summary>
         [Input("evalWindow")]
         public Input<string>? EvalWindow { get; set; }
 
         /// <summary>
-        /// Evaluation settings for the alert (JSON). Only used when SchemaVersion is v2 or higher.
+        /// Evaluation block as JSON (v2alpha1+). Compared semantically.
         /// </summary>
         [Input("evaluation")]
         public Input<string>? Evaluation { get; set; }
 
         /// <summary>
-        /// The frequency of the alert. By default, it is 1m0s.
+        /// Evaluation frequency (e.g. `1m0s`).
         /// </summary>
         [Input("frequency")]
         public Input<string>? Frequency { get; set; }
@@ -255,7 +301,7 @@ namespace Jooon.Pulumi.Signoz
         private InputMap<string>? _labels;
 
         /// <summary>
-        /// Labels of the alert. Severity is a required label.
+        /// Custom labels attached to the alert.
         /// </summary>
         public InputMap<string> Labels
         {
@@ -264,16 +310,16 @@ namespace Jooon.Pulumi.Signoz
         }
 
         /// <summary>
-        /// Notification settings for the alert. Only used when SchemaVersion is v2 or higher.
+        /// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
         /// </summary>
         [Input("notificationSettings")]
-        public Input<Inputs.AlertNotificationSettingsArgs>? NotificationSettings { get; set; }
+        public Input<string>? NotificationSettings { get; set; }
 
         [Input("preferredChannels")]
         private InputList<string>? _preferredChannels;
 
         /// <summary>
-        /// Preferred channels of the alert. By default, it is empty.
+        /// Notification channel names the alert routes to.
         /// </summary>
         public InputList<string> PreferredChannels
         {
@@ -282,37 +328,31 @@ namespace Jooon.Pulumi.Signoz
         }
 
         /// <summary>
-        /// Type of the alert. Possible values are: ThresholdRule and promql_rule.
+        /// Rule engine type: `ThresholdRule` (default) or `PromqlRule`.
         /// </summary>
         [Input("ruleType")]
         public Input<string>? RuleType { get; set; }
 
         /// <summary>
-        /// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and NotificationSettings are supported.
+        /// Alert schema version. Defaults to `V2alpha1`.
         /// </summary>
         [Input("schemaVersion")]
         public Input<string>? SchemaVersion { get; set; }
 
         /// <summary>
-        /// Severity of the alert. Possible values are: info, warning, error, and critical.
+        /// Severity label (e.g. `Info`, `Warning`, `Critical`).
         /// </summary>
-        [Input("severity", required: true)]
-        public Input<string> Severity { get; set; } = null!;
+        [Input("severity")]
+        public Input<string>? Severity { get; set; }
 
         /// <summary>
-        /// Source of the alert. By default, it is &lt;SIGNOZ_ENDPOINT&gt;/alerts.
+        /// Source URL recorded on the rule.
         /// </summary>
         [Input("source")]
         public Input<string>? Source { get; set; }
 
         /// <summary>
-        /// Summary of the alert.
-        /// </summary>
-        [Input("summary")]
-        public Input<string>? Summary { get; set; }
-
-        /// <summary>
-        /// Version of the alert. By default, it is v4.
+        /// Alert API version. Defaults to `V5` (required by SigNoz &gt;= 0.125).
         /// </summary>
         [Input("version")]
         public Input<string>? Version { get; set; }
@@ -326,67 +366,49 @@ namespace Jooon.Pulumi.Signoz
     public sealed class AlertState : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// Name of the alert.
+        /// Alert name.
         /// </summary>
         [Input("alert")]
         public Input<string>? AlertConfig { get; set; }
 
         /// <summary>
-        /// Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+        /// One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
         /// </summary>
         [Input("alertType")]
         public Input<string>? AlertType { get; set; }
 
         /// <summary>
-        /// Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        /// </summary>
-        [Input("broadcastToAll")]
-        public Input<bool>? BroadcastToAll { get; set; }
-
-        /// <summary>
-        /// Condition of the alert.
+        /// Query condition as JSON (compositeQuery + thresholds). Compared semantically.
         /// </summary>
         [Input("condition")]
         public Input<string>? Condition { get; set; }
 
         /// <summary>
-        /// Creation time of the alert.
-        /// </summary>
-        [Input("createAt")]
-        public Input<string>? CreateAt { get; set; }
-
-        /// <summary>
-        /// Creator of the alert.
-        /// </summary>
-        [Input("createBy")]
-        public Input<string>? CreateBy { get; set; }
-
-        /// <summary>
-        /// Description of the alert.
+        /// Human-readable description.
         /// </summary>
         [Input("description")]
         public Input<string>? Description { get; set; }
 
         /// <summary>
-        /// Whether the alert is disabled.
+        /// Whether the rule is disabled. Defaults to false.
         /// </summary>
         [Input("disabled")]
         public Input<bool>? Disabled { get; set; }
 
         /// <summary>
-        /// The evaluation window of the alert. By default, it is 5m0s.
+        /// Evaluation window (e.g. `5m0s`).
         /// </summary>
         [Input("evalWindow")]
         public Input<string>? EvalWindow { get; set; }
 
         /// <summary>
-        /// Evaluation settings for the alert (JSON). Only used when SchemaVersion is v2 or higher.
+        /// Evaluation block as JSON (v2alpha1+). Compared semantically.
         /// </summary>
         [Input("evaluation")]
         public Input<string>? Evaluation { get; set; }
 
         /// <summary>
-        /// The frequency of the alert. By default, it is 1m0s.
+        /// Evaluation frequency (e.g. `1m0s`).
         /// </summary>
         [Input("frequency")]
         public Input<string>? Frequency { get; set; }
@@ -395,7 +417,7 @@ namespace Jooon.Pulumi.Signoz
         private InputMap<string>? _labels;
 
         /// <summary>
-        /// Labels of the alert. Severity is a required label.
+        /// Custom labels attached to the alert.
         /// </summary>
         public InputMap<string> Labels
         {
@@ -404,16 +426,16 @@ namespace Jooon.Pulumi.Signoz
         }
 
         /// <summary>
-        /// Notification settings for the alert. Only used when SchemaVersion is v2 or higher.
+        /// Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
         /// </summary>
         [Input("notificationSettings")]
-        public Input<Inputs.AlertNotificationSettingsGetArgs>? NotificationSettings { get; set; }
+        public Input<string>? NotificationSettings { get; set; }
 
         [Input("preferredChannels")]
         private InputList<string>? _preferredChannels;
 
         /// <summary>
-        /// Preferred channels of the alert. By default, it is empty.
+        /// Notification channel names the alert routes to.
         /// </summary>
         public InputList<string> PreferredChannels
         {
@@ -422,55 +444,31 @@ namespace Jooon.Pulumi.Signoz
         }
 
         /// <summary>
-        /// Type of the alert. Possible values are: ThresholdRule and promql_rule.
+        /// Rule engine type: `ThresholdRule` (default) or `PromqlRule`.
         /// </summary>
         [Input("ruleType")]
         public Input<string>? RuleType { get; set; }
 
         /// <summary>
-        /// Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and NotificationSettings are supported.
+        /// Alert schema version. Defaults to `V2alpha1`.
         /// </summary>
         [Input("schemaVersion")]
         public Input<string>? SchemaVersion { get; set; }
 
         /// <summary>
-        /// Severity of the alert. Possible values are: info, warning, error, and critical.
+        /// Severity label (e.g. `Info`, `Warning`, `Critical`).
         /// </summary>
         [Input("severity")]
         public Input<string>? Severity { get; set; }
 
         /// <summary>
-        /// Source of the alert. By default, it is &lt;SIGNOZ_ENDPOINT&gt;/alerts.
+        /// Source URL recorded on the rule.
         /// </summary>
         [Input("source")]
         public Input<string>? Source { get; set; }
 
         /// <summary>
-        /// State of the alert.
-        /// </summary>
-        [Input("state")]
-        public Input<string>? State { get; set; }
-
-        /// <summary>
-        /// Summary of the alert.
-        /// </summary>
-        [Input("summary")]
-        public Input<string>? Summary { get; set; }
-
-        /// <summary>
-        /// Last update time of the alert.
-        /// </summary>
-        [Input("updateAt")]
-        public Input<string>? UpdateAt { get; set; }
-
-        /// <summary>
-        /// Last updater of the alert.
-        /// </summary>
-        [Input("updateBy")]
-        public Input<string>? UpdateBy { get; set; }
-
-        /// <summary>
-        /// Version of the alert. By default, it is v4.
+        /// Alert API version. Defaults to `V5` (required by SigNoz &gt;= 0.125).
         /// </summary>
         [Input("version")]
         public Input<string>? Version { get; set; }

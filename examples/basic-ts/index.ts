@@ -1,6 +1,6 @@
-// Minimal SigNoz Pulumi program: explicit Provider, one alert, one dashboard.
-// Set SIGNOZ_ENDPOINT + SIGNOZ_ACCESS_TOKEN before `pulumi up`, or override via
-// `pulumi config set --secret signoz:accessToken ...`.
+// End-to-end SigNoz Pulumi program exercising all 5 resources.
+// Set SIGNOZ_ENDPOINT + SIGNOZ_ACCESS_TOKEN (admin) before `pulumi up`.
+import * as pulumi from "@pulumi/pulumi";
 import * as signoz from "@jooon/pulumi-signoz";
 
 const provider = new signoz.Provider("signoz", {
@@ -8,96 +8,113 @@ const provider = new signoz.Provider("signoz", {
   accessToken: process.env.SIGNOZ_ACCESS_TOKEN!,
 });
 
-// Logs-based alert using the v5 / v2alpha1 schema. SigNoz >= 0.125 only
-// accepts version "v5" rules; the condition + evaluation bodies are JSON
-// blobs — export from the SigNoz UI ("Edit" → "Show JSON") to adapt.
-//
-// NOTE: SigNoz requires at least one notification channel in the threshold
-// spec's `channels` array. Notification channels are admin-only and the
-// upstream Terraform provider has no channel resource (as of v0.0.11), so
-// create one in the SigNoz UI first and set `channels: ["<your-channel>"]`
-// below — otherwise the create returns 400 "at least one channel is required".
-const alert = new signoz.Alert(
-  "pulumi-test-alert",
+// Notification channel (admin-only). Receiver config goes in `data`.
+const channel = new signoz.NotificationChannel(
+  "alerts",
   {
-    alert: "Pulumi smoke-test alert",
-    alertType: "LOGS_BASED_ALERT",
-    description: "Created from pulumi-signoz examples/basic-ts.",
-    disabled: true, // disabled so the smoke test doesn't actually fire
-    evalWindow: "5m0s",
-    frequency: "1m0s",
-    broadcastToAll: false,
-    ruleType: "threshold_rule",
-    version: "v5",
-    schemaVersion: "v2alpha1",
-    severity: "info",
-    source: "https://github.com/jgautheron/pulumi-signoz",
-    labels: {
-      severity: "info",
-      managedBy: "pulumi",
-    },
-    condition: JSON.stringify({
+    name: "pulumi-e2e-channel",
+    data: JSON.stringify({
+      webhook_configs: [{ send_resolved: false, url: "https://example.com/pulumi-e2e" }],
+    }),
+  },
+  { provider },
+);
+
+// Dashboard — the whole definition as a single JSON blob.
+const dashboard = new signoz.Dashboard(
+  "overview",
+  {
+    data: JSON.stringify({
+      title: "Pulumi e2e dashboard",
+      description: "Created from pulumi-signoz examples/basic-ts.",
+      tags: ["pulumi", "e2e"],
+      layout: [],
+      widgets: [],
+    }),
+  },
+  { provider },
+);
+
+// Saved logs view.
+const view = new signoz.SavedView(
+  "errors",
+  {
+    name: "Pulumi e2e view",
+    sourcePage: "logs",
+    data: JSON.stringify({
       compositeQuery: {
+        queryType: "builder",
+        panelType: "list",
+        builderQueries: {
+          A: { dataSource: "logs", queryName: "A", aggregateOperator: "noop", expression: "A", disabled: false },
+        },
+      },
+    }),
+  },
+  { provider },
+);
+
+// Logs-based alert (v5/v2alpha1) routing to the channel above.
+const alert = new signoz.Alert(
+  "errors",
+  {
+    alert: "Pulumi e2e alert",
+    alertType: "LOGS_BASED_ALERT",
+    severity: "info",
+    // Use pulumi.jsonStringify (NOT JSON.stringify) because channel.name is an
+    // Output<string> — JSON.stringify can't serialize Outputs.
+    condition: pulumi.jsonStringify({
+      compositeQuery: {
+        queryType: "builder",
+        panelType: "graph",
         queries: [
           {
             type: "builder_query",
             spec: {
               name: "A",
-              stepInterval: 0,
               signal: "logs",
-              source: "",
+              stepInterval: 60,
               aggregations: [{ expression: "count()" }],
               filter: { expression: "" },
-              having: { expression: "" },
             },
           },
         ],
-        panelType: "graph",
-        queryType: "builder",
       },
       selectedQueryName: "A",
       thresholds: {
         kind: "basic",
-        spec: [
-          {
-            name: "info",
-            target: 1000,
-            targetUnit: "",
-            recoveryTarget: null,
-            matchType: "1",
-            op: "1",
-            channels: [],
-          },
-        ],
+        spec: [{ name: "info", op: "above", matchType: "at_least_once", target: 1000, channels: [channel.name] }],
       },
     }),
-    evaluation: JSON.stringify({
-      kind: "rolling",
-      spec: { evalWindow: "5m0s", frequency: "1m0s" },
-    }),
+    evaluation: JSON.stringify({ kind: "rolling", spec: { evalWindow: "5m", frequency: "1m" } }),
+    preferredChannels: [channel.name],
   },
   { provider },
 );
 
-const dashboard = new signoz.Dashboard(
-  "pulumi-test-dashboard",
+// Log pipeline set (singleton).
+const pipeline = new signoz.LogPipeline(
+  "main",
   {
-    // The upstream provider's schema treats most of these as required even
-    // when "empty" is meaningful. Real-world usage: export a working dashboard
-    // from the SigNoz UI and paste the JSON sections here.
-    name: "Pulumi smoke-test dashboard",
-    title: "Pulumi smoke-test dashboard",
-    description: "Created from pulumi-signoz examples/basic-ts.",
-    layout: JSON.stringify([]),
-    panelMap: JSON.stringify({}),
-    widgets: JSON.stringify([]),
-    variables: JSON.stringify({}),
-    version: "1",
-    uploadedGrafana: false,
-    collapsableRowsMigrated: true,
+    pipelines: JSON.stringify([
+      {
+        orderId: 1,
+        name: "pulumi-e2e-drop",
+        alias: "pulumi-e2e-drop",
+        enabled: true,
+        filter: {
+          op: "AND",
+          items: [{ key: { key: "http.target", dataType: "string", type: "tag" }, op: "=", value: "/healthz" }],
+        },
+        config: [],
+      },
+    ]),
   },
   { provider },
 );
 
-export const alertId = alert.id;
+export const channelId = channel.id;
 export const dashboardId = dashboard.id;
+export const viewId = view.id;
+export const alertId = alert.id;
+export const pipelineId = pipeline.id;

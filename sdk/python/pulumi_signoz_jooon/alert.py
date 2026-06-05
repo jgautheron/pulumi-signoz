@@ -13,8 +13,6 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import NotRequired, TypedDict, TypeAlias
 from . import _utilities
-from . import outputs
-from ._inputs import *
 
 __all__ = ['AlertArgs', 'Alert']
 
@@ -24,365 +22,42 @@ class AlertArgs:
                  alert: pulumi.Input[_builtins.str],
                  alert_type: pulumi.Input[_builtins.str],
                  condition: pulumi.Input[_builtins.str],
-                 severity: pulumi.Input[_builtins.str],
-                 broadcast_to_all: pulumi.Input[Optional[_builtins.bool]] = None,
                  description: pulumi.Input[Optional[_builtins.str]] = None,
                  disabled: pulumi.Input[Optional[_builtins.bool]] = None,
                  eval_window: pulumi.Input[Optional[_builtins.str]] = None,
                  evaluation: pulumi.Input[Optional[_builtins.str]] = None,
                  frequency: pulumi.Input[Optional[_builtins.str]] = None,
                  labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 notification_settings: pulumi.Input[Optional['AlertNotificationSettingsArgs']] = None,
-                 preferred_channels: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 rule_type: pulumi.Input[Optional[_builtins.str]] = None,
-                 schema_version: pulumi.Input[Optional[_builtins.str]] = None,
-                 source: pulumi.Input[Optional[_builtins.str]] = None,
-                 summary: pulumi.Input[Optional[_builtins.str]] = None,
-                 version: pulumi.Input[Optional[_builtins.str]] = None):
-        """
-        The set of arguments for constructing a Alert resource.
-
-        :param pulumi.Input[_builtins.str] alert: Name of the alert.
-        :param pulumi.Input[_builtins.str] alert_type: Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
-        :param pulumi.Input[_builtins.str] condition: Condition of the alert.
-        :param pulumi.Input[_builtins.str] severity: Severity of the alert. Possible values are: info, warning, error, and critical.
-        :param pulumi.Input[_builtins.bool] broadcast_to_all: Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        :param pulumi.Input[_builtins.str] description: Description of the alert.
-        :param pulumi.Input[_builtins.bool] disabled: Whether the alert is disabled.
-        :param pulumi.Input[_builtins.str] eval_window: The evaluation window of the alert. By default, it is 5m0s.
-        :param pulumi.Input[_builtins.str] evaluation: Evaluation settings for the alert (JSON). Only used when schema_version is v2 or higher.
-        :param pulumi.Input[_builtins.str] frequency: The frequency of the alert. By default, it is 1m0s.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Labels of the alert. Severity is a required label.
-        :param pulumi.Input['AlertNotificationSettingsArgs'] notification_settings: Notification settings for the alert. Only used when schema_version is v2 or higher.
-        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Preferred channels of the alert. By default, it is empty.
-        :param pulumi.Input[_builtins.str] rule_type: Type of the alert. Possible values are: threshold_rule and promql_rule.
-        :param pulumi.Input[_builtins.str] schema_version: Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
-        :param pulumi.Input[_builtins.str] source: Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
-        :param pulumi.Input[_builtins.str] summary: Summary of the alert.
-        :param pulumi.Input[_builtins.str] version: Version of the alert. By default, it is v4.
-        """
-        pulumi.set(__self__, "alert", alert)
-        pulumi.set(__self__, "alert_type", alert_type)
-        pulumi.set(__self__, "condition", condition)
-        pulumi.set(__self__, "severity", severity)
-        if broadcast_to_all is not None:
-            warnings.warn("""This field is no longer needed and will be ignored""", DeprecationWarning)
-            pulumi.log.warn("""broadcast_to_all is deprecated: This field is no longer needed and will be ignored""")
-        if broadcast_to_all is not None:
-            pulumi.set(__self__, "broadcast_to_all", broadcast_to_all)
-        if description is not None:
-            pulumi.set(__self__, "description", description)
-        if disabled is not None:
-            pulumi.set(__self__, "disabled", disabled)
-        if eval_window is not None:
-            pulumi.set(__self__, "eval_window", eval_window)
-        if evaluation is not None:
-            pulumi.set(__self__, "evaluation", evaluation)
-        if frequency is not None:
-            pulumi.set(__self__, "frequency", frequency)
-        if labels is not None:
-            pulumi.set(__self__, "labels", labels)
-        if notification_settings is not None:
-            pulumi.set(__self__, "notification_settings", notification_settings)
-        if preferred_channels is not None:
-            pulumi.set(__self__, "preferred_channels", preferred_channels)
-        if rule_type is not None:
-            pulumi.set(__self__, "rule_type", rule_type)
-        if schema_version is not None:
-            pulumi.set(__self__, "schema_version", schema_version)
-        if source is not None:
-            pulumi.set(__self__, "source", source)
-        if summary is not None:
-            pulumi.set(__self__, "summary", summary)
-        if version is not None:
-            pulumi.set(__self__, "version", version)
-
-    @_builtins.property
-    @pulumi.getter
-    def alert(self) -> pulumi.Input[_builtins.str]:
-        """
-        Name of the alert.
-        """
-        return pulumi.get(self, "alert")
-
-    @alert.setter
-    def alert(self, value: pulumi.Input[_builtins.str]):
-        pulumi.set(self, "alert", value)
-
-    @_builtins.property
-    @pulumi.getter(name="alertType")
-    def alert_type(self) -> pulumi.Input[_builtins.str]:
-        """
-        Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
-        """
-        return pulumi.get(self, "alert_type")
-
-    @alert_type.setter
-    def alert_type(self, value: pulumi.Input[_builtins.str]):
-        pulumi.set(self, "alert_type", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def condition(self) -> pulumi.Input[_builtins.str]:
-        """
-        Condition of the alert.
-        """
-        return pulumi.get(self, "condition")
-
-    @condition.setter
-    def condition(self, value: pulumi.Input[_builtins.str]):
-        pulumi.set(self, "condition", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def severity(self) -> pulumi.Input[_builtins.str]:
-        """
-        Severity of the alert. Possible values are: info, warning, error, and critical.
-        """
-        return pulumi.get(self, "severity")
-
-    @severity.setter
-    def severity(self, value: pulumi.Input[_builtins.str]):
-        pulumi.set(self, "severity", value)
-
-    @_builtins.property
-    @pulumi.getter(name="broadcastToAll")
-    @_utilities.deprecated("""This field is no longer needed and will be ignored""")
-    def broadcast_to_all(self) -> pulumi.Input[Optional[_builtins.bool]]:
-        """
-        Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        """
-        return pulumi.get(self, "broadcast_to_all")
-
-    @broadcast_to_all.setter
-    def broadcast_to_all(self, value: pulumi.Input[Optional[_builtins.bool]]):
-        pulumi.set(self, "broadcast_to_all", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def description(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Description of the alert.
-        """
-        return pulumi.get(self, "description")
-
-    @description.setter
-    def description(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "description", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def disabled(self) -> pulumi.Input[Optional[_builtins.bool]]:
-        """
-        Whether the alert is disabled.
-        """
-        return pulumi.get(self, "disabled")
-
-    @disabled.setter
-    def disabled(self, value: pulumi.Input[Optional[_builtins.bool]]):
-        pulumi.set(self, "disabled", value)
-
-    @_builtins.property
-    @pulumi.getter(name="evalWindow")
-    def eval_window(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        The evaluation window of the alert. By default, it is 5m0s.
-        """
-        return pulumi.get(self, "eval_window")
-
-    @eval_window.setter
-    def eval_window(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "eval_window", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def evaluation(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Evaluation settings for the alert (JSON). Only used when schema_version is v2 or higher.
-        """
-        return pulumi.get(self, "evaluation")
-
-    @evaluation.setter
-    def evaluation(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "evaluation", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def frequency(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        The frequency of the alert. By default, it is 1m0s.
-        """
-        return pulumi.get(self, "frequency")
-
-    @frequency.setter
-    def frequency(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "frequency", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def labels(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
-        """
-        Labels of the alert. Severity is a required label.
-        """
-        return pulumi.get(self, "labels")
-
-    @labels.setter
-    def labels(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
-        pulumi.set(self, "labels", value)
-
-    @_builtins.property
-    @pulumi.getter(name="notificationSettings")
-    def notification_settings(self) -> pulumi.Input[Optional['AlertNotificationSettingsArgs']]:
-        """
-        Notification settings for the alert. Only used when schema_version is v2 or higher.
-        """
-        return pulumi.get(self, "notification_settings")
-
-    @notification_settings.setter
-    def notification_settings(self, value: pulumi.Input[Optional['AlertNotificationSettingsArgs']]):
-        pulumi.set(self, "notification_settings", value)
-
-    @_builtins.property
-    @pulumi.getter(name="preferredChannels")
-    def preferred_channels(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
-        """
-        Preferred channels of the alert. By default, it is empty.
-        """
-        return pulumi.get(self, "preferred_channels")
-
-    @preferred_channels.setter
-    def preferred_channels(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
-        pulumi.set(self, "preferred_channels", value)
-
-    @_builtins.property
-    @pulumi.getter(name="ruleType")
-    def rule_type(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Type of the alert. Possible values are: threshold_rule and promql_rule.
-        """
-        return pulumi.get(self, "rule_type")
-
-    @rule_type.setter
-    def rule_type(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "rule_type", value)
-
-    @_builtins.property
-    @pulumi.getter(name="schemaVersion")
-    def schema_version(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
-        """
-        return pulumi.get(self, "schema_version")
-
-    @schema_version.setter
-    def schema_version(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "schema_version", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def source(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
-        """
-        return pulumi.get(self, "source")
-
-    @source.setter
-    def source(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "source", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def summary(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Summary of the alert.
-        """
-        return pulumi.get(self, "summary")
-
-    @summary.setter
-    def summary(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "summary", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def version(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Version of the alert. By default, it is v4.
-        """
-        return pulumi.get(self, "version")
-
-    @version.setter
-    def version(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "version", value)
-
-
-@pulumi.input_type
-class _AlertState:
-    def __init__(__self__, *,
-                 alert: pulumi.Input[Optional[_builtins.str]] = None,
-                 alert_type: pulumi.Input[Optional[_builtins.str]] = None,
-                 broadcast_to_all: pulumi.Input[Optional[_builtins.bool]] = None,
-                 condition: pulumi.Input[Optional[_builtins.str]] = None,
-                 create_at: pulumi.Input[Optional[_builtins.str]] = None,
-                 create_by: pulumi.Input[Optional[_builtins.str]] = None,
-                 description: pulumi.Input[Optional[_builtins.str]] = None,
-                 disabled: pulumi.Input[Optional[_builtins.bool]] = None,
-                 eval_window: pulumi.Input[Optional[_builtins.str]] = None,
-                 evaluation: pulumi.Input[Optional[_builtins.str]] = None,
-                 frequency: pulumi.Input[Optional[_builtins.str]] = None,
-                 labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 notification_settings: pulumi.Input[Optional['AlertNotificationSettingsArgs']] = None,
+                 notification_settings: pulumi.Input[Optional[_builtins.str]] = None,
                  preferred_channels: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  rule_type: pulumi.Input[Optional[_builtins.str]] = None,
                  schema_version: pulumi.Input[Optional[_builtins.str]] = None,
                  severity: pulumi.Input[Optional[_builtins.str]] = None,
                  source: pulumi.Input[Optional[_builtins.str]] = None,
-                 state: pulumi.Input[Optional[_builtins.str]] = None,
-                 summary: pulumi.Input[Optional[_builtins.str]] = None,
-                 update_at: pulumi.Input[Optional[_builtins.str]] = None,
-                 update_by: pulumi.Input[Optional[_builtins.str]] = None,
                  version: pulumi.Input[Optional[_builtins.str]] = None):
         """
-        Input properties used for looking up and filtering Alert resources.
+        The set of arguments for constructing a Alert resource.
 
-        :param pulumi.Input[_builtins.str] alert: Name of the alert.
-        :param pulumi.Input[_builtins.str] alert_type: Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
-        :param pulumi.Input[_builtins.bool] broadcast_to_all: Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        :param pulumi.Input[_builtins.str] condition: Condition of the alert.
-        :param pulumi.Input[_builtins.str] create_at: Creation time of the alert.
-        :param pulumi.Input[_builtins.str] create_by: Creator of the alert.
-        :param pulumi.Input[_builtins.str] description: Description of the alert.
-        :param pulumi.Input[_builtins.bool] disabled: Whether the alert is disabled.
-        :param pulumi.Input[_builtins.str] eval_window: The evaluation window of the alert. By default, it is 5m0s.
-        :param pulumi.Input[_builtins.str] evaluation: Evaluation settings for the alert (JSON). Only used when schema_version is v2 or higher.
-        :param pulumi.Input[_builtins.str] frequency: The frequency of the alert. By default, it is 1m0s.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Labels of the alert. Severity is a required label.
-        :param pulumi.Input['AlertNotificationSettingsArgs'] notification_settings: Notification settings for the alert. Only used when schema_version is v2 or higher.
-        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Preferred channels of the alert. By default, it is empty.
-        :param pulumi.Input[_builtins.str] rule_type: Type of the alert. Possible values are: threshold_rule and promql_rule.
-        :param pulumi.Input[_builtins.str] schema_version: Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
-        :param pulumi.Input[_builtins.str] severity: Severity of the alert. Possible values are: info, warning, error, and critical.
-        :param pulumi.Input[_builtins.str] source: Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
-        :param pulumi.Input[_builtins.str] state: State of the alert.
-        :param pulumi.Input[_builtins.str] summary: Summary of the alert.
-        :param pulumi.Input[_builtins.str] update_at: Last update time of the alert.
-        :param pulumi.Input[_builtins.str] update_by: Last updater of the alert.
-        :param pulumi.Input[_builtins.str] version: Version of the alert. By default, it is v4.
+        :param pulumi.Input[_builtins.str] alert: Alert name.
+        :param pulumi.Input[_builtins.str] alert_type: One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
+        :param pulumi.Input[_builtins.str] condition: Query condition as JSON (compositeQuery + thresholds). Compared semantically.
+        :param pulumi.Input[_builtins.str] description: Human-readable description.
+        :param pulumi.Input[_builtins.bool] disabled: Whether the rule is disabled. Defaults to false.
+        :param pulumi.Input[_builtins.str] eval_window: Evaluation window (e.g. `5m0s`).
+        :param pulumi.Input[_builtins.str] evaluation: Evaluation block as JSON (v2alpha1+). Compared semantically.
+        :param pulumi.Input[_builtins.str] frequency: Evaluation frequency (e.g. `1m0s`).
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Custom labels attached to the alert.
+        :param pulumi.Input[_builtins.str] notification_settings: Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Notification channel names the alert routes to.
+        :param pulumi.Input[_builtins.str] rule_type: Rule engine type: `threshold_rule` (default) or `promql_rule`.
+        :param pulumi.Input[_builtins.str] schema_version: Alert schema version. Defaults to `v2alpha1`.
+        :param pulumi.Input[_builtins.str] severity: Severity label (e.g. `info`, `warning`, `critical`).
+        :param pulumi.Input[_builtins.str] source: Source URL recorded on the rule.
+        :param pulumi.Input[_builtins.str] version: Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
         """
-        if alert is not None:
-            pulumi.set(__self__, "alert", alert)
-        if alert_type is not None:
-            pulumi.set(__self__, "alert_type", alert_type)
-        if broadcast_to_all is not None:
-            warnings.warn("""This field is no longer needed and will be ignored""", DeprecationWarning)
-            pulumi.log.warn("""broadcast_to_all is deprecated: This field is no longer needed and will be ignored""")
-        if broadcast_to_all is not None:
-            pulumi.set(__self__, "broadcast_to_all", broadcast_to_all)
-        if condition is not None:
-            pulumi.set(__self__, "condition", condition)
-        if create_at is not None:
-            pulumi.set(__self__, "create_at", create_at)
-        if create_by is not None:
-            pulumi.set(__self__, "create_by", create_by)
+        pulumi.set(__self__, "alert", alert)
+        pulumi.set(__self__, "alert_type", alert_type)
+        pulumi.set(__self__, "condition", condition)
         if description is not None:
             pulumi.set(__self__, "description", description)
         if disabled is not None:
@@ -407,95 +82,50 @@ class _AlertState:
             pulumi.set(__self__, "severity", severity)
         if source is not None:
             pulumi.set(__self__, "source", source)
-        if state is not None:
-            pulumi.set(__self__, "state", state)
-        if summary is not None:
-            pulumi.set(__self__, "summary", summary)
-        if update_at is not None:
-            pulumi.set(__self__, "update_at", update_at)
-        if update_by is not None:
-            pulumi.set(__self__, "update_by", update_by)
         if version is not None:
             pulumi.set(__self__, "version", version)
 
     @_builtins.property
     @pulumi.getter
-    def alert(self) -> pulumi.Input[Optional[_builtins.str]]:
+    def alert(self) -> pulumi.Input[_builtins.str]:
         """
-        Name of the alert.
+        Alert name.
         """
         return pulumi.get(self, "alert")
 
     @alert.setter
-    def alert(self, value: pulumi.Input[Optional[_builtins.str]]):
+    def alert(self, value: pulumi.Input[_builtins.str]):
         pulumi.set(self, "alert", value)
 
     @_builtins.property
     @pulumi.getter(name="alertType")
-    def alert_type(self) -> pulumi.Input[Optional[_builtins.str]]:
+    def alert_type(self) -> pulumi.Input[_builtins.str]:
         """
-        Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+        One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
         """
         return pulumi.get(self, "alert_type")
 
     @alert_type.setter
-    def alert_type(self, value: pulumi.Input[Optional[_builtins.str]]):
+    def alert_type(self, value: pulumi.Input[_builtins.str]):
         pulumi.set(self, "alert_type", value)
 
     @_builtins.property
-    @pulumi.getter(name="broadcastToAll")
-    @_utilities.deprecated("""This field is no longer needed and will be ignored""")
-    def broadcast_to_all(self) -> pulumi.Input[Optional[_builtins.bool]]:
-        """
-        Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        """
-        return pulumi.get(self, "broadcast_to_all")
-
-    @broadcast_to_all.setter
-    def broadcast_to_all(self, value: pulumi.Input[Optional[_builtins.bool]]):
-        pulumi.set(self, "broadcast_to_all", value)
-
-    @_builtins.property
     @pulumi.getter
-    def condition(self) -> pulumi.Input[Optional[_builtins.str]]:
+    def condition(self) -> pulumi.Input[_builtins.str]:
         """
-        Condition of the alert.
+        Query condition as JSON (compositeQuery + thresholds). Compared semantically.
         """
         return pulumi.get(self, "condition")
 
     @condition.setter
-    def condition(self, value: pulumi.Input[Optional[_builtins.str]]):
+    def condition(self, value: pulumi.Input[_builtins.str]):
         pulumi.set(self, "condition", value)
-
-    @_builtins.property
-    @pulumi.getter(name="createAt")
-    def create_at(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Creation time of the alert.
-        """
-        return pulumi.get(self, "create_at")
-
-    @create_at.setter
-    def create_at(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "create_at", value)
-
-    @_builtins.property
-    @pulumi.getter(name="createBy")
-    def create_by(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Creator of the alert.
-        """
-        return pulumi.get(self, "create_by")
-
-    @create_by.setter
-    def create_by(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "create_by", value)
 
     @_builtins.property
     @pulumi.getter
     def description(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Description of the alert.
+        Human-readable description.
         """
         return pulumi.get(self, "description")
 
@@ -507,7 +137,7 @@ class _AlertState:
     @pulumi.getter
     def disabled(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
-        Whether the alert is disabled.
+        Whether the rule is disabled. Defaults to false.
         """
         return pulumi.get(self, "disabled")
 
@@ -519,7 +149,7 @@ class _AlertState:
     @pulumi.getter(name="evalWindow")
     def eval_window(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        The evaluation window of the alert. By default, it is 5m0s.
+        Evaluation window (e.g. `5m0s`).
         """
         return pulumi.get(self, "eval_window")
 
@@ -531,7 +161,7 @@ class _AlertState:
     @pulumi.getter
     def evaluation(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Evaluation settings for the alert (JSON). Only used when schema_version is v2 or higher.
+        Evaluation block as JSON (v2alpha1+). Compared semantically.
         """
         return pulumi.get(self, "evaluation")
 
@@ -543,7 +173,7 @@ class _AlertState:
     @pulumi.getter
     def frequency(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        The frequency of the alert. By default, it is 1m0s.
+        Evaluation frequency (e.g. `1m0s`).
         """
         return pulumi.get(self, "frequency")
 
@@ -555,7 +185,7 @@ class _AlertState:
     @pulumi.getter
     def labels(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
-        Labels of the alert. Severity is a required label.
+        Custom labels attached to the alert.
         """
         return pulumi.get(self, "labels")
 
@@ -565,21 +195,21 @@ class _AlertState:
 
     @_builtins.property
     @pulumi.getter(name="notificationSettings")
-    def notification_settings(self) -> pulumi.Input[Optional['AlertNotificationSettingsArgs']]:
+    def notification_settings(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Notification settings for the alert. Only used when schema_version is v2 or higher.
+        Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
         """
         return pulumi.get(self, "notification_settings")
 
     @notification_settings.setter
-    def notification_settings(self, value: pulumi.Input[Optional['AlertNotificationSettingsArgs']]):
+    def notification_settings(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "notification_settings", value)
 
     @_builtins.property
     @pulumi.getter(name="preferredChannels")
     def preferred_channels(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         """
-        Preferred channels of the alert. By default, it is empty.
+        Notification channel names the alert routes to.
         """
         return pulumi.get(self, "preferred_channels")
 
@@ -591,7 +221,7 @@ class _AlertState:
     @pulumi.getter(name="ruleType")
     def rule_type(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Type of the alert. Possible values are: threshold_rule and promql_rule.
+        Rule engine type: `threshold_rule` (default) or `promql_rule`.
         """
         return pulumi.get(self, "rule_type")
 
@@ -603,7 +233,7 @@ class _AlertState:
     @pulumi.getter(name="schemaVersion")
     def schema_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
+        Alert schema version. Defaults to `v2alpha1`.
         """
         return pulumi.get(self, "schema_version")
 
@@ -615,7 +245,7 @@ class _AlertState:
     @pulumi.getter
     def severity(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Severity of the alert. Possible values are: info, warning, error, and critical.
+        Severity label (e.g. `info`, `warning`, `critical`).
         """
         return pulumi.get(self, "severity")
 
@@ -627,7 +257,7 @@ class _AlertState:
     @pulumi.getter
     def source(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+        Source URL recorded on the rule.
         """
         return pulumi.get(self, "source")
 
@@ -637,57 +267,274 @@ class _AlertState:
 
     @_builtins.property
     @pulumi.getter
-    def state(self) -> pulumi.Input[Optional[_builtins.str]]:
+    def version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        State of the alert.
+        Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
         """
-        return pulumi.get(self, "state")
+        return pulumi.get(self, "version")
 
-    @state.setter
-    def state(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "state", value)
+    @version.setter
+    def version(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "version", value)
+
+
+@pulumi.input_type
+class _AlertState:
+    def __init__(__self__, *,
+                 alert: pulumi.Input[Optional[_builtins.str]] = None,
+                 alert_type: pulumi.Input[Optional[_builtins.str]] = None,
+                 condition: pulumi.Input[Optional[_builtins.str]] = None,
+                 description: pulumi.Input[Optional[_builtins.str]] = None,
+                 disabled: pulumi.Input[Optional[_builtins.bool]] = None,
+                 eval_window: pulumi.Input[Optional[_builtins.str]] = None,
+                 evaluation: pulumi.Input[Optional[_builtins.str]] = None,
+                 frequency: pulumi.Input[Optional[_builtins.str]] = None,
+                 labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 notification_settings: pulumi.Input[Optional[_builtins.str]] = None,
+                 preferred_channels: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 rule_type: pulumi.Input[Optional[_builtins.str]] = None,
+                 schema_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 severity: pulumi.Input[Optional[_builtins.str]] = None,
+                 source: pulumi.Input[Optional[_builtins.str]] = None,
+                 version: pulumi.Input[Optional[_builtins.str]] = None):
+        """
+        Input properties used for looking up and filtering Alert resources.
+
+        :param pulumi.Input[_builtins.str] alert: Alert name.
+        :param pulumi.Input[_builtins.str] alert_type: One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
+        :param pulumi.Input[_builtins.str] condition: Query condition as JSON (compositeQuery + thresholds). Compared semantically.
+        :param pulumi.Input[_builtins.str] description: Human-readable description.
+        :param pulumi.Input[_builtins.bool] disabled: Whether the rule is disabled. Defaults to false.
+        :param pulumi.Input[_builtins.str] eval_window: Evaluation window (e.g. `5m0s`).
+        :param pulumi.Input[_builtins.str] evaluation: Evaluation block as JSON (v2alpha1+). Compared semantically.
+        :param pulumi.Input[_builtins.str] frequency: Evaluation frequency (e.g. `1m0s`).
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Custom labels attached to the alert.
+        :param pulumi.Input[_builtins.str] notification_settings: Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Notification channel names the alert routes to.
+        :param pulumi.Input[_builtins.str] rule_type: Rule engine type: `threshold_rule` (default) or `promql_rule`.
+        :param pulumi.Input[_builtins.str] schema_version: Alert schema version. Defaults to `v2alpha1`.
+        :param pulumi.Input[_builtins.str] severity: Severity label (e.g. `info`, `warning`, `critical`).
+        :param pulumi.Input[_builtins.str] source: Source URL recorded on the rule.
+        :param pulumi.Input[_builtins.str] version: Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
+        """
+        if alert is not None:
+            pulumi.set(__self__, "alert", alert)
+        if alert_type is not None:
+            pulumi.set(__self__, "alert_type", alert_type)
+        if condition is not None:
+            pulumi.set(__self__, "condition", condition)
+        if description is not None:
+            pulumi.set(__self__, "description", description)
+        if disabled is not None:
+            pulumi.set(__self__, "disabled", disabled)
+        if eval_window is not None:
+            pulumi.set(__self__, "eval_window", eval_window)
+        if evaluation is not None:
+            pulumi.set(__self__, "evaluation", evaluation)
+        if frequency is not None:
+            pulumi.set(__self__, "frequency", frequency)
+        if labels is not None:
+            pulumi.set(__self__, "labels", labels)
+        if notification_settings is not None:
+            pulumi.set(__self__, "notification_settings", notification_settings)
+        if preferred_channels is not None:
+            pulumi.set(__self__, "preferred_channels", preferred_channels)
+        if rule_type is not None:
+            pulumi.set(__self__, "rule_type", rule_type)
+        if schema_version is not None:
+            pulumi.set(__self__, "schema_version", schema_version)
+        if severity is not None:
+            pulumi.set(__self__, "severity", severity)
+        if source is not None:
+            pulumi.set(__self__, "source", source)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
 
     @_builtins.property
     @pulumi.getter
-    def summary(self) -> pulumi.Input[Optional[_builtins.str]]:
+    def alert(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Summary of the alert.
+        Alert name.
         """
-        return pulumi.get(self, "summary")
+        return pulumi.get(self, "alert")
 
-    @summary.setter
-    def summary(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "summary", value)
-
-    @_builtins.property
-    @pulumi.getter(name="updateAt")
-    def update_at(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Last update time of the alert.
-        """
-        return pulumi.get(self, "update_at")
-
-    @update_at.setter
-    def update_at(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "update_at", value)
+    @alert.setter
+    def alert(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "alert", value)
 
     @_builtins.property
-    @pulumi.getter(name="updateBy")
-    def update_by(self) -> pulumi.Input[Optional[_builtins.str]]:
+    @pulumi.getter(name="alertType")
+    def alert_type(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Last updater of the alert.
+        One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
         """
-        return pulumi.get(self, "update_by")
+        return pulumi.get(self, "alert_type")
 
-    @update_by.setter
-    def update_by(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "update_by", value)
+    @alert_type.setter
+    def alert_type(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "alert_type", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def condition(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Query condition as JSON (compositeQuery + thresholds). Compared semantically.
+        """
+        return pulumi.get(self, "condition")
+
+    @condition.setter
+    def condition(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "condition", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def description(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Human-readable description.
+        """
+        return pulumi.get(self, "description")
+
+    @description.setter
+    def description(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "description", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def disabled(self) -> pulumi.Input[Optional[_builtins.bool]]:
+        """
+        Whether the rule is disabled. Defaults to false.
+        """
+        return pulumi.get(self, "disabled")
+
+    @disabled.setter
+    def disabled(self, value: pulumi.Input[Optional[_builtins.bool]]):
+        pulumi.set(self, "disabled", value)
+
+    @_builtins.property
+    @pulumi.getter(name="evalWindow")
+    def eval_window(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Evaluation window (e.g. `5m0s`).
+        """
+        return pulumi.get(self, "eval_window")
+
+    @eval_window.setter
+    def eval_window(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "eval_window", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def evaluation(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Evaluation block as JSON (v2alpha1+). Compared semantically.
+        """
+        return pulumi.get(self, "evaluation")
+
+    @evaluation.setter
+    def evaluation(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "evaluation", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def frequency(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Evaluation frequency (e.g. `1m0s`).
+        """
+        return pulumi.get(self, "frequency")
+
+    @frequency.setter
+    def frequency(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "frequency", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def labels(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
+        """
+        Custom labels attached to the alert.
+        """
+        return pulumi.get(self, "labels")
+
+    @labels.setter
+    def labels(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
+        pulumi.set(self, "labels", value)
+
+    @_builtins.property
+    @pulumi.getter(name="notificationSettings")
+    def notification_settings(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+        """
+        return pulumi.get(self, "notification_settings")
+
+    @notification_settings.setter
+    def notification_settings(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "notification_settings", value)
+
+    @_builtins.property
+    @pulumi.getter(name="preferredChannels")
+    def preferred_channels(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
+        """
+        Notification channel names the alert routes to.
+        """
+        return pulumi.get(self, "preferred_channels")
+
+    @preferred_channels.setter
+    def preferred_channels(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
+        pulumi.set(self, "preferred_channels", value)
+
+    @_builtins.property
+    @pulumi.getter(name="ruleType")
+    def rule_type(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Rule engine type: `threshold_rule` (default) or `promql_rule`.
+        """
+        return pulumi.get(self, "rule_type")
+
+    @rule_type.setter
+    def rule_type(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "rule_type", value)
+
+    @_builtins.property
+    @pulumi.getter(name="schemaVersion")
+    def schema_version(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Alert schema version. Defaults to `v2alpha1`.
+        """
+        return pulumi.get(self, "schema_version")
+
+    @schema_version.setter
+    def schema_version(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "schema_version", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def severity(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Severity label (e.g. `info`, `warning`, `critical`).
+        """
+        return pulumi.get(self, "severity")
+
+    @severity.setter
+    def severity(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "severity", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def source(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Source URL recorded on the rule.
+        """
+        return pulumi.get(self, "source")
+
+    @source.setter
+    def source(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "source", value)
 
     @_builtins.property
     @pulumi.getter
     def version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Version of the alert. By default, it is v4.
+        Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
         """
         return pulumi.get(self, "version")
 
@@ -704,7 +551,6 @@ class Alert(pulumi.CustomResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  alert: pulumi.Input[Optional[_builtins.str]] = None,
                  alert_type: pulumi.Input[Optional[_builtins.str]] = None,
-                 broadcast_to_all: pulumi.Input[Optional[_builtins.bool]] = None,
                  condition: pulumi.Input[Optional[_builtins.str]] = None,
                  description: pulumi.Input[Optional[_builtins.str]] = None,
                  disabled: pulumi.Input[Optional[_builtins.bool]] = None,
@@ -712,38 +558,93 @@ class Alert(pulumi.CustomResource):
                  evaluation: pulumi.Input[Optional[_builtins.str]] = None,
                  frequency: pulumi.Input[Optional[_builtins.str]] = None,
                  labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 notification_settings: pulumi.Input[Optional[Union['AlertNotificationSettingsArgs', 'AlertNotificationSettingsArgsDict']]] = None,
+                 notification_settings: pulumi.Input[Optional[_builtins.str]] = None,
                  preferred_channels: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  rule_type: pulumi.Input[Optional[_builtins.str]] = None,
                  schema_version: pulumi.Input[Optional[_builtins.str]] = None,
                  severity: pulumi.Input[Optional[_builtins.str]] = None,
                  source: pulumi.Input[Optional[_builtins.str]] = None,
-                 summary: pulumi.Input[Optional[_builtins.str]] = None,
                  version: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         """
-        Create a Alert resource with the given unique name, props, and options.
+        A SigNoz alert rule. Top-level fields are typed; the query `condition`, `evaluation`, and `notification_settings` are JSON blobs (export from the SigNoz UI to adapt). Defaults target the v5 / v2alpha1 schema required by SigNoz >= 0.125.
+
+        ## Example Usage
+
+        ```python
+        import pulumi
+        import json
+        import pulumi_signoz_jooon as signoz
+
+        # A logs-based alert on the v5 / v2alpha1 schema (SigNoz >= 0.125).
+        # The threshold references a notification channel by name.
+        high_error_logs = signoz.Alert("high_error_logs",
+            alert="High error log volume",
+            alert_type="LOGS_BASED_ALERT",
+            severity="warning",
+            condition=json.dumps({
+                "compositeQuery": {
+                    "queryType": "builder",
+                    "panelType": "graph",
+                    "queries": [{
+                        "type": "builder_query",
+                        "spec": {
+                            "name": "A",
+                            "signal": "logs",
+                            "stepInterval": 0,
+                            "aggregations": [{
+                                "expression": "count()",
+                            }],
+                            "filter": {
+                                "expression": "severity_text = 'ERROR'",
+                            },
+                            "having": {
+                                "expression": "",
+                            },
+                        },
+                    }],
+                },
+                "selectedQueryName": "A",
+                "thresholds": {
+                    "kind": "basic",
+                    "spec": [{
+                        "name": "warning",
+                        "target": 100,
+                        "matchType": "1",
+                        "op": "1",
+                        "channels": [slack["name"]],
+                    }],
+                },
+            }),
+            evaluation=json.dumps({
+                "kind": "rolling",
+                "spec": {
+                    "evalWindow": "5m0s",
+                    "frequency": "1m0s",
+                },
+            }),
+            preferred_channels=[slack["name"]])
+        ```
+
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.Input[_builtins.str] alert: Name of the alert.
-        :param pulumi.Input[_builtins.str] alert_type: Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
-        :param pulumi.Input[_builtins.bool] broadcast_to_all: Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        :param pulumi.Input[_builtins.str] condition: Condition of the alert.
-        :param pulumi.Input[_builtins.str] description: Description of the alert.
-        :param pulumi.Input[_builtins.bool] disabled: Whether the alert is disabled.
-        :param pulumi.Input[_builtins.str] eval_window: The evaluation window of the alert. By default, it is 5m0s.
-        :param pulumi.Input[_builtins.str] evaluation: Evaluation settings for the alert (JSON). Only used when schema_version is v2 or higher.
-        :param pulumi.Input[_builtins.str] frequency: The frequency of the alert. By default, it is 1m0s.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Labels of the alert. Severity is a required label.
-        :param pulumi.Input[Union['AlertNotificationSettingsArgs', 'AlertNotificationSettingsArgsDict']] notification_settings: Notification settings for the alert. Only used when schema_version is v2 or higher.
-        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Preferred channels of the alert. By default, it is empty.
-        :param pulumi.Input[_builtins.str] rule_type: Type of the alert. Possible values are: threshold_rule and promql_rule.
-        :param pulumi.Input[_builtins.str] schema_version: Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
-        :param pulumi.Input[_builtins.str] severity: Severity of the alert. Possible values are: info, warning, error, and critical.
-        :param pulumi.Input[_builtins.str] source: Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
-        :param pulumi.Input[_builtins.str] summary: Summary of the alert.
-        :param pulumi.Input[_builtins.str] version: Version of the alert. By default, it is v4.
+        :param pulumi.Input[_builtins.str] alert: Alert name.
+        :param pulumi.Input[_builtins.str] alert_type: One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
+        :param pulumi.Input[_builtins.str] condition: Query condition as JSON (compositeQuery + thresholds). Compared semantically.
+        :param pulumi.Input[_builtins.str] description: Human-readable description.
+        :param pulumi.Input[_builtins.bool] disabled: Whether the rule is disabled. Defaults to false.
+        :param pulumi.Input[_builtins.str] eval_window: Evaluation window (e.g. `5m0s`).
+        :param pulumi.Input[_builtins.str] evaluation: Evaluation block as JSON (v2alpha1+). Compared semantically.
+        :param pulumi.Input[_builtins.str] frequency: Evaluation frequency (e.g. `1m0s`).
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Custom labels attached to the alert.
+        :param pulumi.Input[_builtins.str] notification_settings: Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Notification channel names the alert routes to.
+        :param pulumi.Input[_builtins.str] rule_type: Rule engine type: `threshold_rule` (default) or `promql_rule`.
+        :param pulumi.Input[_builtins.str] schema_version: Alert schema version. Defaults to `v2alpha1`.
+        :param pulumi.Input[_builtins.str] severity: Severity label (e.g. `info`, `warning`, `critical`).
+        :param pulumi.Input[_builtins.str] source: Source URL recorded on the rule.
+        :param pulumi.Input[_builtins.str] version: Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
         """
         ...
     @overload
@@ -752,7 +653,65 @@ class Alert(pulumi.CustomResource):
                  args: AlertArgs,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        Create a Alert resource with the given unique name, props, and options.
+        A SigNoz alert rule. Top-level fields are typed; the query `condition`, `evaluation`, and `notification_settings` are JSON blobs (export from the SigNoz UI to adapt). Defaults target the v5 / v2alpha1 schema required by SigNoz >= 0.125.
+
+        ## Example Usage
+
+        ```python
+        import pulumi
+        import json
+        import pulumi_signoz_jooon as signoz
+
+        # A logs-based alert on the v5 / v2alpha1 schema (SigNoz >= 0.125).
+        # The threshold references a notification channel by name.
+        high_error_logs = signoz.Alert("high_error_logs",
+            alert="High error log volume",
+            alert_type="LOGS_BASED_ALERT",
+            severity="warning",
+            condition=json.dumps({
+                "compositeQuery": {
+                    "queryType": "builder",
+                    "panelType": "graph",
+                    "queries": [{
+                        "type": "builder_query",
+                        "spec": {
+                            "name": "A",
+                            "signal": "logs",
+                            "stepInterval": 0,
+                            "aggregations": [{
+                                "expression": "count()",
+                            }],
+                            "filter": {
+                                "expression": "severity_text = 'ERROR'",
+                            },
+                            "having": {
+                                "expression": "",
+                            },
+                        },
+                    }],
+                },
+                "selectedQueryName": "A",
+                "thresholds": {
+                    "kind": "basic",
+                    "spec": [{
+                        "name": "warning",
+                        "target": 100,
+                        "matchType": "1",
+                        "op": "1",
+                        "channels": [slack["name"]],
+                    }],
+                },
+            }),
+            evaluation=json.dumps({
+                "kind": "rolling",
+                "spec": {
+                    "evalWindow": "5m0s",
+                    "frequency": "1m0s",
+                },
+            }),
+            preferred_channels=[slack["name"]])
+        ```
+
 
         :param str resource_name: The name of the resource.
         :param AlertArgs args: The arguments to use to populate this resource's properties.
@@ -771,7 +730,6 @@ class Alert(pulumi.CustomResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  alert: pulumi.Input[Optional[_builtins.str]] = None,
                  alert_type: pulumi.Input[Optional[_builtins.str]] = None,
-                 broadcast_to_all: pulumi.Input[Optional[_builtins.bool]] = None,
                  condition: pulumi.Input[Optional[_builtins.str]] = None,
                  description: pulumi.Input[Optional[_builtins.str]] = None,
                  disabled: pulumi.Input[Optional[_builtins.bool]] = None,
@@ -779,13 +737,12 @@ class Alert(pulumi.CustomResource):
                  evaluation: pulumi.Input[Optional[_builtins.str]] = None,
                  frequency: pulumi.Input[Optional[_builtins.str]] = None,
                  labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 notification_settings: pulumi.Input[Optional[Union['AlertNotificationSettingsArgs', 'AlertNotificationSettingsArgsDict']]] = None,
+                 notification_settings: pulumi.Input[Optional[_builtins.str]] = None,
                  preferred_channels: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  rule_type: pulumi.Input[Optional[_builtins.str]] = None,
                  schema_version: pulumi.Input[Optional[_builtins.str]] = None,
                  severity: pulumi.Input[Optional[_builtins.str]] = None,
                  source: pulumi.Input[Optional[_builtins.str]] = None,
-                 summary: pulumi.Input[Optional[_builtins.str]] = None,
                  version: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -802,7 +759,6 @@ class Alert(pulumi.CustomResource):
             if alert_type is None and not opts.urn:
                 raise TypeError("Missing required property 'alert_type'")
             __props__.__dict__["alert_type"] = alert_type
-            __props__.__dict__["broadcast_to_all"] = broadcast_to_all
             if condition is None and not opts.urn:
                 raise TypeError("Missing required property 'condition'")
             __props__.__dict__["condition"] = condition
@@ -816,17 +772,9 @@ class Alert(pulumi.CustomResource):
             __props__.__dict__["preferred_channels"] = preferred_channels
             __props__.__dict__["rule_type"] = rule_type
             __props__.__dict__["schema_version"] = schema_version
-            if severity is None and not opts.urn:
-                raise TypeError("Missing required property 'severity'")
             __props__.__dict__["severity"] = severity
             __props__.__dict__["source"] = source
-            __props__.__dict__["summary"] = summary
             __props__.__dict__["version"] = version
-            __props__.__dict__["create_at"] = None
-            __props__.__dict__["create_by"] = None
-            __props__.__dict__["state"] = None
-            __props__.__dict__["update_at"] = None
-            __props__.__dict__["update_by"] = None
         super(Alert, __self__).__init__(
             'signoz:index/alert:Alert',
             resource_name,
@@ -839,26 +787,19 @@ class Alert(pulumi.CustomResource):
             opts: Optional[pulumi.ResourceOptions] = None,
             alert: pulumi.Input[Optional[_builtins.str]] = None,
             alert_type: pulumi.Input[Optional[_builtins.str]] = None,
-            broadcast_to_all: pulumi.Input[Optional[_builtins.bool]] = None,
             condition: pulumi.Input[Optional[_builtins.str]] = None,
-            create_at: pulumi.Input[Optional[_builtins.str]] = None,
-            create_by: pulumi.Input[Optional[_builtins.str]] = None,
             description: pulumi.Input[Optional[_builtins.str]] = None,
             disabled: pulumi.Input[Optional[_builtins.bool]] = None,
             eval_window: pulumi.Input[Optional[_builtins.str]] = None,
             evaluation: pulumi.Input[Optional[_builtins.str]] = None,
             frequency: pulumi.Input[Optional[_builtins.str]] = None,
             labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-            notification_settings: pulumi.Input[Optional[Union['AlertNotificationSettingsArgs', 'AlertNotificationSettingsArgsDict']]] = None,
+            notification_settings: pulumi.Input[Optional[_builtins.str]] = None,
             preferred_channels: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
             rule_type: pulumi.Input[Optional[_builtins.str]] = None,
             schema_version: pulumi.Input[Optional[_builtins.str]] = None,
             severity: pulumi.Input[Optional[_builtins.str]] = None,
             source: pulumi.Input[Optional[_builtins.str]] = None,
-            state: pulumi.Input[Optional[_builtins.str]] = None,
-            summary: pulumi.Input[Optional[_builtins.str]] = None,
-            update_at: pulumi.Input[Optional[_builtins.str]] = None,
-            update_by: pulumi.Input[Optional[_builtins.str]] = None,
             version: pulumi.Input[Optional[_builtins.str]] = None) -> 'Alert':
         """
         Get an existing Alert resource's state with the given name, id, and optional extra
@@ -867,29 +808,22 @@ class Alert(pulumi.CustomResource):
         :param str resource_name: The unique name of the resulting resource.
         :param pulumi.Input[str] id: The unique provider ID of the resource to lookup.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.Input[_builtins.str] alert: Name of the alert.
-        :param pulumi.Input[_builtins.str] alert_type: Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
-        :param pulumi.Input[_builtins.bool] broadcast_to_all: Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        :param pulumi.Input[_builtins.str] condition: Condition of the alert.
-        :param pulumi.Input[_builtins.str] create_at: Creation time of the alert.
-        :param pulumi.Input[_builtins.str] create_by: Creator of the alert.
-        :param pulumi.Input[_builtins.str] description: Description of the alert.
-        :param pulumi.Input[_builtins.bool] disabled: Whether the alert is disabled.
-        :param pulumi.Input[_builtins.str] eval_window: The evaluation window of the alert. By default, it is 5m0s.
-        :param pulumi.Input[_builtins.str] evaluation: Evaluation settings for the alert (JSON). Only used when schema_version is v2 or higher.
-        :param pulumi.Input[_builtins.str] frequency: The frequency of the alert. By default, it is 1m0s.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Labels of the alert. Severity is a required label.
-        :param pulumi.Input[Union['AlertNotificationSettingsArgs', 'AlertNotificationSettingsArgsDict']] notification_settings: Notification settings for the alert. Only used when schema_version is v2 or higher.
-        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Preferred channels of the alert. By default, it is empty.
-        :param pulumi.Input[_builtins.str] rule_type: Type of the alert. Possible values are: threshold_rule and promql_rule.
-        :param pulumi.Input[_builtins.str] schema_version: Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
-        :param pulumi.Input[_builtins.str] severity: Severity of the alert. Possible values are: info, warning, error, and critical.
-        :param pulumi.Input[_builtins.str] source: Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
-        :param pulumi.Input[_builtins.str] state: State of the alert.
-        :param pulumi.Input[_builtins.str] summary: Summary of the alert.
-        :param pulumi.Input[_builtins.str] update_at: Last update time of the alert.
-        :param pulumi.Input[_builtins.str] update_by: Last updater of the alert.
-        :param pulumi.Input[_builtins.str] version: Version of the alert. By default, it is v4.
+        :param pulumi.Input[_builtins.str] alert: Alert name.
+        :param pulumi.Input[_builtins.str] alert_type: One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
+        :param pulumi.Input[_builtins.str] condition: Query condition as JSON (compositeQuery + thresholds). Compared semantically.
+        :param pulumi.Input[_builtins.str] description: Human-readable description.
+        :param pulumi.Input[_builtins.bool] disabled: Whether the rule is disabled. Defaults to false.
+        :param pulumi.Input[_builtins.str] eval_window: Evaluation window (e.g. `5m0s`).
+        :param pulumi.Input[_builtins.str] evaluation: Evaluation block as JSON (v2alpha1+). Compared semantically.
+        :param pulumi.Input[_builtins.str] frequency: Evaluation frequency (e.g. `1m0s`).
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Custom labels attached to the alert.
+        :param pulumi.Input[_builtins.str] notification_settings: Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
+        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] preferred_channels: Notification channel names the alert routes to.
+        :param pulumi.Input[_builtins.str] rule_type: Rule engine type: `threshold_rule` (default) or `promql_rule`.
+        :param pulumi.Input[_builtins.str] schema_version: Alert schema version. Defaults to `v2alpha1`.
+        :param pulumi.Input[_builtins.str] severity: Severity label (e.g. `info`, `warning`, `critical`).
+        :param pulumi.Input[_builtins.str] source: Source URL recorded on the rule.
+        :param pulumi.Input[_builtins.str] version: Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
         """
         opts = pulumi.ResourceOptions.merge(opts, pulumi.ResourceOptions(id=id))
 
@@ -897,10 +831,7 @@ class Alert(pulumi.CustomResource):
 
         __props__.__dict__["alert"] = alert
         __props__.__dict__["alert_type"] = alert_type
-        __props__.__dict__["broadcast_to_all"] = broadcast_to_all
         __props__.__dict__["condition"] = condition
-        __props__.__dict__["create_at"] = create_at
-        __props__.__dict__["create_by"] = create_by
         __props__.__dict__["description"] = description
         __props__.__dict__["disabled"] = disabled
         __props__.__dict__["eval_window"] = eval_window
@@ -913,10 +844,6 @@ class Alert(pulumi.CustomResource):
         __props__.__dict__["schema_version"] = schema_version
         __props__.__dict__["severity"] = severity
         __props__.__dict__["source"] = source
-        __props__.__dict__["state"] = state
-        __props__.__dict__["summary"] = summary
-        __props__.__dict__["update_at"] = update_at
-        __props__.__dict__["update_by"] = update_by
         __props__.__dict__["version"] = version
         return Alert(resource_name, opts=opts, __props__=__props__)
 
@@ -924,7 +851,7 @@ class Alert(pulumi.CustomResource):
     @pulumi.getter
     def alert(self) -> pulumi.Output[_builtins.str]:
         """
-        Name of the alert.
+        Alert name.
         """
         return pulumi.get(self, "alert")
 
@@ -932,48 +859,23 @@ class Alert(pulumi.CustomResource):
     @pulumi.getter(name="alertType")
     def alert_type(self) -> pulumi.Output[_builtins.str]:
         """
-        Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.
+        One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.
         """
         return pulumi.get(self, "alert_type")
-
-    @_builtins.property
-    @pulumi.getter(name="broadcastToAll")
-    @_utilities.deprecated("""This field is no longer needed and will be ignored""")
-    def broadcast_to_all(self) -> pulumi.Output[_builtins.bool]:
-        """
-        Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.
-        """
-        return pulumi.get(self, "broadcast_to_all")
 
     @_builtins.property
     @pulumi.getter
     def condition(self) -> pulumi.Output[_builtins.str]:
         """
-        Condition of the alert.
+        Query condition as JSON (compositeQuery + thresholds). Compared semantically.
         """
         return pulumi.get(self, "condition")
 
     @_builtins.property
-    @pulumi.getter(name="createAt")
-    def create_at(self) -> pulumi.Output[_builtins.str]:
-        """
-        Creation time of the alert.
-        """
-        return pulumi.get(self, "create_at")
-
-    @_builtins.property
-    @pulumi.getter(name="createBy")
-    def create_by(self) -> pulumi.Output[_builtins.str]:
-        """
-        Creator of the alert.
-        """
-        return pulumi.get(self, "create_by")
-
-    @_builtins.property
     @pulumi.getter
-    def description(self) -> pulumi.Output[_builtins.str]:
+    def description(self) -> pulumi.Output[Optional[_builtins.str]]:
         """
-        Description of the alert.
+        Human-readable description.
         """
         return pulumi.get(self, "description")
 
@@ -981,7 +883,7 @@ class Alert(pulumi.CustomResource):
     @pulumi.getter
     def disabled(self) -> pulumi.Output[_builtins.bool]:
         """
-        Whether the alert is disabled.
+        Whether the rule is disabled. Defaults to false.
         """
         return pulumi.get(self, "disabled")
 
@@ -989,15 +891,15 @@ class Alert(pulumi.CustomResource):
     @pulumi.getter(name="evalWindow")
     def eval_window(self) -> pulumi.Output[_builtins.str]:
         """
-        The evaluation window of the alert. By default, it is 5m0s.
+        Evaluation window (e.g. `5m0s`).
         """
         return pulumi.get(self, "eval_window")
 
     @_builtins.property
     @pulumi.getter
-    def evaluation(self) -> pulumi.Output[_builtins.str]:
+    def evaluation(self) -> pulumi.Output[Optional[_builtins.str]]:
         """
-        Evaluation settings for the alert (JSON). Only used when schema_version is v2 or higher.
+        Evaluation block as JSON (v2alpha1+). Compared semantically.
         """
         return pulumi.get(self, "evaluation")
 
@@ -1005,31 +907,31 @@ class Alert(pulumi.CustomResource):
     @pulumi.getter
     def frequency(self) -> pulumi.Output[_builtins.str]:
         """
-        The frequency of the alert. By default, it is 1m0s.
+        Evaluation frequency (e.g. `1m0s`).
         """
         return pulumi.get(self, "frequency")
 
     @_builtins.property
     @pulumi.getter
-    def labels(self) -> pulumi.Output[Mapping[str, _builtins.str]]:
+    def labels(self) -> pulumi.Output[Optional[Mapping[str, _builtins.str]]]:
         """
-        Labels of the alert. Severity is a required label.
+        Custom labels attached to the alert.
         """
         return pulumi.get(self, "labels")
 
     @_builtins.property
     @pulumi.getter(name="notificationSettings")
-    def notification_settings(self) -> pulumi.Output['outputs.AlertNotificationSettings']:
+    def notification_settings(self) -> pulumi.Output[Optional[_builtins.str]]:
         """
-        Notification settings for the alert. Only used when schema_version is v2 or higher.
+        Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.
         """
         return pulumi.get(self, "notification_settings")
 
     @_builtins.property
     @pulumi.getter(name="preferredChannels")
-    def preferred_channels(self) -> pulumi.Output[Sequence[_builtins.str]]:
+    def preferred_channels(self) -> pulumi.Output[Optional[Sequence[_builtins.str]]]:
         """
-        Preferred channels of the alert. By default, it is empty.
+        Notification channel names the alert routes to.
         """
         return pulumi.get(self, "preferred_channels")
 
@@ -1037,7 +939,7 @@ class Alert(pulumi.CustomResource):
     @pulumi.getter(name="ruleType")
     def rule_type(self) -> pulumi.Output[_builtins.str]:
         """
-        Type of the alert. Possible values are: threshold_rule and promql_rule.
+        Rule engine type: `threshold_rule` (default) or `promql_rule`.
         """
         return pulumi.get(self, "rule_type")
 
@@ -1045,63 +947,31 @@ class Alert(pulumi.CustomResource):
     @pulumi.getter(name="schemaVersion")
     def schema_version(self) -> pulumi.Output[_builtins.str]:
         """
-        Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
+        Alert schema version. Defaults to `v2alpha1`.
         """
         return pulumi.get(self, "schema_version")
 
     @_builtins.property
     @pulumi.getter
-    def severity(self) -> pulumi.Output[_builtins.str]:
+    def severity(self) -> pulumi.Output[Optional[_builtins.str]]:
         """
-        Severity of the alert. Possible values are: info, warning, error, and critical.
+        Severity label (e.g. `info`, `warning`, `critical`).
         """
         return pulumi.get(self, "severity")
 
     @_builtins.property
     @pulumi.getter
-    def source(self) -> pulumi.Output[_builtins.str]:
+    def source(self) -> pulumi.Output[Optional[_builtins.str]]:
         """
-        Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+        Source URL recorded on the rule.
         """
         return pulumi.get(self, "source")
 
     @_builtins.property
     @pulumi.getter
-    def state(self) -> pulumi.Output[_builtins.str]:
-        """
-        State of the alert.
-        """
-        return pulumi.get(self, "state")
-
-    @_builtins.property
-    @pulumi.getter
-    def summary(self) -> pulumi.Output[_builtins.str]:
-        """
-        Summary of the alert.
-        """
-        return pulumi.get(self, "summary")
-
-    @_builtins.property
-    @pulumi.getter(name="updateAt")
-    def update_at(self) -> pulumi.Output[_builtins.str]:
-        """
-        Last update time of the alert.
-        """
-        return pulumi.get(self, "update_at")
-
-    @_builtins.property
-    @pulumi.getter(name="updateBy")
-    def update_by(self) -> pulumi.Output[_builtins.str]:
-        """
-        Last updater of the alert.
-        """
-        return pulumi.get(self, "update_by")
-
-    @_builtins.property
-    @pulumi.getter
     def version(self) -> pulumi.Output[_builtins.str]:
         """
-        Version of the alert. By default, it is v4.
+        Alert API version. Defaults to `v5` (required by SigNoz >= 0.125).
         """
         return pulumi.get(self, "version")
 

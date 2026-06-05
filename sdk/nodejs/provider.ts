@@ -26,14 +26,11 @@ export class Provider extends pulumi.ProviderResource {
     }
 
     /**
-     * Access token of the SigNoz API. You can retrieve it from SigNoz UI
-     * with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-     * Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+     * SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
      */
     declare public readonly accessToken: pulumi.Output<string | undefined>;
     /**
-     * Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-     * Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+     * Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
      */
     declare public readonly endpoint: pulumi.Output<string | undefined>;
 
@@ -74,24 +71,19 @@ export class Provider extends pulumi.ProviderResource {
  */
 export interface ProviderArgs {
     /**
-     * Access token of the SigNoz API. You can retrieve it from SigNoz UI
-     * with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-     * Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+     * SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
      */
     accessToken?: pulumi.Input<string | undefined>;
     /**
-     * Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-     * Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+     * Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
      */
     endpoint?: pulumi.Input<string | undefined>;
     /**
-     * Specifies the max retry limit for the HTTP requests made to SigNoz.
-     * Also, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10.
+     * Maximum retries for transient (5xx / network) failures. Defaults to 3. May also be set via `SIGNOZ_HTTP_MAX_RETRY`.
      */
     httpMaxRetry?: pulumi.Input<number | undefined>;
     /**
-     * Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.
-     * Also, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35.
+     * Per-request HTTP timeout in seconds. Defaults to 35. May also be set via `SIGNOZ_HTTP_TIMEOUT`.
      */
     httpTimeout?: pulumi.Input<number | undefined>;
 }

@@ -1,7 +1,7 @@
 {
     "name": "signoz",
     "displayName": "SigNoz",
-    "description": "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.",
+    "description": "A Pulumi provider for SigNoz. Manage SigNoz dashboards, alerts, notification channels, saved views, and log pipelines as code.",
     "keywords": [
         "signoz",
         "observability",
@@ -11,7 +11,7 @@
     ],
     "homepage": "https://signoz.io",
     "license": "Apache-2.0",
-    "attribution": "This Pulumi package is based on the [`signoz` Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz).",
+    "attribution": "This Pulumi package is based on the [`signoz` Terraform Provider](https://github.com/jgautheron/terraform-provider-signoz).",
     "repository": "https://github.com/jgautheron/pulumi-signoz",
     "publisher": "jgautheron",
     "meta": {
@@ -40,8 +40,8 @@
         },
         "nodejs": {
             "packageName": "@jooon/pulumi-signoz",
-            "packageDescription": "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.",
-            "readme": "\u003e This provider is a derived work of the [Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz)\n\u003e distributed under [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/). If you encounter a bug or missing feature,\n\u003e first check the [`pulumi-signoz` repo](https://github.com/jgautheron/pulumi-signoz/issues); however, if that doesn't turn up anything,\n\u003e please consult the source [`terraform-provider-signoz` repo](https://github.com/SigNoz/terraform-provider-signoz/issues).",
+            "packageDescription": "A Pulumi provider for SigNoz. Manage SigNoz dashboards, alerts, notification channels, saved views, and log pipelines as code.",
+            "readme": "\u003e This provider is a derived work of the [Terraform Provider](https://github.com/jgautheron/terraform-provider-signoz)\n\u003e distributed under [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/). If you encounter a bug or missing feature,\n\u003e first check the [`pulumi-signoz` repo](https://github.com/jgautheron/pulumi-signoz/issues); however, if that doesn't turn up anything,\n\u003e please consult the source [`terraform-provider-signoz` repo](https://github.com/jgautheron/terraform-provider-signoz/issues).",
             "dependencies": {
                 "@pulumi/pulumi": "^3.0.0"
             },
@@ -51,7 +51,7 @@
         },
         "python": {
             "packageName": "pulumi_signoz_jooon",
-            "readme": "\u003e This provider is a derived work of the [Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz)\n\u003e distributed under [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/). If you encounter a bug or missing feature,\n\u003e first check the [`pulumi-signoz` repo](https://github.com/jgautheron/pulumi-signoz/issues); however, if that doesn't turn up anything,\n\u003e please consult the source [`terraform-provider-signoz` repo](https://github.com/SigNoz/terraform-provider-signoz/issues).",
+            "readme": "\u003e This provider is a derived work of the [Terraform Provider](https://github.com/jgautheron/terraform-provider-signoz)\n\u003e distributed under [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/). If you encounter a bug or missing feature,\n\u003e first check the [`pulumi-signoz` repo](https://github.com/jgautheron/pulumi-signoz/issues); however, if that doesn't turn up anything,\n\u003e please consult the source [`terraform-provider-signoz` repo](https://github.com/jgautheron/terraform-provider-signoz/issues).",
             "compatibility": "tfbridge20",
             "respectSchemaVersion": true,
             "pyproject": {
@@ -63,144 +63,20 @@
         "variables": {
             "accessToken": {
                 "type": "string",
-                "description": "Access token of the SigNoz API. You can retrieve it from SigNoz UI\nwith Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).\nAlso, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.",
+                "description": "SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.",
                 "secret": true
             },
             "endpoint": {
                 "type": "string",
-                "description": "Endpoint of the SigNoz. It is the root URL of the SigNoz UI.\nAlso, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301."
+                "description": "Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable."
             },
             "httpMaxRetry": {
                 "type": "integer",
-                "description": "Specifies the max retry limit for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10."
+                "description": "Maximum retries for transient (5xx / network) failures. Defaults to 3. May also be set via `SIGNOZ_HTTP_MAX_RETRY`."
             },
             "httpTimeout": {
                 "type": "integer",
-                "description": "Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35."
-            }
-        }
-    },
-    "types": {
-        "signoz:index/AlertNotificationSettings:AlertNotificationSettings": {
-            "properties": {
-                "groupBies": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Group by the alert. By default, it is empty, use '__all__' to get different notification for each unique parameters.\n"
-                },
-                "renotify": {
-                    "$ref": "#/types/signoz:index/AlertNotificationSettingsRenotify:AlertNotificationSettingsRenotify",
-                    "description": "The alert re-notification settings.\n"
-                },
-                "usePolicy": {
-                    "type": "boolean",
-                    "description": "Use policy in the alert. By default, it is false.\n"
-                }
-            },
-            "type": "object",
-            "language": {
-                "nodejs": {
-                    "requiredOutputs": [
-                        "groupBies",
-                        "renotify",
-                        "usePolicy"
-                    ]
-                }
-            }
-        },
-        "signoz:index/AlertNotificationSettingsRenotify:AlertNotificationSettingsRenotify": {
-            "properties": {
-                "alertStates": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "For which AlertStates of the alert want to get renotified.\n"
-                },
-                "enabled": {
-                    "type": "boolean",
-                    "description": "To enable the re-notification of the alert.\n"
-                },
-                "interval": {
-                    "type": "string",
-                    "description": "Re-notify interval of the alert.\n"
-                }
-            },
-            "type": "object",
-            "required": [
-                "alertStates",
-                "interval"
-            ],
-            "language": {
-                "nodejs": {
-                    "requiredOutputs": [
-                        "alertStates",
-                        "enabled",
-                        "interval"
-                    ]
-                }
-            }
-        },
-        "signoz:index/getAlertNotificationSettings:getAlertNotificationSettings": {
-            "properties": {
-                "groupBies": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Group by labels for notification.\n"
-                },
-                "renotify": {
-                    "$ref": "#/types/signoz:index/getAlertNotificationSettingsRenotify:getAlertNotificationSettingsRenotify",
-                    "description": "Renotify settings for the alert.\n"
-                },
-                "usePolicy": {
-                    "type": "boolean",
-                    "description": "Whether to use notification policy.\n"
-                }
-            },
-            "type": "object",
-            "required": [
-                "groupBies",
-                "renotify",
-                "usePolicy"
-            ],
-            "language": {
-                "nodejs": {
-                    "requiredInputs": []
-                }
-            }
-        },
-        "signoz:index/getAlertNotificationSettingsRenotify:getAlertNotificationSettingsRenotify": {
-            "properties": {
-                "alertStates": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Alert states for renotify.\n"
-                },
-                "enabled": {
-                    "type": "boolean",
-                    "description": "Whether renotify is enabled.\n"
-                },
-                "interval": {
-                    "type": "string",
-                    "description": "Interval for renotify.\n"
-                }
-            },
-            "type": "object",
-            "required": [
-                "alertStates",
-                "enabled",
-                "interval"
-            ],
-            "language": {
-                "nodejs": {
-                    "requiredInputs": []
-                }
+                "description": "Per-request HTTP timeout in seconds. Defaults to 35. May also be set via `SIGNOZ_HTTP_TIMEOUT`."
             }
         }
     },
@@ -209,39 +85,39 @@
         "properties": {
             "accessToken": {
                 "type": "string",
-                "description": "Access token of the SigNoz API. You can retrieve it from SigNoz UI\nwith Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).\nAlso, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.",
+                "description": "SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.",
                 "secret": true
             },
             "endpoint": {
                 "type": "string",
-                "description": "Endpoint of the SigNoz. It is the root URL of the SigNoz UI.\nAlso, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301."
+                "description": "Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable."
             },
             "httpMaxRetry": {
                 "type": "integer",
-                "description": "Specifies the max retry limit for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10."
+                "description": "Maximum retries for transient (5xx / network) failures. Defaults to 3. May also be set via `SIGNOZ_HTTP_MAX_RETRY`."
             },
             "httpTimeout": {
                 "type": "integer",
-                "description": "Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35."
+                "description": "Per-request HTTP timeout in seconds. Defaults to 35. May also be set via `SIGNOZ_HTTP_TIMEOUT`."
             }
         },
         "inputProperties": {
             "accessToken": {
                 "type": "string",
-                "description": "Access token of the SigNoz API. You can retrieve it from SigNoz UI\nwith Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).\nAlso, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.",
+                "description": "SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.",
                 "secret": true
             },
             "endpoint": {
                 "type": "string",
-                "description": "Endpoint of the SigNoz. It is the root URL of the SigNoz UI.\nAlso, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301."
+                "description": "Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable."
             },
             "httpMaxRetry": {
                 "type": "integer",
-                "description": "Specifies the max retry limit for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10."
+                "description": "Maximum retries for transient (5xx / network) failures. Defaults to 3. May also be set via `SIGNOZ_HTTP_MAX_RETRY`."
             },
             "httpTimeout": {
                 "type": "integer",
-                "description": "Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.\nAlso, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35."
+                "description": "Per-request HTTP timeout in seconds. Defaults to 35. May also be set via `SIGNOZ_HTTP_TIMEOUT`."
             }
         },
         "methods": {
@@ -250,10 +126,11 @@
     },
     "resources": {
         "signoz:index/alert:Alert": {
+            "description": "A SigNoz alert rule. Top-level fields are typed; the query \u003cspan pulumi-lang-nodejs=\"`condition`\" pulumi-lang-dotnet=\"`Condition`\" pulumi-lang-go=\"`condition`\" pulumi-lang-python=\"`condition`\" pulumi-lang-yaml=\"`condition`\" pulumi-lang-java=\"`condition`\" pulumi-lang-hcl=\"`condition`\"\u003e`condition`\u003c/span\u003e, \u003cspan pulumi-lang-nodejs=\"`evaluation`\" pulumi-lang-dotnet=\"`Evaluation`\" pulumi-lang-go=\"`evaluation`\" pulumi-lang-python=\"`evaluation`\" pulumi-lang-yaml=\"`evaluation`\" pulumi-lang-java=\"`evaluation`\" pulumi-lang-hcl=\"`evaluation`\"\u003e`evaluation`\u003c/span\u003e, and \u003cspan pulumi-lang-nodejs=\"`notificationSettings`\" pulumi-lang-dotnet=\"`NotificationSettings`\" pulumi-lang-go=\"`notificationSettings`\" pulumi-lang-python=\"`notification_settings`\" pulumi-lang-yaml=\"`notificationSettings`\" pulumi-lang-java=\"`notificationSettings`\" pulumi-lang-hcl=\"`notification_settings`\"\u003e`notificationSettings`\u003c/span\u003e are JSON blobs (export from the SigNoz UI to adapt). Defaults target the v5 / v2alpha1 schema required by SigNoz \u003e= 0.125.\n\n## Example Usage\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as signoz from \"@jooon/pulumi-signoz\";\n\n// A logs-based alert on the v5 / v2alpha1 schema (SigNoz \u003e= 0.125).\n// The threshold references a notification channel by name.\nconst highErrorLogs = new signoz.Alert(\"high_error_logs\", {\n    alert: \"High error log volume\",\n    alertType: \"LOGS_BASED_ALERT\",\n    severity: \"warning\",\n    condition: JSON.stringify({\n        compositeQuery: {\n            queryType: \"builder\",\n            panelType: \"graph\",\n            queries: [{\n                type: \"builder_query\",\n                spec: {\n                    name: \"A\",\n                    signal: \"logs\",\n                    stepInterval: 0,\n                    aggregations: [{\n                        expression: \"count()\",\n                    }],\n                    filter: {\n                        expression: \"severity_text = 'ERROR'\",\n                    },\n                    having: {\n                        expression: \"\",\n                    },\n                },\n            }],\n        },\n        selectedQueryName: \"A\",\n        thresholds: {\n            kind: \"basic\",\n            spec: [{\n                name: \"warning\",\n                target: 100,\n                matchType: \"1\",\n                op: \"1\",\n                channels: [slack.name],\n            }],\n        },\n    }),\n    evaluation: JSON.stringify({\n        kind: \"rolling\",\n        spec: {\n            evalWindow: \"5m0s\",\n            frequency: \"1m0s\",\n        },\n    }),\n    preferredChannels: [slack.name],\n});\n```\n```python\nimport pulumi\nimport json\nimport pulumi_signoz_jooon as signoz\n\n# A logs-based alert on the v5 / v2alpha1 schema (SigNoz \u003e= 0.125).\n# The threshold references a notification channel by name.\nhigh_error_logs = signoz.Alert(\"high_error_logs\",\n    alert=\"High error log volume\",\n    alert_type=\"LOGS_BASED_ALERT\",\n    severity=\"warning\",\n    condition=json.dumps({\n        \"compositeQuery\": {\n            \"queryType\": \"builder\",\n            \"panelType\": \"graph\",\n            \"queries\": [{\n                \"type\": \"builder_query\",\n                \"spec\": {\n                    \"name\": \"A\",\n                    \"signal\": \"logs\",\n                    \"stepInterval\": 0,\n                    \"aggregations\": [{\n                        \"expression\": \"count()\",\n                    }],\n                    \"filter\": {\n                        \"expression\": \"severity_text = 'ERROR'\",\n                    },\n                    \"having\": {\n                        \"expression\": \"\",\n                    },\n                },\n            }],\n        },\n        \"selectedQueryName\": \"A\",\n        \"thresholds\": {\n            \"kind\": \"basic\",\n            \"spec\": [{\n                \"name\": \"warning\",\n                \"target\": 100,\n                \"matchType\": \"1\",\n                \"op\": \"1\",\n                \"channels\": [slack[\"name\"]],\n            }],\n        },\n    }),\n    evaluation=json.dumps({\n        \"kind\": \"rolling\",\n        \"spec\": {\n            \"evalWindow\": \"5m0s\",\n            \"frequency\": \"1m0s\",\n        },\n    }),\n    preferred_channels=[slack[\"name\"]])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\nusing Pulumi;\nusing Signoz = Jooon.Pulumi.Signoz;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    // A logs-based alert on the v5 / v2alpha1 schema (SigNoz \u003e= 0.125).\n    // The threshold references a notification channel by name.\n    var highErrorLogs = new Signoz.Alert(\"high_error_logs\", new()\n    {\n        AlertConfig = \"High error log volume\",\n        AlertType = \"LOGS_BASED_ALERT\",\n        Severity = \"warning\",\n        Condition = JsonSerializer.Serialize(new Dictionary\u003cstring, object?\u003e\n        {\n            [\"compositeQuery\"] = new Dictionary\u003cstring, object?\u003e\n            {\n                [\"queryType\"] = \"builder\",\n                [\"panelType\"] = \"graph\",\n                [\"queries\"] = new[]\n                {\n                    new Dictionary\u003cstring, object?\u003e\n                    {\n                        [\"type\"] = \"builder_query\",\n                        [\"spec\"] = new Dictionary\u003cstring, object?\u003e\n                        {\n                            [\"name\"] = \"A\",\n                            [\"signal\"] = \"logs\",\n                            [\"stepInterval\"] = 0,\n                            [\"aggregations\"] = new[]\n                            {\n                                new Dictionary\u003cstring, object?\u003e\n                                {\n                                    [\"expression\"] = \"count()\",\n                                },\n                            },\n                            [\"filter\"] = new Dictionary\u003cstring, object?\u003e\n                            {\n                                [\"expression\"] = \"severity_text = 'ERROR'\",\n                            },\n                            [\"having\"] = new Dictionary\u003cstring, object?\u003e\n                            {\n                                [\"expression\"] = \"\",\n                            },\n                        },\n                    },\n                },\n            },\n            [\"selectedQueryName\"] = \"A\",\n            [\"thresholds\"] = new Dictionary\u003cstring, object?\u003e\n            {\n                [\"kind\"] = \"basic\",\n                [\"spec\"] = new[]\n                {\n                    new Dictionary\u003cstring, object?\u003e\n                    {\n                        [\"name\"] = \"warning\",\n                        [\"target\"] = 100,\n                        [\"matchType\"] = \"1\",\n                        [\"op\"] = \"1\",\n                        [\"channels\"] = new[]\n                        {\n                            slack.Name,\n                        },\n                    },\n                },\n            },\n        }),\n        Evaluation = JsonSerializer.Serialize(new Dictionary\u003cstring, object?\u003e\n        {\n            [\"kind\"] = \"rolling\",\n            [\"spec\"] = new Dictionary\u003cstring, object?\u003e\n            {\n                [\"evalWindow\"] = \"5m0s\",\n                [\"frequency\"] = \"1m0s\",\n            },\n        }),\n        PreferredChannels = new[]\n        {\n            slack.Name,\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"encoding/json\"\n\n\t\"github.com/jgautheron/pulumi-signoz/sdk/go/signoz\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\ttmpJSON0, err := json.Marshal(map[string]interface{}{\n\t\t\t\"compositeQuery\": map[string]interface{}{\n\t\t\t\t\"queryType\": \"builder\",\n\t\t\t\t\"panelType\": \"graph\",\n\t\t\t\t\"queries\": []map[string]interface{}{\n\t\t\t\t\tmap[string]interface{}{\n\t\t\t\t\t\t\"type\": \"builder_query\",\n\t\t\t\t\t\t\"spec\": map[string]interface{}{\n\t\t\t\t\t\t\t\"name\":         \"A\",\n\t\t\t\t\t\t\t\"signal\":       \"logs\",\n\t\t\t\t\t\t\t\"stepInterval\": 0,\n\t\t\t\t\t\t\t\"aggregations\": []map[string]interface{}{\n\t\t\t\t\t\t\t\tmap[string]interface{}{\n\t\t\t\t\t\t\t\t\t\"expression\": \"count()\",\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"filter\": map[string]interface{}{\n\t\t\t\t\t\t\t\t\"expression\": \"severity_text = 'ERROR'\",\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"having\": map[string]interface{}{\n\t\t\t\t\t\t\t\t\"expression\": \"\",\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t\t\"selectedQueryName\": \"A\",\n\t\t\t\"thresholds\": map[string]interface{}{\n\t\t\t\t\"kind\": \"basic\",\n\t\t\t\t\"spec\": []map[string]interface{}{\n\t\t\t\t\tmap[string]interface{}{\n\t\t\t\t\t\t\"name\":      \"warning\",\n\t\t\t\t\t\t\"target\":    100,\n\t\t\t\t\t\t\"matchType\": \"1\",\n\t\t\t\t\t\t\"op\":        \"1\",\n\t\t\t\t\t\t\"channels\": []interface{}{\n\t\t\t\t\t\t\tslack.Name,\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tjson0 := string(tmpJSON0)\n\t\ttmpJSON1, err := json.Marshal(map[string]interface{}{\n\t\t\t\"kind\": \"rolling\",\n\t\t\t\"spec\": map[string]interface{}{\n\t\t\t\t\"evalWindow\": \"5m0s\",\n\t\t\t\t\"frequency\":  \"1m0s\",\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tjson1 := string(tmpJSON1)\n\t\t// A logs-based alert on the v5 / v2alpha1 schema (SigNoz \u003e= 0.125).\n\t\t// The threshold references a notification channel by name.\n\t\t_, err = signoz.NewAlert(ctx, \"high_error_logs\", \u0026signoz.AlertArgs{\n\t\t\tAlert:      pulumi.String(\"High error log volume\"),\n\t\t\tAlertType:  pulumi.String(\"LOGS_BASED_ALERT\"),\n\t\t\tSeverity:   pulumi.String(\"warning\"),\n\t\t\tCondition:  pulumi.String(pulumi.String(json0)),\n\t\t\tEvaluation: pulumi.String(pulumi.String(json1)),\n\t\t\tPreferredChannels: pulumi.StringArray{\n\t\t\t\tslack.Name,\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\npulumi {\n  required_providers {\n    signoz = {\n      source = \"pulumi/signoz\"\n    }\n  }\n}\n\n# A logs-based alert on the v5 / v2alpha1 schema (SigNoz \u003e= 0.125).\n# The threshold references a notification channel by name.\nresource \"signoz_alert\" \"high_error_logs\" {\n  alert      = \"High error log volume\"\n  alert_type = \"LOGS_BASED_ALERT\"\n  severity   = \"warning\"\n  condition = jsonencode({\n    \"compositeQuery\" = {\n      \"queryType\" = \"builder\"\n      \"panelType\" = \"graph\"\n      \"queries\" = [{\n        \"type\" = \"builder_query\"\n        \"spec\" = {\n          \"name\"         = \"A\"\n          \"signal\"       = \"logs\"\n          \"stepInterval\" = 0\n          \"aggregations\" = [{\n            \"expression\" = \"count()\"\n          }]\n          \"filter\" = {\n            \"expression\" = \"severity_text = 'ERROR'\"\n          }\n          \"having\" = {\n            \"expression\" = \"\"\n          }\n        }\n      }]\n    }\n    \"selectedQueryName\" = \"A\"\n    \"thresholds\" = {\n      \"kind\" = \"basic\"\n      \"spec\" = [{\n        \"name\"      = \"warning\"\n        \"target\"    = 100\n        \"matchType\" = \"1\"\n        \"op\"        = \"1\"\n        \"channels\"  = [slack.name]\n      }]\n    }\n  })\n  evaluation = jsonencode({\n    \"kind\" = \"rolling\"\n    \"spec\" = {\n      \"evalWindow\" = \"5m0s\"\n      \"frequency\"  = \"1m0s\"\n    }\n  })\n  preferred_channels = [slack.name]\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport dev.jooon.signoz.Alert;\nimport dev.jooon.signoz.AlertArgs;\nimport static com.pulumi.codegen.internal.Serialization.*;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        // A logs-based alert on the v5 / v2alpha1 schema (SigNoz \u003e= 0.125).\n        // The threshold references a notification channel by name.\n        var highErrorLogs = new Alert(\"highErrorLogs\", AlertArgs.builder()\n            .alert(\"High error log volume\")\n            .alertType(\"LOGS_BASED_ALERT\")\n            .severity(\"warning\")\n            .condition(serializeJson(\n                jsonObject(\n                    jsonProperty(\"compositeQuery\", jsonObject(\n                        jsonProperty(\"queryType\", \"builder\"),\n                        jsonProperty(\"panelType\", \"graph\"),\n                        jsonProperty(\"queries\", jsonArray(jsonObject(\n                            jsonProperty(\"type\", \"builder_query\"),\n                            jsonProperty(\"spec\", jsonObject(\n                                jsonProperty(\"name\", \"A\"),\n                                jsonProperty(\"signal\", \"logs\"),\n                                jsonProperty(\"stepInterval\", 0),\n                                jsonProperty(\"aggregations\", jsonArray(jsonObject(\n                                    jsonProperty(\"expression\", \"count()\")\n                                ))),\n                                jsonProperty(\"filter\", jsonObject(\n                                    jsonProperty(\"expression\", \"severity_text = 'ERROR'\")\n                                )),\n                                jsonProperty(\"having\", jsonObject(\n                                    jsonProperty(\"expression\", \"\")\n                                ))\n                            ))\n                        )))\n                    )),\n                    jsonProperty(\"selectedQueryName\", \"A\"),\n                    jsonProperty(\"thresholds\", jsonObject(\n                        jsonProperty(\"kind\", \"basic\"),\n                        jsonProperty(\"spec\", jsonArray(jsonObject(\n                            jsonProperty(\"name\", \"warning\"),\n                            jsonProperty(\"target\", 100),\n                            jsonProperty(\"matchType\", \"1\"),\n                            jsonProperty(\"op\", \"1\"),\n                            jsonProperty(\"channels\", jsonArray(slack.name()))\n                        )))\n                    ))\n                )))\n            .evaluation(serializeJson(\n                jsonObject(\n                    jsonProperty(\"kind\", \"rolling\"),\n                    jsonProperty(\"spec\", jsonObject(\n                        jsonProperty(\"evalWindow\", \"5m0s\"),\n                        jsonProperty(\"frequency\", \"1m0s\")\n                    ))\n                )))\n            .preferredChannels(slack.name())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  # A logs-based alert on the v5 / v2alpha1 schema (SigNoz \u003e= 0.125).\n  # The threshold references a notification channel by name.\n  highErrorLogs:\n    type: signoz:Alert\n    name: high_error_logs\n    properties:\n      alert: High error log volume\n      alertType: LOGS_BASED_ALERT\n      severity: warning\n      condition:\n        fn::toJSON:\n          compositeQuery:\n            queryType: builder\n            panelType: graph\n            queries:\n              - type: builder_query\n                spec:\n                  name: A\n                  signal: logs\n                  stepInterval: 0\n                  aggregations:\n                    - expression: count()\n                  filter:\n                    expression: severity_text = 'ERROR'\n                  having:\n                    expression: \"\"\n          selectedQueryName: A\n          thresholds:\n            kind: basic\n            spec:\n              - name: warning\n                target: 100\n                matchType: '1'\n                op: '1'\n                channels:\n                  - ${slack.name}\n      evaluation:\n        fn::toJSON:\n          kind: rolling\n          spec:\n            evalWindow: 5m0s\n            frequency: 1m0s\n      preferredChannels:\n        - ${slack.name}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n",
             "properties": {
                 "alert": {
                     "type": "string",
-                    "description": "Name of the alert.",
+                    "description": "Alert name.\n",
                     "language": {
                         "csharp": {
                             "name": "AlertConfig"
@@ -262,129 +139,86 @@
                 },
                 "alertType": {
                     "type": "string",
-                    "description": "Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT."
-                },
-                "broadcastToAll": {
-                    "type": "boolean",
-                    "description": "Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.",
-                    "deprecationMessage": "This field is no longer needed and will be ignored"
+                    "description": "One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.\n"
                 },
                 "condition": {
                     "type": "string",
-                    "description": "Condition of the alert."
-                },
-                "createAt": {
-                    "type": "string",
-                    "description": "Creation time of the alert."
-                },
-                "createBy": {
-                    "type": "string",
-                    "description": "Creator of the alert."
+                    "description": "Query condition as JSON (compositeQuery + thresholds). Compared semantically.\n"
                 },
                 "description": {
                     "type": "string",
-                    "description": "Description of the alert."
+                    "description": "Human-readable description.\n"
                 },
                 "disabled": {
                     "type": "boolean",
-                    "description": "Whether the alert is disabled."
+                    "description": "Whether the rule is disabled. Defaults to false.\n"
                 },
                 "evalWindow": {
                     "type": "string",
-                    "description": "The evaluation window of the alert. By default, it is 5m0s."
+                    "description": "Evaluation window (e.g. \u003cspan pulumi-lang-nodejs=\"`5m0s`\" pulumi-lang-dotnet=\"`5m0s`\" pulumi-lang-go=\"`5m0s`\" pulumi-lang-python=\"`5m0s`\" pulumi-lang-yaml=\"`5m0s`\" pulumi-lang-java=\"`5m0s`\" pulumi-lang-hcl=\"`5m0s`\"\u003e`5m0s`\u003c/span\u003e).\n"
                 },
                 "evaluation": {
                     "type": "string",
-                    "description": "Evaluation settings for the alert (JSON). Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                    "description": "Evaluation block as JSON (v2alpha1+). Compared semantically.\n"
                 },
                 "frequency": {
                     "type": "string",
-                    "description": "The frequency of the alert. By default, it is 1m0s."
+                    "description": "Evaluation frequency (e.g. \u003cspan pulumi-lang-nodejs=\"`1m0s`\" pulumi-lang-dotnet=\"`1m0s`\" pulumi-lang-go=\"`1m0s`\" pulumi-lang-python=\"`1m0s`\" pulumi-lang-yaml=\"`1m0s`\" pulumi-lang-java=\"`1m0s`\" pulumi-lang-hcl=\"`1m0s`\"\u003e`1m0s`\u003c/span\u003e).\n"
                 },
                 "labels": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "Labels of the alert. Severity is a required label."
+                    "description": "Custom labels attached to the alert.\n"
                 },
                 "notificationSettings": {
-                    "$ref": "#/types/signoz:index/AlertNotificationSettings:AlertNotificationSettings",
-                    "description": "Notification settings for the alert. Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                    "type": "string",
+                    "description": "Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.\n"
                 },
                 "preferredChannels": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "description": "Preferred channels of the alert. By default, it is empty."
+                    "description": "Notification channel names the alert routes to.\n"
                 },
                 "ruleType": {
                     "type": "string",
-                    "description": "Type of the alert. Possible values are:\u003cspan pulumi-lang-nodejs=\" thresholdRule \" pulumi-lang-dotnet=\" ThresholdRule \" pulumi-lang-go=\" thresholdRule \" pulumi-lang-python=\" threshold_rule \" pulumi-lang-yaml=\" thresholdRule \" pulumi-lang-java=\" thresholdRule \" pulumi-lang-hcl=\" threshold_rule \"\u003e thresholdRule \u003c/span\u003eand promql_rule."
+                    "description": "Rule engine type: \u003cspan pulumi-lang-nodejs=\"`thresholdRule`\" pulumi-lang-dotnet=\"`ThresholdRule`\" pulumi-lang-go=\"`thresholdRule`\" pulumi-lang-python=\"`threshold_rule`\" pulumi-lang-yaml=\"`thresholdRule`\" pulumi-lang-java=\"`thresholdRule`\" pulumi-lang-hcl=\"`threshold_rule`\"\u003e`thresholdRule`\u003c/span\u003e (default) or \u003cspan pulumi-lang-nodejs=\"`promqlRule`\" pulumi-lang-dotnet=\"`PromqlRule`\" pulumi-lang-go=\"`promqlRule`\" pulumi-lang-python=\"`promql_rule`\" pulumi-lang-yaml=\"`promqlRule`\" pulumi-lang-java=\"`promqlRule`\" pulumi-lang-hcl=\"`promql_rule`\"\u003e`promqlRule`\u003c/span\u003e.\n"
                 },
                 "schemaVersion": {
                     "type": "string",
-                    "description": "Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and\u003cspan pulumi-lang-nodejs=\" notificationSettings \" pulumi-lang-dotnet=\" NotificationSettings \" pulumi-lang-go=\" notificationSettings \" pulumi-lang-python=\" notification_settings \" pulumi-lang-yaml=\" notificationSettings \" pulumi-lang-java=\" notificationSettings \" pulumi-lang-hcl=\" notification_settings \"\u003e notificationSettings \u003c/span\u003eare supported."
+                    "description": "Alert schema version. Defaults to \u003cspan pulumi-lang-nodejs=\"`v2alpha1`\" pulumi-lang-dotnet=\"`V2alpha1`\" pulumi-lang-go=\"`v2alpha1`\" pulumi-lang-python=\"`v2alpha1`\" pulumi-lang-yaml=\"`v2alpha1`\" pulumi-lang-java=\"`v2alpha1`\" pulumi-lang-hcl=\"`v2alpha1`\"\u003e`v2alpha1`\u003c/span\u003e.\n"
                 },
                 "severity": {
                     "type": "string",
-                    "description": "Severity of the alert. Possible values are: info, warning, error, and critical."
+                    "description": "Severity label (e.g. \u003cspan pulumi-lang-nodejs=\"`info`\" pulumi-lang-dotnet=\"`Info`\" pulumi-lang-go=\"`info`\" pulumi-lang-python=\"`info`\" pulumi-lang-yaml=\"`info`\" pulumi-lang-java=\"`info`\" pulumi-lang-hcl=\"`info`\"\u003e`info`\u003c/span\u003e, \u003cspan pulumi-lang-nodejs=\"`warning`\" pulumi-lang-dotnet=\"`Warning`\" pulumi-lang-go=\"`warning`\" pulumi-lang-python=\"`warning`\" pulumi-lang-yaml=\"`warning`\" pulumi-lang-java=\"`warning`\" pulumi-lang-hcl=\"`warning`\"\u003e`warning`\u003c/span\u003e, \u003cspan pulumi-lang-nodejs=\"`critical`\" pulumi-lang-dotnet=\"`Critical`\" pulumi-lang-go=\"`critical`\" pulumi-lang-python=\"`critical`\" pulumi-lang-yaml=\"`critical`\" pulumi-lang-java=\"`critical`\" pulumi-lang-hcl=\"`critical`\"\u003e`critical`\u003c/span\u003e).\n"
                 },
                 "source": {
                     "type": "string",
-                    "description": "Source of the alert. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/alerts."
-                },
-                "state": {
-                    "type": "string",
-                    "description": "State of the alert."
-                },
-                "summary": {
-                    "type": "string",
-                    "description": "Summary of the alert."
-                },
-                "updateAt": {
-                    "type": "string",
-                    "description": "Last update time of the alert."
-                },
-                "updateBy": {
-                    "type": "string",
-                    "description": "Last updater of the alert."
+                    "description": "Source URL recorded on the rule.\n"
                 },
                 "version": {
                     "type": "string",
-                    "description": "Version of the alert. By default, it is v4."
+                    "description": "Alert API version. Defaults to \u003cspan pulumi-lang-nodejs=\"`v5`\" pulumi-lang-dotnet=\"`V5`\" pulumi-lang-go=\"`v5`\" pulumi-lang-python=\"`v5`\" pulumi-lang-yaml=\"`v5`\" pulumi-lang-java=\"`v5`\" pulumi-lang-hcl=\"`v5`\"\u003e`v5`\u003c/span\u003e (required by SigNoz \u003e= 0.125).\n"
                 }
             },
             "required": [
                 "alert",
                 "alertType",
-                "broadcastToAll",
                 "condition",
-                "createAt",
-                "createBy",
-                "description",
                 "disabled",
                 "evalWindow",
-                "evaluation",
                 "frequency",
-                "labels",
-                "notificationSettings",
-                "preferredChannels",
                 "ruleType",
                 "schemaVersion",
-                "severity",
-                "source",
-                "state",
-                "summary",
-                "updateAt",
-                "updateBy",
                 "version"
             ],
             "inputProperties": {
                 "alert": {
                     "type": "string",
-                    "description": "Name of the alert.",
+                    "description": "Alert name.\n",
                     "language": {
                         "csharp": {
                             "name": "AlertConfig"
@@ -393,92 +227,82 @@
                 },
                 "alertType": {
                     "type": "string",
-                    "description": "Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT."
-                },
-                "broadcastToAll": {
-                    "type": "boolean",
-                    "description": "Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.",
-                    "deprecationMessage": "This field is no longer needed and will be ignored"
+                    "description": "One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.\n"
                 },
                 "condition": {
                     "type": "string",
-                    "description": "Condition of the alert."
+                    "description": "Query condition as JSON (compositeQuery + thresholds). Compared semantically.\n"
                 },
                 "description": {
                     "type": "string",
-                    "description": "Description of the alert."
+                    "description": "Human-readable description.\n"
                 },
                 "disabled": {
                     "type": "boolean",
-                    "description": "Whether the alert is disabled."
+                    "description": "Whether the rule is disabled. Defaults to false.\n"
                 },
                 "evalWindow": {
                     "type": "string",
-                    "description": "The evaluation window of the alert. By default, it is 5m0s."
+                    "description": "Evaluation window (e.g. \u003cspan pulumi-lang-nodejs=\"`5m0s`\" pulumi-lang-dotnet=\"`5m0s`\" pulumi-lang-go=\"`5m0s`\" pulumi-lang-python=\"`5m0s`\" pulumi-lang-yaml=\"`5m0s`\" pulumi-lang-java=\"`5m0s`\" pulumi-lang-hcl=\"`5m0s`\"\u003e`5m0s`\u003c/span\u003e).\n"
                 },
                 "evaluation": {
                     "type": "string",
-                    "description": "Evaluation settings for the alert (JSON). Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                    "description": "Evaluation block as JSON (v2alpha1+). Compared semantically.\n"
                 },
                 "frequency": {
                     "type": "string",
-                    "description": "The frequency of the alert. By default, it is 1m0s."
+                    "description": "Evaluation frequency (e.g. \u003cspan pulumi-lang-nodejs=\"`1m0s`\" pulumi-lang-dotnet=\"`1m0s`\" pulumi-lang-go=\"`1m0s`\" pulumi-lang-python=\"`1m0s`\" pulumi-lang-yaml=\"`1m0s`\" pulumi-lang-java=\"`1m0s`\" pulumi-lang-hcl=\"`1m0s`\"\u003e`1m0s`\u003c/span\u003e).\n"
                 },
                 "labels": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "Labels of the alert. Severity is a required label."
+                    "description": "Custom labels attached to the alert.\n"
                 },
                 "notificationSettings": {
-                    "$ref": "#/types/signoz:index/AlertNotificationSettings:AlertNotificationSettings",
-                    "description": "Notification settings for the alert. Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                    "type": "string",
+                    "description": "Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.\n"
                 },
                 "preferredChannels": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "description": "Preferred channels of the alert. By default, it is empty."
+                    "description": "Notification channel names the alert routes to.\n"
                 },
                 "ruleType": {
                     "type": "string",
-                    "description": "Type of the alert. Possible values are:\u003cspan pulumi-lang-nodejs=\" thresholdRule \" pulumi-lang-dotnet=\" ThresholdRule \" pulumi-lang-go=\" thresholdRule \" pulumi-lang-python=\" threshold_rule \" pulumi-lang-yaml=\" thresholdRule \" pulumi-lang-java=\" thresholdRule \" pulumi-lang-hcl=\" threshold_rule \"\u003e thresholdRule \u003c/span\u003eand promql_rule."
+                    "description": "Rule engine type: \u003cspan pulumi-lang-nodejs=\"`thresholdRule`\" pulumi-lang-dotnet=\"`ThresholdRule`\" pulumi-lang-go=\"`thresholdRule`\" pulumi-lang-python=\"`threshold_rule`\" pulumi-lang-yaml=\"`thresholdRule`\" pulumi-lang-java=\"`thresholdRule`\" pulumi-lang-hcl=\"`threshold_rule`\"\u003e`thresholdRule`\u003c/span\u003e (default) or \u003cspan pulumi-lang-nodejs=\"`promqlRule`\" pulumi-lang-dotnet=\"`PromqlRule`\" pulumi-lang-go=\"`promqlRule`\" pulumi-lang-python=\"`promql_rule`\" pulumi-lang-yaml=\"`promqlRule`\" pulumi-lang-java=\"`promqlRule`\" pulumi-lang-hcl=\"`promql_rule`\"\u003e`promqlRule`\u003c/span\u003e.\n"
                 },
                 "schemaVersion": {
                     "type": "string",
-                    "description": "Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and\u003cspan pulumi-lang-nodejs=\" notificationSettings \" pulumi-lang-dotnet=\" NotificationSettings \" pulumi-lang-go=\" notificationSettings \" pulumi-lang-python=\" notification_settings \" pulumi-lang-yaml=\" notificationSettings \" pulumi-lang-java=\" notificationSettings \" pulumi-lang-hcl=\" notification_settings \"\u003e notificationSettings \u003c/span\u003eare supported."
+                    "description": "Alert schema version. Defaults to \u003cspan pulumi-lang-nodejs=\"`v2alpha1`\" pulumi-lang-dotnet=\"`V2alpha1`\" pulumi-lang-go=\"`v2alpha1`\" pulumi-lang-python=\"`v2alpha1`\" pulumi-lang-yaml=\"`v2alpha1`\" pulumi-lang-java=\"`v2alpha1`\" pulumi-lang-hcl=\"`v2alpha1`\"\u003e`v2alpha1`\u003c/span\u003e.\n"
                 },
                 "severity": {
                     "type": "string",
-                    "description": "Severity of the alert. Possible values are: info, warning, error, and critical."
+                    "description": "Severity label (e.g. \u003cspan pulumi-lang-nodejs=\"`info`\" pulumi-lang-dotnet=\"`Info`\" pulumi-lang-go=\"`info`\" pulumi-lang-python=\"`info`\" pulumi-lang-yaml=\"`info`\" pulumi-lang-java=\"`info`\" pulumi-lang-hcl=\"`info`\"\u003e`info`\u003c/span\u003e, \u003cspan pulumi-lang-nodejs=\"`warning`\" pulumi-lang-dotnet=\"`Warning`\" pulumi-lang-go=\"`warning`\" pulumi-lang-python=\"`warning`\" pulumi-lang-yaml=\"`warning`\" pulumi-lang-java=\"`warning`\" pulumi-lang-hcl=\"`warning`\"\u003e`warning`\u003c/span\u003e, \u003cspan pulumi-lang-nodejs=\"`critical`\" pulumi-lang-dotnet=\"`Critical`\" pulumi-lang-go=\"`critical`\" pulumi-lang-python=\"`critical`\" pulumi-lang-yaml=\"`critical`\" pulumi-lang-java=\"`critical`\" pulumi-lang-hcl=\"`critical`\"\u003e`critical`\u003c/span\u003e).\n"
                 },
                 "source": {
                     "type": "string",
-                    "description": "Source of the alert. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/alerts."
-                },
-                "summary": {
-                    "type": "string",
-                    "description": "Summary of the alert."
+                    "description": "Source URL recorded on the rule.\n"
                 },
                 "version": {
                     "type": "string",
-                    "description": "Version of the alert. By default, it is v4."
+                    "description": "Alert API version. Defaults to \u003cspan pulumi-lang-nodejs=\"`v5`\" pulumi-lang-dotnet=\"`V5`\" pulumi-lang-go=\"`v5`\" pulumi-lang-python=\"`v5`\" pulumi-lang-yaml=\"`v5`\" pulumi-lang-java=\"`v5`\" pulumi-lang-hcl=\"`v5`\"\u003e`v5`\u003c/span\u003e (required by SigNoz \u003e= 0.125).\n"
                 }
             },
             "requiredInputs": [
                 "alert",
                 "alertType",
-                "condition",
-                "severity"
+                "condition"
             ],
             "stateInputs": {
                 "description": "Input properties used for looking up and filtering Alert resources.\n",
                 "properties": {
                     "alert": {
                         "type": "string",
-                        "description": "Name of the alert.",
+                        "description": "Alert name.\n",
                         "language": {
                             "csharp": {
                                 "name": "AlertConfig"
@@ -487,312 +311,233 @@
                     },
                     "alertType": {
                         "type": "string",
-                        "description": "Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT."
-                    },
-                    "broadcastToAll": {
-                        "type": "boolean",
-                        "description": "Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels.",
-                        "deprecationMessage": "This field is no longer needed and will be ignored"
+                        "description": "One of `METRIC_BASED_ALERT`, `LOGS_BASED_ALERT`, `TRACES_BASED_ALERT`, `EXCEPTIONS_BASED_ALERT`.\n"
                     },
                     "condition": {
                         "type": "string",
-                        "description": "Condition of the alert."
-                    },
-                    "createAt": {
-                        "type": "string",
-                        "description": "Creation time of the alert."
-                    },
-                    "createBy": {
-                        "type": "string",
-                        "description": "Creator of the alert."
+                        "description": "Query condition as JSON (compositeQuery + thresholds). Compared semantically.\n"
                     },
                     "description": {
                         "type": "string",
-                        "description": "Description of the alert."
+                        "description": "Human-readable description.\n"
                     },
                     "disabled": {
                         "type": "boolean",
-                        "description": "Whether the alert is disabled."
+                        "description": "Whether the rule is disabled. Defaults to false.\n"
                     },
                     "evalWindow": {
                         "type": "string",
-                        "description": "The evaluation window of the alert. By default, it is 5m0s."
+                        "description": "Evaluation window (e.g. \u003cspan pulumi-lang-nodejs=\"`5m0s`\" pulumi-lang-dotnet=\"`5m0s`\" pulumi-lang-go=\"`5m0s`\" pulumi-lang-python=\"`5m0s`\" pulumi-lang-yaml=\"`5m0s`\" pulumi-lang-java=\"`5m0s`\" pulumi-lang-hcl=\"`5m0s`\"\u003e`5m0s`\u003c/span\u003e).\n"
                     },
                     "evaluation": {
                         "type": "string",
-                        "description": "Evaluation settings for the alert (JSON). Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                        "description": "Evaluation block as JSON (v2alpha1+). Compared semantically.\n"
                     },
                     "frequency": {
                         "type": "string",
-                        "description": "The frequency of the alert. By default, it is 1m0s."
+                        "description": "Evaluation frequency (e.g. \u003cspan pulumi-lang-nodejs=\"`1m0s`\" pulumi-lang-dotnet=\"`1m0s`\" pulumi-lang-go=\"`1m0s`\" pulumi-lang-python=\"`1m0s`\" pulumi-lang-yaml=\"`1m0s`\" pulumi-lang-java=\"`1m0s`\" pulumi-lang-hcl=\"`1m0s`\"\u003e`1m0s`\u003c/span\u003e).\n"
                     },
                     "labels": {
                         "type": "object",
                         "additionalProperties": {
                             "type": "string"
                         },
-                        "description": "Labels of the alert. Severity is a required label."
+                        "description": "Custom labels attached to the alert.\n"
                     },
                     "notificationSettings": {
-                        "$ref": "#/types/signoz:index/AlertNotificationSettings:AlertNotificationSettings",
-                        "description": "Notification settings for the alert. Only used when\u003cspan pulumi-lang-nodejs=\" schemaVersion \" pulumi-lang-dotnet=\" SchemaVersion \" pulumi-lang-go=\" schemaVersion \" pulumi-lang-python=\" schema_version \" pulumi-lang-yaml=\" schemaVersion \" pulumi-lang-java=\" schemaVersion \" pulumi-lang-hcl=\" schema_version \"\u003e schemaVersion \u003c/span\u003eis v2 or higher."
+                        "type": "string",
+                        "description": "Notification settings as JSON (renotify, group*by, use*policy). Compared semantically.\n"
                     },
                     "preferredChannels": {
                         "type": "array",
                         "items": {
                             "type": "string"
                         },
-                        "description": "Preferred channels of the alert. By default, it is empty."
+                        "description": "Notification channel names the alert routes to.\n"
                     },
                     "ruleType": {
                         "type": "string",
-                        "description": "Type of the alert. Possible values are:\u003cspan pulumi-lang-nodejs=\" thresholdRule \" pulumi-lang-dotnet=\" ThresholdRule \" pulumi-lang-go=\" thresholdRule \" pulumi-lang-python=\" threshold_rule \" pulumi-lang-yaml=\" thresholdRule \" pulumi-lang-java=\" thresholdRule \" pulumi-lang-hcl=\" threshold_rule \"\u003e thresholdRule \u003c/span\u003eand promql_rule."
+                        "description": "Rule engine type: \u003cspan pulumi-lang-nodejs=\"`thresholdRule`\" pulumi-lang-dotnet=\"`ThresholdRule`\" pulumi-lang-go=\"`thresholdRule`\" pulumi-lang-python=\"`threshold_rule`\" pulumi-lang-yaml=\"`thresholdRule`\" pulumi-lang-java=\"`thresholdRule`\" pulumi-lang-hcl=\"`threshold_rule`\"\u003e`thresholdRule`\u003c/span\u003e (default) or \u003cspan pulumi-lang-nodejs=\"`promqlRule`\" pulumi-lang-dotnet=\"`PromqlRule`\" pulumi-lang-go=\"`promqlRule`\" pulumi-lang-python=\"`promql_rule`\" pulumi-lang-yaml=\"`promqlRule`\" pulumi-lang-java=\"`promqlRule`\" pulumi-lang-hcl=\"`promql_rule`\"\u003e`promqlRule`\u003c/span\u003e.\n"
                     },
                     "schemaVersion": {
                         "type": "string",
-                        "description": "Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and\u003cspan pulumi-lang-nodejs=\" notificationSettings \" pulumi-lang-dotnet=\" NotificationSettings \" pulumi-lang-go=\" notificationSettings \" pulumi-lang-python=\" notification_settings \" pulumi-lang-yaml=\" notificationSettings \" pulumi-lang-java=\" notificationSettings \" pulumi-lang-hcl=\" notification_settings \"\u003e notificationSettings \u003c/span\u003eare supported."
+                        "description": "Alert schema version. Defaults to \u003cspan pulumi-lang-nodejs=\"`v2alpha1`\" pulumi-lang-dotnet=\"`V2alpha1`\" pulumi-lang-go=\"`v2alpha1`\" pulumi-lang-python=\"`v2alpha1`\" pulumi-lang-yaml=\"`v2alpha1`\" pulumi-lang-java=\"`v2alpha1`\" pulumi-lang-hcl=\"`v2alpha1`\"\u003e`v2alpha1`\u003c/span\u003e.\n"
                     },
                     "severity": {
                         "type": "string",
-                        "description": "Severity of the alert. Possible values are: info, warning, error, and critical."
+                        "description": "Severity label (e.g. \u003cspan pulumi-lang-nodejs=\"`info`\" pulumi-lang-dotnet=\"`Info`\" pulumi-lang-go=\"`info`\" pulumi-lang-python=\"`info`\" pulumi-lang-yaml=\"`info`\" pulumi-lang-java=\"`info`\" pulumi-lang-hcl=\"`info`\"\u003e`info`\u003c/span\u003e, \u003cspan pulumi-lang-nodejs=\"`warning`\" pulumi-lang-dotnet=\"`Warning`\" pulumi-lang-go=\"`warning`\" pulumi-lang-python=\"`warning`\" pulumi-lang-yaml=\"`warning`\" pulumi-lang-java=\"`warning`\" pulumi-lang-hcl=\"`warning`\"\u003e`warning`\u003c/span\u003e, \u003cspan pulumi-lang-nodejs=\"`critical`\" pulumi-lang-dotnet=\"`Critical`\" pulumi-lang-go=\"`critical`\" pulumi-lang-python=\"`critical`\" pulumi-lang-yaml=\"`critical`\" pulumi-lang-java=\"`critical`\" pulumi-lang-hcl=\"`critical`\"\u003e`critical`\u003c/span\u003e).\n"
                     },
                     "source": {
                         "type": "string",
-                        "description": "Source of the alert. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/alerts."
-                    },
-                    "state": {
-                        "type": "string",
-                        "description": "State of the alert."
-                    },
-                    "summary": {
-                        "type": "string",
-                        "description": "Summary of the alert."
-                    },
-                    "updateAt": {
-                        "type": "string",
-                        "description": "Last update time of the alert."
-                    },
-                    "updateBy": {
-                        "type": "string",
-                        "description": "Last updater of the alert."
+                        "description": "Source URL recorded on the rule.\n"
                     },
                     "version": {
                         "type": "string",
-                        "description": "Version of the alert. By default, it is v4."
+                        "description": "Alert API version. Defaults to \u003cspan pulumi-lang-nodejs=\"`v5`\" pulumi-lang-dotnet=\"`V5`\" pulumi-lang-go=\"`v5`\" pulumi-lang-python=\"`v5`\" pulumi-lang-yaml=\"`v5`\" pulumi-lang-java=\"`v5`\" pulumi-lang-hcl=\"`v5`\"\u003e`v5`\u003c/span\u003e (required by SigNoz \u003e= 0.125).\n"
                     }
                 },
                 "type": "object"
             }
         },
         "signoz:index/dashboard:Dashboard": {
+            "description": "A SigNoz dashboard. The full dashboard definition is supplied as JSON in \u003cspan pulumi-lang-nodejs=\"`data`\" pulumi-lang-dotnet=\"`Data`\" pulumi-lang-go=\"`data`\" pulumi-lang-python=\"`data`\" pulumi-lang-yaml=\"`data`\" pulumi-lang-java=\"`data`\" pulumi-lang-hcl=\"`data`\"\u003e`data`\u003c/span\u003e; export an existing dashboard from the SigNoz UI to bootstrap it.\n\n## Example Usage\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as signoz from \"@jooon/pulumi-signoz\";\n\nconst overview = new signoz.Dashboard(\"overview\", {data: JSON.stringify({\n    title: \"App Overview\",\n    description: \"Managed by Pulumi\",\n    tags: [\"managed-by:terraform\"],\n    layout: [],\n    widgets: [],\n})});\n```\n```python\nimport pulumi\nimport json\nimport pulumi_signoz_jooon as signoz\n\noverview = signoz.Dashboard(\"overview\", data=json.dumps({\n    \"title\": \"App Overview\",\n    \"description\": \"Managed by Pulumi\",\n    \"tags\": [\"managed-by:terraform\"],\n    \"layout\": [],\n    \"widgets\": [],\n}))\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\nusing Pulumi;\nusing Signoz = Jooon.Pulumi.Signoz;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var overview = new Signoz.Dashboard(\"overview\", new()\n    {\n        Data = JsonSerializer.Serialize(new Dictionary\u003cstring, object?\u003e\n        {\n            [\"title\"] = \"App Overview\",\n            [\"description\"] = \"Managed by Pulumi\",\n            [\"tags\"] = new[]\n            {\n                \"managed-by:terraform\",\n            },\n            [\"layout\"] = new[]\n            {\n            },\n            [\"widgets\"] = new[]\n            {\n            },\n        }),\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"encoding/json\"\n\n\t\"github.com/jgautheron/pulumi-signoz/sdk/go/signoz\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\ttmpJSON0, err := json.Marshal(map[string]interface{}{\n\t\t\t\"title\":       \"App Overview\",\n\t\t\t\"description\": \"Managed by Pulumi\",\n\t\t\t\"tags\": []string{\n\t\t\t\t\"managed-by:terraform\",\n\t\t\t},\n\t\t\t\"layout\":  []interface{}{},\n\t\t\t\"widgets\": []interface{}{},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tjson0 := string(tmpJSON0)\n\t\t_, err = signoz.NewDashboard(ctx, \"overview\", \u0026signoz.DashboardArgs{\n\t\t\tData: pulumi.String(pulumi.String(json0)),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\npulumi {\n  required_providers {\n    signoz = {\n      source = \"pulumi/signoz\"\n    }\n  }\n}\n\nresource \"signoz_dashboard\" \"overview\" {\n  data = jsonencode({\n    \"title\"       = \"App Overview\"\n    \"description\" = \"Managed by Pulumi\"\n    \"tags\"        = [\"managed-by:terraform\"]\n    \"layout\"      = []\n    \"widgets\"     = []\n  })\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport dev.jooon.signoz.Dashboard;\nimport dev.jooon.signoz.DashboardArgs;\nimport static com.pulumi.codegen.internal.Serialization.*;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var overview = new Dashboard(\"overview\", DashboardArgs.builder()\n            .data(serializeJson(\n                jsonObject(\n                    jsonProperty(\"title\", \"App Overview\"),\n                    jsonProperty(\"description\", \"Managed by Pulumi\"),\n                    jsonProperty(\"tags\", jsonArray(\"managed-by:terraform\")),\n                    jsonProperty(\"layout\", jsonArray(\n                    )),\n                    jsonProperty(\"widgets\", jsonArray(\n                    ))\n                )))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  overview:\n    type: signoz:Dashboard\n    properties:\n      data:\n        fn::toJSON:\n          title: App Overview\n          description: Managed by Pulumi\n          tags:\n            - managed-by:terraform\n          layout: []\n          widgets: []\n```\n\u003c!--End PulumiCodeChooser --\u003e\n",
             "properties": {
-                "collapsableRowsMigrated": {
-                    "type": "boolean"
-                },
-                "createdAt": {
+                "data": {
                     "type": "string",
-                    "description": "Creation time of the dashboard."
-                },
-                "createdBy": {
-                    "type": "string",
-                    "description": "Creator of the dashboard."
-                },
-                "description": {
-                    "type": "string",
-                    "description": "Description of the dashboard."
-                },
-                "layout": {
-                    "type": "string",
-                    "description": "Layout of the dashboard."
-                },
-                "name": {
-                    "type": "string",
-                    "description": "Name of the dashboard."
-                },
-                "panelMap": {
-                    "type": "string"
-                },
-                "source": {
-                    "type": "string",
-                    "description": "Source of the dashboard. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/dashboard."
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Tags of the dashboard."
-                },
-                "title": {
-                    "type": "string",
-                    "description": "Title of the dashboard."
-                },
-                "updatedAt": {
-                    "type": "string",
-                    "description": "Last update time of the dashboard."
-                },
-                "updatedBy": {
-                    "type": "string",
-                    "description": "Last updater of the dashboard."
-                },
-                "uploadedGrafana": {
-                    "type": "boolean"
-                },
-                "variables": {
-                    "type": "string",
-                    "description": "Variables for the dashboard."
-                },
-                "version": {
-                    "type": "string",
-                    "description": "Version of the dashboard."
-                },
-                "widgets": {
-                    "type": "string",
-                    "description": "Widgets for the dashboard."
+                    "description": "Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.\n"
                 }
             },
             "required": [
-                "collapsableRowsMigrated",
-                "createdAt",
-                "createdBy",
-                "description",
-                "layout",
-                "name",
-                "source",
-                "title",
-                "updatedAt",
-                "updatedBy",
-                "uploadedGrafana",
-                "variables",
-                "version",
-                "widgets"
+                "data"
             ],
             "inputProperties": {
-                "collapsableRowsMigrated": {
-                    "type": "boolean"
-                },
-                "description": {
+                "data": {
                     "type": "string",
-                    "description": "Description of the dashboard."
-                },
-                "layout": {
-                    "type": "string",
-                    "description": "Layout of the dashboard."
-                },
-                "name": {
-                    "type": "string",
-                    "description": "Name of the dashboard."
-                },
-                "panelMap": {
-                    "type": "string"
-                },
-                "source": {
-                    "type": "string",
-                    "description": "Source of the dashboard. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/dashboard."
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Tags of the dashboard."
-                },
-                "title": {
-                    "type": "string",
-                    "description": "Title of the dashboard."
-                },
-                "uploadedGrafana": {
-                    "type": "boolean"
-                },
-                "variables": {
-                    "type": "string",
-                    "description": "Variables for the dashboard."
-                },
-                "version": {
-                    "type": "string",
-                    "description": "Version of the dashboard."
-                },
-                "widgets": {
-                    "type": "string",
-                    "description": "Widgets for the dashboard."
+                    "description": "Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.\n"
                 }
             },
             "requiredInputs": [
-                "collapsableRowsMigrated",
-                "description",
-                "layout",
-                "title",
-                "uploadedGrafana",
-                "variables",
-                "version",
-                "widgets"
+                "data"
             ],
             "stateInputs": {
                 "description": "Input properties used for looking up and filtering Dashboard resources.\n",
                 "properties": {
-                    "collapsableRowsMigrated": {
-                        "type": "boolean"
-                    },
-                    "createdAt": {
+                    "data": {
                         "type": "string",
-                        "description": "Creation time of the dashboard."
-                    },
-                    "createdBy": {
+                        "description": "Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.\n"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "signoz:index/logPipeline:LogPipeline": {
+            "description": "The SigNoz log-processing pipeline set. SigNoz manages log pipelines as a single versioned, ordered collection, so this is a **singleton** resource — declare at most one. Applying publishes a new pipeline-set version; destroying publishes an empty set.\n\n## Example Usage\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as signoz from \"@jooon/pulumi-signoz\";\n\n// Singleton: declare at most one signoz_log_pipeline per SigNoz instance.\n// Applying publishes a new pipeline-set version; destroying clears the set.\nconst main = new signoz.LogPipeline(\"main\", {pipelines: JSON.stringify([{\n    orderId: 1,\n    name: \"drop-health-checks\",\n    alias: \"drop-health-checks\",\n    enabled: true,\n    filter: {\n        op: \"AND\",\n        items: [{\n            key: {\n                key: \"http.target\",\n            },\n            op: \"=\",\n            value: \"/healthz\",\n        }],\n    },\n    config: [],\n}])});\n```\n```python\nimport pulumi\nimport json\nimport pulumi_signoz_jooon as signoz\n\n# Singleton: declare at most one signoz_log_pipeline per SigNoz instance.\n# Applying publishes a new pipeline-set version; destroying clears the set.\nmain = signoz.LogPipeline(\"main\", pipelines=json.dumps([{\n    \"orderId\": 1,\n    \"name\": \"drop-health-checks\",\n    \"alias\": \"drop-health-checks\",\n    \"enabled\": True,\n    \"filter\": {\n        \"op\": \"AND\",\n        \"items\": [{\n            \"key\": {\n                \"key\": \"http.target\",\n            },\n            \"op\": \"=\",\n            \"value\": \"/healthz\",\n        }],\n    },\n    \"config\": [],\n}]))\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\nusing Pulumi;\nusing Signoz = Jooon.Pulumi.Signoz;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    // Singleton: declare at most one signoz_log_pipeline per SigNoz instance.\n    // Applying publishes a new pipeline-set version; destroying clears the set.\n    var main = new Signoz.LogPipeline(\"main\", new()\n    {\n        Pipelines = JsonSerializer.Serialize(new[]\n        {\n            new Dictionary\u003cstring, object?\u003e\n            {\n                [\"orderId\"] = 1,\n                [\"name\"] = \"drop-health-checks\",\n                [\"alias\"] = \"drop-health-checks\",\n                [\"enabled\"] = true,\n                [\"filter\"] = new Dictionary\u003cstring, object?\u003e\n                {\n                    [\"op\"] = \"AND\",\n                    [\"items\"] = new[]\n                    {\n                        new Dictionary\u003cstring, object?\u003e\n                        {\n                            [\"key\"] = new Dictionary\u003cstring, object?\u003e\n                            {\n                                [\"key\"] = \"http.target\",\n                            },\n                            [\"op\"] = \"=\",\n                            [\"value\"] = \"/healthz\",\n                        },\n                    },\n                },\n                [\"config\"] = new[]\n                {\n                },\n            },\n        }),\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"encoding/json\"\n\n\t\"github.com/jgautheron/pulumi-signoz/sdk/go/signoz\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\ttmpJSON0, err := json.Marshal([]map[string]interface{}{\n\t\t\tmap[string]interface{}{\n\t\t\t\t\"orderId\": 1,\n\t\t\t\t\"name\":    \"drop-health-checks\",\n\t\t\t\t\"alias\":   \"drop-health-checks\",\n\t\t\t\t\"enabled\": true,\n\t\t\t\t\"filter\": map[string]interface{}{\n\t\t\t\t\t\"op\": \"AND\",\n\t\t\t\t\t\"items\": []map[string]interface{}{\n\t\t\t\t\t\tmap[string]interface{}{\n\t\t\t\t\t\t\t\"key\": map[string]interface{}{\n\t\t\t\t\t\t\t\t\"key\": \"http.target\",\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"op\":    \"=\",\n\t\t\t\t\t\t\t\"value\": \"/healthz\",\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t\"config\": []interface{}{},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tjson0 := string(tmpJSON0)\n\t\t// Singleton: declare at most one signoz_log_pipeline per SigNoz instance.\n\t\t// Applying publishes a new pipeline-set version; destroying clears the set.\n\t\t_, err = signoz.NewLogPipeline(ctx, \"main\", \u0026signoz.LogPipelineArgs{\n\t\t\tPipelines: pulumi.String(pulumi.String(json0)),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\npulumi {\n  required_providers {\n    signoz = {\n      source = \"pulumi/signoz\"\n    }\n  }\n}\n\n# Singleton: declare at most one signoz_log_pipeline per SigNoz instance.\n# Applying publishes a new pipeline-set version; destroying clears the set.\nresource \"signoz_logpipeline\" \"main\" {\n  pipelines = jsonencode([{\n    \"orderId\" = 1\n    \"name\"    = \"drop-health-checks\"\n    \"alias\"   = \"drop-health-checks\"\n    \"enabled\" = true\n    \"filter\" = {\n      \"op\" = \"AND\"\n      \"items\" = [{\n        \"key\" = {\n          \"key\" = \"http.target\"\n        }\n        \"op\"    = \"=\"\n        \"value\" = \"/healthz\"\n      }]\n    }\n    \"config\" = []\n  }])\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport dev.jooon.signoz.LogPipeline;\nimport dev.jooon.signoz.LogPipelineArgs;\nimport static com.pulumi.codegen.internal.Serialization.*;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        // Singleton: declare at most one signoz_log_pipeline per SigNoz instance.\n        // Applying publishes a new pipeline-set version; destroying clears the set.\n        var main = new LogPipeline(\"main\", LogPipelineArgs.builder()\n            .pipelines(serializeJson(\n                jsonArray(jsonObject(\n                    jsonProperty(\"orderId\", 1),\n                    jsonProperty(\"name\", \"drop-health-checks\"),\n                    jsonProperty(\"alias\", \"drop-health-checks\"),\n                    jsonProperty(\"enabled\", true),\n                    jsonProperty(\"filter\", jsonObject(\n                        jsonProperty(\"op\", \"AND\"),\n                        jsonProperty(\"items\", jsonArray(jsonObject(\n                            jsonProperty(\"key\", jsonObject(\n                                jsonProperty(\"key\", \"http.target\")\n                            )),\n                            jsonProperty(\"op\", \"=\"),\n                            jsonProperty(\"value\", \"/healthz\")\n                        )))\n                    )),\n                    jsonProperty(\"config\", jsonArray(\n                    ))\n                ))))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  # Singleton: declare at most one signoz_log_pipeline per SigNoz instance.\n  # Applying publishes a new pipeline-set version; destroying clears the set.\n  main:\n    type: signoz:LogPipeline\n    properties:\n      pipelines:\n        fn::toJSON:\n          - orderId: 1\n            name: drop-health-checks\n            alias: drop-health-checks\n            enabled: true\n            filter:\n              op: AND\n              items:\n                - key:\n                    key: http.target\n                  op: =\n                  value: /healthz\n            config: []\n```\n\u003c!--End PulumiCodeChooser --\u003e\n",
+            "properties": {
+                "pipelines": {
+                    "type": "string",
+                    "description": "Ordered array of pipeline definitions as JSON. Compared semantically.\n"
+                }
+            },
+            "required": [
+                "pipelines"
+            ],
+            "inputProperties": {
+                "pipelines": {
+                    "type": "string",
+                    "description": "Ordered array of pipeline definitions as JSON. Compared semantically.\n"
+                }
+            },
+            "requiredInputs": [
+                "pipelines"
+            ],
+            "stateInputs": {
+                "description": "Input properties used for looking up and filtering LogPipeline resources.\n",
+                "properties": {
+                    "pipelines": {
                         "type": "string",
-                        "description": "Creator of the dashboard."
-                    },
-                    "description": {
+                        "description": "Ordered array of pipeline definitions as JSON. Compared semantically.\n"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "signoz:index/notificationChannel:NotificationChannel": {
+            "description": "A SigNoz notification channel (Slack, webhook, PagerDuty, email, OpsGenie, MS Teams). **Write operations require an admin Service Account token.** The receiver config goes in \u003cspan pulumi-lang-nodejs=\"`data`\" pulumi-lang-dotnet=\"`Data`\" pulumi-lang-go=\"`data`\" pulumi-lang-python=\"`data`\" pulumi-lang-yaml=\"`data`\" pulumi-lang-java=\"`data`\" pulumi-lang-hcl=\"`data`\"\u003e`data`\u003c/span\u003e as JSON.\n\n## Example Usage\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as signoz from \"@jooon/pulumi-signoz\";\n\n// Notification channels require an ADMIN SigNoz service-account token.\nconst slack = new signoz.NotificationChannel(\"slack\", {\n    name: \"team-alerts\",\n    data: JSON.stringify({\n        slack_configs: [{\n            send_resolved: true,\n            api_url: \"https://hooks.slack.com/services/T000/B000/XXXX\",\n            channel: \"#alerts\",\n        }],\n    }),\n});\n```\n```python\nimport pulumi\nimport json\nimport pulumi_signoz_jooon as signoz\n\n# Notification channels require an ADMIN SigNoz service-account token.\nslack = signoz.NotificationChannel(\"slack\",\n    name=\"team-alerts\",\n    data=json.dumps({\n        \"slack_configs\": [{\n            \"send_resolved\": True,\n            \"api_url\": \"https://hooks.slack.com/services/T000/B000/XXXX\",\n            \"channel\": \"#alerts\",\n        }],\n    }))\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\nusing Pulumi;\nusing Signoz = Jooon.Pulumi.Signoz;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    // Notification channels require an ADMIN SigNoz service-account token.\n    var slack = new Signoz.NotificationChannel(\"slack\", new()\n    {\n        Name = \"team-alerts\",\n        Data = JsonSerializer.Serialize(new Dictionary\u003cstring, object?\u003e\n        {\n            [\"slack_configs\"] = new[]\n            {\n                new Dictionary\u003cstring, object?\u003e\n                {\n                    [\"send_resolved\"] = true,\n                    [\"api_url\"] = \"https://hooks.slack.com/services/T000/B000/XXXX\",\n                    [\"channel\"] = \"#alerts\",\n                },\n            },\n        }),\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"encoding/json\"\n\n\t\"github.com/jgautheron/pulumi-signoz/sdk/go/signoz\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\ttmpJSON0, err := json.Marshal(map[string]interface{}{\n\t\t\t\"slack_configs\": []map[string]interface{}{\n\t\t\t\tmap[string]interface{}{\n\t\t\t\t\t\"send_resolved\": true,\n\t\t\t\t\t\"api_url\":       \"https://hooks.slack.com/services/T000/B000/XXXX\",\n\t\t\t\t\t\"channel\":       \"#alerts\",\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tjson0 := string(tmpJSON0)\n\t\t// Notification channels require an ADMIN SigNoz service-account token.\n\t\t_, err = signoz.NewNotificationChannel(ctx, \"slack\", \u0026signoz.NotificationChannelArgs{\n\t\t\tName: pulumi.String(\"team-alerts\"),\n\t\t\tData: pulumi.String(pulumi.String(json0)),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\npulumi {\n  required_providers {\n    signoz = {\n      source = \"pulumi/signoz\"\n    }\n  }\n}\n\n# Notification channels require an ADMIN SigNoz service-account token.\nresource \"signoz_notificationchannel\" \"slack\" {\n  name = \"team-alerts\"\n  data = jsonencode({\n    \"slack_configs\" = [{\n      \"send_resolved\" = true\n      \"api_url\"       = \"https://hooks.slack.com/services/T000/B000/XXXX\"\n      \"channel\"       = \"#alerts\"\n    }]\n  })\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport dev.jooon.signoz.NotificationChannel;\nimport dev.jooon.signoz.NotificationChannelArgs;\nimport static com.pulumi.codegen.internal.Serialization.*;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        // Notification channels require an ADMIN SigNoz service-account token.\n        var slack = new NotificationChannel(\"slack\", NotificationChannelArgs.builder()\n            .name(\"team-alerts\")\n            .data(serializeJson(\n                jsonObject(\n                    jsonProperty(\"slack_configs\", jsonArray(jsonObject(\n                        jsonProperty(\"send_resolved\", true),\n                        jsonProperty(\"api_url\", \"https://hooks.slack.com/services/T000/B000/XXXX\"),\n                        jsonProperty(\"channel\", \"#alerts\")\n                    )))\n                )))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  # Notification channels require an ADMIN SigNoz service-account token.\n  slack:\n    type: signoz:NotificationChannel\n    properties:\n      name: team-alerts\n      data:\n        fn::toJSON:\n          slack_configs:\n            - send_resolved: true\n              api_url: https://hooks.slack.com/services/T000/B000/XXXX\n              channel: '#alerts'\n```\n\u003c!--End PulumiCodeChooser --\u003e\n",
+            "properties": {
+                "data": {
+                    "type": "string",
+                    "description": "Receiver configuration as JSON, e.g. `{\u003cspan pulumi-lang-nodejs=\"\"slackConfigs\"\" pulumi-lang-dotnet=\"\"SlackConfigs\"\" pulumi-lang-go=\"\"slackConfigs\"\" pulumi-lang-python=\"\"slack_configs\"\" pulumi-lang-yaml=\"\"slackConfigs\"\" pulumi-lang-java=\"\"slackConfigs\"\" pulumi-lang-hcl=\"\"slack_configs\"\"\u003e\"slackConfigs\"\u003c/span\u003e:[{\u003cspan pulumi-lang-nodejs=\"\"apiUrl\"\" pulumi-lang-dotnet=\"\"ApiUrl\"\" pulumi-lang-go=\"\"apiUrl\"\" pulumi-lang-python=\"\"api_url\"\" pulumi-lang-yaml=\"\"apiUrl\"\" pulumi-lang-java=\"\"apiUrl\"\" pulumi-lang-hcl=\"\"api_url\"\"\u003e\"apiUrl\"\u003c/span\u003e:\"…\",\"channel\":\"#alerts\"}]}`. Compared semantically.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Unique channel name.\n"
+                }
+            },
+            "required": [
+                "data",
+                "name"
+            ],
+            "inputProperties": {
+                "data": {
+                    "type": "string",
+                    "description": "Receiver configuration as JSON, e.g. `{\u003cspan pulumi-lang-nodejs=\"\"slackConfigs\"\" pulumi-lang-dotnet=\"\"SlackConfigs\"\" pulumi-lang-go=\"\"slackConfigs\"\" pulumi-lang-python=\"\"slack_configs\"\" pulumi-lang-yaml=\"\"slackConfigs\"\" pulumi-lang-java=\"\"slackConfigs\"\" pulumi-lang-hcl=\"\"slack_configs\"\"\u003e\"slackConfigs\"\u003c/span\u003e:[{\u003cspan pulumi-lang-nodejs=\"\"apiUrl\"\" pulumi-lang-dotnet=\"\"ApiUrl\"\" pulumi-lang-go=\"\"apiUrl\"\" pulumi-lang-python=\"\"api_url\"\" pulumi-lang-yaml=\"\"apiUrl\"\" pulumi-lang-java=\"\"apiUrl\"\" pulumi-lang-hcl=\"\"api_url\"\"\u003e\"apiUrl\"\u003c/span\u003e:\"…\",\"channel\":\"#alerts\"}]}`. Compared semantically.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Unique channel name.\n"
+                }
+            },
+            "requiredInputs": [
+                "data"
+            ],
+            "stateInputs": {
+                "description": "Input properties used for looking up and filtering NotificationChannel resources.\n",
+                "properties": {
+                    "data": {
                         "type": "string",
-                        "description": "Description of the dashboard."
-                    },
-                    "layout": {
-                        "type": "string",
-                        "description": "Layout of the dashboard."
+                        "description": "Receiver configuration as JSON, e.g. `{\u003cspan pulumi-lang-nodejs=\"\"slackConfigs\"\" pulumi-lang-dotnet=\"\"SlackConfigs\"\" pulumi-lang-go=\"\"slackConfigs\"\" pulumi-lang-python=\"\"slack_configs\"\" pulumi-lang-yaml=\"\"slackConfigs\"\" pulumi-lang-java=\"\"slackConfigs\"\" pulumi-lang-hcl=\"\"slack_configs\"\"\u003e\"slackConfigs\"\u003c/span\u003e:[{\u003cspan pulumi-lang-nodejs=\"\"apiUrl\"\" pulumi-lang-dotnet=\"\"ApiUrl\"\" pulumi-lang-go=\"\"apiUrl\"\" pulumi-lang-python=\"\"api_url\"\" pulumi-lang-yaml=\"\"apiUrl\"\" pulumi-lang-java=\"\"apiUrl\"\" pulumi-lang-hcl=\"\"api_url\"\"\u003e\"apiUrl\"\u003c/span\u003e:\"…\",\"channel\":\"#alerts\"}]}`. Compared semantically.\n"
                     },
                     "name": {
                         "type": "string",
-                        "description": "Name of the dashboard."
-                    },
-                    "panelMap": {
-                        "type": "string"
-                    },
-                    "source": {
+                        "description": "Unique channel name.\n"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "signoz:index/savedView:SavedView": {
+            "description": "A saved SigNoz explorer view (logs or traces). The query state goes in \u003cspan pulumi-lang-nodejs=\"`data`\" pulumi-lang-dotnet=\"`Data`\" pulumi-lang-go=\"`data`\" pulumi-lang-python=\"`data`\" pulumi-lang-yaml=\"`data`\" pulumi-lang-java=\"`data`\" pulumi-lang-hcl=\"`data`\"\u003e`data`\u003c/span\u003e as JSON.\n\n## Example Usage\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as signoz from \"@jooon/pulumi-signoz\";\n\nconst errors = new signoz.SavedView(\"errors\", {\n    name: \"Errors (last 15m)\",\n    sourcePage: \"logs\",\n    data: JSON.stringify({\n        compositeQuery: {\n            queryType: \"builder\",\n            panelType: \"list\",\n            builderQueries: {\n                A: {\n                    dataSource: \"logs\",\n                    queryName: \"A\",\n                    aggregateOperator: \"noop\",\n                    expression: \"A\",\n                    disabled: false,\n                },\n            },\n        },\n    }),\n});\n```\n```python\nimport pulumi\nimport json\nimport pulumi_signoz_jooon as signoz\n\nerrors = signoz.SavedView(\"errors\",\n    name=\"Errors (last 15m)\",\n    source_page=\"logs\",\n    data=json.dumps({\n        \"compositeQuery\": {\n            \"queryType\": \"builder\",\n            \"panelType\": \"list\",\n            \"builderQueries\": {\n                \"A\": {\n                    \"dataSource\": \"logs\",\n                    \"queryName\": \"A\",\n                    \"aggregateOperator\": \"noop\",\n                    \"expression\": \"A\",\n                    \"disabled\": False,\n                },\n            },\n        },\n    }))\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\nusing Pulumi;\nusing Signoz = Jooon.Pulumi.Signoz;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var errors = new Signoz.SavedView(\"errors\", new()\n    {\n        Name = \"Errors (last 15m)\",\n        SourcePage = \"logs\",\n        Data = JsonSerializer.Serialize(new Dictionary\u003cstring, object?\u003e\n        {\n            [\"compositeQuery\"] = new Dictionary\u003cstring, object?\u003e\n            {\n                [\"queryType\"] = \"builder\",\n                [\"panelType\"] = \"list\",\n                [\"builderQueries\"] = new Dictionary\u003cstring, object?\u003e\n                {\n                    [\"A\"] = new Dictionary\u003cstring, object?\u003e\n                    {\n                        [\"dataSource\"] = \"logs\",\n                        [\"queryName\"] = \"A\",\n                        [\"aggregateOperator\"] = \"noop\",\n                        [\"expression\"] = \"A\",\n                        [\"disabled\"] = false,\n                    },\n                },\n            },\n        }),\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"encoding/json\"\n\n\t\"github.com/jgautheron/pulumi-signoz/sdk/go/signoz\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\ttmpJSON0, err := json.Marshal(map[string]interface{}{\n\t\t\t\"compositeQuery\": map[string]interface{}{\n\t\t\t\t\"queryType\": \"builder\",\n\t\t\t\t\"panelType\": \"list\",\n\t\t\t\t\"builderQueries\": map[string]interface{}{\n\t\t\t\t\t\"A\": map[string]interface{}{\n\t\t\t\t\t\t\"dataSource\":        \"logs\",\n\t\t\t\t\t\t\"queryName\":         \"A\",\n\t\t\t\t\t\t\"aggregateOperator\": \"noop\",\n\t\t\t\t\t\t\"expression\":        \"A\",\n\t\t\t\t\t\t\"disabled\":          false,\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tjson0 := string(tmpJSON0)\n\t\t_, err = signoz.NewSavedView(ctx, \"errors\", \u0026signoz.SavedViewArgs{\n\t\t\tName:       pulumi.String(\"Errors (last 15m)\"),\n\t\t\tSourcePage: pulumi.String(\"logs\"),\n\t\t\tData:       pulumi.String(pulumi.String(json0)),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\npulumi {\n  required_providers {\n    signoz = {\n      source = \"pulumi/signoz\"\n    }\n  }\n}\n\nresource \"signoz_savedview\" \"errors\" {\n  name        = \"Errors (last 15m)\"\n  source_page = \"logs\"\n  data = jsonencode({\n    \"compositeQuery\" = {\n      \"queryType\" = \"builder\"\n      \"panelType\" = \"list\"\n      \"builderQueries\" = {\n        \"A\" = {\n          \"dataSource\"        = \"logs\"\n          \"queryName\"         = \"A\"\n          \"aggregateOperator\" = \"noop\"\n          \"expression\"        = \"A\"\n          \"disabled\"          = false\n        }\n      }\n    }\n  })\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport dev.jooon.signoz.SavedView;\nimport dev.jooon.signoz.SavedViewArgs;\nimport static com.pulumi.codegen.internal.Serialization.*;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var errors = new SavedView(\"errors\", SavedViewArgs.builder()\n            .name(\"Errors (last 15m)\")\n            .sourcePage(\"logs\")\n            .data(serializeJson(\n                jsonObject(\n                    jsonProperty(\"compositeQuery\", jsonObject(\n                        jsonProperty(\"queryType\", \"builder\"),\n                        jsonProperty(\"panelType\", \"list\"),\n                        jsonProperty(\"builderQueries\", jsonObject(\n                            jsonProperty(\"A\", jsonObject(\n                                jsonProperty(\"dataSource\", \"logs\"),\n                                jsonProperty(\"queryName\", \"A\"),\n                                jsonProperty(\"aggregateOperator\", \"noop\"),\n                                jsonProperty(\"expression\", \"A\"),\n                                jsonProperty(\"disabled\", false)\n                            ))\n                        ))\n                    ))\n                )))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  errors:\n    type: signoz:SavedView\n    properties:\n      name: Errors (last 15m)\n      sourcePage: logs\n      data:\n        fn::toJSON:\n          compositeQuery:\n            queryType: builder\n            panelType: list\n            builderQueries:\n              A:\n                dataSource: logs\n                queryName: A\n                aggregateOperator: noop\n                expression: A\n                disabled: false\n```\n\u003c!--End PulumiCodeChooser --\u003e\n",
+            "properties": {
+                "data": {
+                    "type": "string",
+                    "description": "Saved query state as JSON (compositeQuery, filters, columns, …). Compared semantically.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "View name.\n"
+                },
+                "sourcePage": {
+                    "type": "string",
+                    "description": "Explorer the view belongs to: \u003cspan pulumi-lang-nodejs=\"`logs`\" pulumi-lang-dotnet=\"`Logs`\" pulumi-lang-go=\"`logs`\" pulumi-lang-python=\"`logs`\" pulumi-lang-yaml=\"`logs`\" pulumi-lang-java=\"`logs`\" pulumi-lang-hcl=\"`logs`\"\u003e`logs`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`traces`\" pulumi-lang-dotnet=\"`Traces`\" pulumi-lang-go=\"`traces`\" pulumi-lang-python=\"`traces`\" pulumi-lang-yaml=\"`traces`\" pulumi-lang-java=\"`traces`\" pulumi-lang-hcl=\"`traces`\"\u003e`traces`\u003c/span\u003e.\n"
+                }
+            },
+            "required": [
+                "data",
+                "name",
+                "sourcePage"
+            ],
+            "inputProperties": {
+                "data": {
+                    "type": "string",
+                    "description": "Saved query state as JSON (compositeQuery, filters, columns, …). Compared semantically.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "View name.\n"
+                },
+                "sourcePage": {
+                    "type": "string",
+                    "description": "Explorer the view belongs to: \u003cspan pulumi-lang-nodejs=\"`logs`\" pulumi-lang-dotnet=\"`Logs`\" pulumi-lang-go=\"`logs`\" pulumi-lang-python=\"`logs`\" pulumi-lang-yaml=\"`logs`\" pulumi-lang-java=\"`logs`\" pulumi-lang-hcl=\"`logs`\"\u003e`logs`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`traces`\" pulumi-lang-dotnet=\"`Traces`\" pulumi-lang-go=\"`traces`\" pulumi-lang-python=\"`traces`\" pulumi-lang-yaml=\"`traces`\" pulumi-lang-java=\"`traces`\" pulumi-lang-hcl=\"`traces`\"\u003e`traces`\u003c/span\u003e.\n"
+                }
+            },
+            "requiredInputs": [
+                "data",
+                "sourcePage"
+            ],
+            "stateInputs": {
+                "description": "Input properties used for looking up and filtering SavedView resources.\n",
+                "properties": {
+                    "data": {
                         "type": "string",
-                        "description": "Source of the dashboard. By default, it is \u003cSIGNOZ_ENDPOINT\u003e/dashboard."
+                        "description": "Saved query state as JSON (compositeQuery, filters, columns, …). Compared semantically.\n"
                     },
-                    "tags": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "Tags of the dashboard."
-                    },
-                    "title": {
+                    "name": {
                         "type": "string",
-                        "description": "Title of the dashboard."
+                        "description": "View name.\n"
                     },
-                    "updatedAt": {
+                    "sourcePage": {
                         "type": "string",
-                        "description": "Last update time of the dashboard."
-                    },
-                    "updatedBy": {
-                        "type": "string",
-                        "description": "Last updater of the dashboard."
-                    },
-                    "uploadedGrafana": {
-                        "type": "boolean"
-                    },
-                    "variables": {
-                        "type": "string",
-                        "description": "Variables for the dashboard."
-                    },
-                    "version": {
-                        "type": "string",
-                        "description": "Version of the dashboard."
-                    },
-                    "widgets": {
-                        "type": "string",
-                        "description": "Widgets for the dashboard."
+                        "description": "Explorer the view belongs to: \u003cspan pulumi-lang-nodejs=\"`logs`\" pulumi-lang-dotnet=\"`Logs`\" pulumi-lang-go=\"`logs`\" pulumi-lang-python=\"`logs`\" pulumi-lang-yaml=\"`logs`\" pulumi-lang-java=\"`logs`\" pulumi-lang-hcl=\"`logs`\"\u003e`logs`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`traces`\" pulumi-lang-dotnet=\"`Traces`\" pulumi-lang-go=\"`traces`\" pulumi-lang-python=\"`traces`\" pulumi-lang-yaml=\"`traces`\" pulumi-lang-java=\"`traces`\" pulumi-lang-hcl=\"`traces`\"\u003e`traces`\u003c/span\u003e.\n"
                     }
                 },
                 "type": "object"
@@ -825,200 +570,6 @@
                 },
                 "required": [
                     "result"
-                ],
-                "type": "object"
-            }
-        },
-        "signoz:index/getAlert:getAlert": {
-            "inputs": {
-                "description": "A collection of arguments for invoking getAlert.\n",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id"
-                ]
-            },
-            "outputs": {
-                "description": "A collection of values returned by getAlert.\n",
-                "properties": {
-                    "alert": {
-                        "language": {
-                            "csharp": {
-                                "name": "AlertConfig"
-                            }
-                        },
-                        "type": "string"
-                    },
-                    "alertType": {
-                        "type": "string"
-                    },
-                    "broadcastToAll": {
-                        "deprecationMessage": "This field is no longer needed and will be ignored",
-                        "type": "boolean"
-                    },
-                    "condition": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "disabled": {
-                        "type": "boolean"
-                    },
-                    "evalWindow": {
-                        "type": "string"
-                    },
-                    "evaluation": {
-                        "type": "string"
-                    },
-                    "frequency": {
-                        "type": "string"
-                    },
-                    "id": {
-                        "type": "string"
-                    },
-                    "labels": {
-                        "additionalProperties": {
-                            "type": "string"
-                        },
-                        "type": "object"
-                    },
-                    "notificationSettings": {
-                        "$ref": "#/types/signoz:index/getAlertNotificationSettings:getAlertNotificationSettings"
-                    },
-                    "preferredChannels": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array"
-                    },
-                    "ruleType": {
-                        "type": "string"
-                    },
-                    "schemaVersion": {
-                        "type": "string"
-                    },
-                    "severity": {
-                        "type": "string"
-                    },
-                    "source": {
-                        "type": "string"
-                    },
-                    "state": {
-                        "type": "string"
-                    },
-                    "summary": {
-                        "type": "string"
-                    },
-                    "version": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "alert",
-                    "alertType",
-                    "broadcastToAll",
-                    "condition",
-                    "description",
-                    "disabled",
-                    "evalWindow",
-                    "evaluation",
-                    "frequency",
-                    "id",
-                    "labels",
-                    "notificationSettings",
-                    "preferredChannels",
-                    "ruleType",
-                    "schemaVersion",
-                    "severity",
-                    "source",
-                    "state",
-                    "summary",
-                    "version"
-                ],
-                "type": "object"
-            }
-        },
-        "signoz:index/getDashboard:getDashboard": {
-            "inputs": {
-                "description": "A collection of arguments for invoking getDashboard.\n",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "version": {
-                        "type": "string"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id"
-                ]
-            },
-            "outputs": {
-                "description": "A collection of values returned by getDashboard.\n",
-                "properties": {
-                    "collapsableRowsMigrated": {
-                        "type": "boolean"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "id": {
-                        "type": "string"
-                    },
-                    "layout": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "panelMap": {
-                        "type": "string"
-                    },
-                    "source": {
-                        "type": "string"
-                    },
-                    "tags": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array"
-                    },
-                    "title": {
-                        "type": "string"
-                    },
-                    "uploadedGrafana": {
-                        "type": "boolean"
-                    },
-                    "variables": {
-                        "type": "string"
-                    },
-                    "version": {
-                        "type": "string"
-                    },
-                    "widgets": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "collapsableRowsMigrated",
-                    "description",
-                    "id",
-                    "layout",
-                    "name",
-                    "panelMap",
-                    "source",
-                    "tags",
-                    "title",
-                    "uploadedGrafana",
-                    "variables",
-                    "version",
-                    "widgets"
                 ],
                 "type": "object"
             }

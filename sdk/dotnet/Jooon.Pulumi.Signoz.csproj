@@ -4,12 +4,12 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>jgautheron</Authors>
     <Company>jgautheron</Company>
-    <Description>A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.</Description>
+    <Description>A Pulumi provider for SigNoz. Manage SigNoz dashboards, alerts, notification channels, saved views, and log pipelines as code.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://signoz.io</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jgautheron/pulumi-signoz</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <Version>0.0.0-alpha.0+dev</Version>
+    <Version>0.2.0</Version>
 
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>

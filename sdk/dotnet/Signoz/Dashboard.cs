@@ -10,95 +10,50 @@ using Pulumi;
 
 namespace Jooon.Pulumi.Signoz
 {
+    /// <summary>
+    /// A SigNoz dashboard. The full dashboard definition is supplied as JSON in `Data`; export an existing dashboard from the SigNoz UI to bootstrap it.
+    /// 
+    /// ## Example Usage
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using System.Text.Json;
+    /// using Pulumi;
+    /// using Signoz = Jooon.Pulumi.Signoz;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var overview = new Signoz.Dashboard("overview", new()
+    ///     {
+    ///         Data = JsonSerializer.Serialize(new Dictionary&lt;string, object?&gt;
+    ///         {
+    ///             ["title"] = "App Overview",
+    ///             ["description"] = "Managed by Pulumi",
+    ///             ["tags"] = new[]
+    ///             {
+    ///                 "managed-by:terraform",
+    ///             },
+    ///             ["layout"] = new[]
+    ///             {
+    ///             },
+    ///             ["widgets"] = new[]
+    ///             {
+    ///             },
+    ///         }),
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// </summary>
     [SignozResourceType("signoz:index/dashboard:Dashboard")]
     public partial class Dashboard : global::Pulumi.CustomResource
     {
-        [Output("collapsableRowsMigrated")]
-        public Output<bool> CollapsableRowsMigrated { get; private set; } = null!;
-
         /// <summary>
-        /// Creation time of the dashboard.
+        /// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
         /// </summary>
-        [Output("createdAt")]
-        public Output<string> CreatedAt { get; private set; } = null!;
-
-        /// <summary>
-        /// Creator of the dashboard.
-        /// </summary>
-        [Output("createdBy")]
-        public Output<string> CreatedBy { get; private set; } = null!;
-
-        /// <summary>
-        /// Description of the dashboard.
-        /// </summary>
-        [Output("description")]
-        public Output<string> Description { get; private set; } = null!;
-
-        /// <summary>
-        /// Layout of the dashboard.
-        /// </summary>
-        [Output("layout")]
-        public Output<string> Layout { get; private set; } = null!;
-
-        /// <summary>
-        /// Name of the dashboard.
-        /// </summary>
-        [Output("name")]
-        public Output<string> Name { get; private set; } = null!;
-
-        [Output("panelMap")]
-        public Output<string?> PanelMap { get; private set; } = null!;
-
-        /// <summary>
-        /// Source of the dashboard. By default, it is &lt;SIGNOZ_ENDPOINT&gt;/dashboard.
-        /// </summary>
-        [Output("source")]
-        public Output<string> Source { get; private set; } = null!;
-
-        /// <summary>
-        /// Tags of the dashboard.
-        /// </summary>
-        [Output("tags")]
-        public Output<ImmutableArray<string>> Tags { get; private set; } = null!;
-
-        /// <summary>
-        /// Title of the dashboard.
-        /// </summary>
-        [Output("title")]
-        public Output<string> Title { get; private set; } = null!;
-
-        /// <summary>
-        /// Last update time of the dashboard.
-        /// </summary>
-        [Output("updatedAt")]
-        public Output<string> UpdatedAt { get; private set; } = null!;
-
-        /// <summary>
-        /// Last updater of the dashboard.
-        /// </summary>
-        [Output("updatedBy")]
-        public Output<string> UpdatedBy { get; private set; } = null!;
-
-        [Output("uploadedGrafana")]
-        public Output<bool> UploadedGrafana { get; private set; } = null!;
-
-        /// <summary>
-        /// Variables for the dashboard.
-        /// </summary>
-        [Output("variables")]
-        public Output<string> Variables { get; private set; } = null!;
-
-        /// <summary>
-        /// Version of the dashboard.
-        /// </summary>
-        [Output("version")]
-        public Output<string> Version { get; private set; } = null!;
-
-        /// <summary>
-        /// Widgets for the dashboard.
-        /// </summary>
-        [Output("widgets")]
-        public Output<string> Widgets { get; private set; } = null!;
+        [Output("data")]
+        public Output<string> Data { get; private set; } = null!;
 
 
         /// <summary>
@@ -146,74 +101,11 @@ namespace Jooon.Pulumi.Signoz
 
     public sealed class DashboardArgs : global::Pulumi.ResourceArgs
     {
-        [Input("collapsableRowsMigrated", required: true)]
-        public Input<bool> CollapsableRowsMigrated { get; set; } = null!;
-
         /// <summary>
-        /// Description of the dashboard.
+        /// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
         /// </summary>
-        [Input("description", required: true)]
-        public Input<string> Description { get; set; } = null!;
-
-        /// <summary>
-        /// Layout of the dashboard.
-        /// </summary>
-        [Input("layout", required: true)]
-        public Input<string> Layout { get; set; } = null!;
-
-        /// <summary>
-        /// Name of the dashboard.
-        /// </summary>
-        [Input("name")]
-        public Input<string>? Name { get; set; }
-
-        [Input("panelMap")]
-        public Input<string>? PanelMap { get; set; }
-
-        /// <summary>
-        /// Source of the dashboard. By default, it is &lt;SIGNOZ_ENDPOINT&gt;/dashboard.
-        /// </summary>
-        [Input("source")]
-        public Input<string>? Source { get; set; }
-
-        [Input("tags")]
-        private InputList<string>? _tags;
-
-        /// <summary>
-        /// Tags of the dashboard.
-        /// </summary>
-        public InputList<string> Tags
-        {
-            get => _tags ?? (_tags = new InputList<string>());
-            set => _tags = value;
-        }
-
-        /// <summary>
-        /// Title of the dashboard.
-        /// </summary>
-        [Input("title", required: true)]
-        public Input<string> Title { get; set; } = null!;
-
-        [Input("uploadedGrafana", required: true)]
-        public Input<bool> UploadedGrafana { get; set; } = null!;
-
-        /// <summary>
-        /// Variables for the dashboard.
-        /// </summary>
-        [Input("variables", required: true)]
-        public Input<string> Variables { get; set; } = null!;
-
-        /// <summary>
-        /// Version of the dashboard.
-        /// </summary>
-        [Input("version", required: true)]
-        public Input<string> Version { get; set; } = null!;
-
-        /// <summary>
-        /// Widgets for the dashboard.
-        /// </summary>
-        [Input("widgets", required: true)]
-        public Input<string> Widgets { get; set; } = null!;
+        [Input("data", required: true)]
+        public Input<string> Data { get; set; } = null!;
 
         public DashboardArgs()
         {
@@ -223,98 +115,11 @@ namespace Jooon.Pulumi.Signoz
 
     public sealed class DashboardState : global::Pulumi.ResourceArgs
     {
-        [Input("collapsableRowsMigrated")]
-        public Input<bool>? CollapsableRowsMigrated { get; set; }
-
         /// <summary>
-        /// Creation time of the dashboard.
+        /// Dashboard definition as JSON (title, layout, widgets, variables, …). Compared semantically, so key ordering and whitespace don't cause diffs.
         /// </summary>
-        [Input("createdAt")]
-        public Input<string>? CreatedAt { get; set; }
-
-        /// <summary>
-        /// Creator of the dashboard.
-        /// </summary>
-        [Input("createdBy")]
-        public Input<string>? CreatedBy { get; set; }
-
-        /// <summary>
-        /// Description of the dashboard.
-        /// </summary>
-        [Input("description")]
-        public Input<string>? Description { get; set; }
-
-        /// <summary>
-        /// Layout of the dashboard.
-        /// </summary>
-        [Input("layout")]
-        public Input<string>? Layout { get; set; }
-
-        /// <summary>
-        /// Name of the dashboard.
-        /// </summary>
-        [Input("name")]
-        public Input<string>? Name { get; set; }
-
-        [Input("panelMap")]
-        public Input<string>? PanelMap { get; set; }
-
-        /// <summary>
-        /// Source of the dashboard. By default, it is &lt;SIGNOZ_ENDPOINT&gt;/dashboard.
-        /// </summary>
-        [Input("source")]
-        public Input<string>? Source { get; set; }
-
-        [Input("tags")]
-        private InputList<string>? _tags;
-
-        /// <summary>
-        /// Tags of the dashboard.
-        /// </summary>
-        public InputList<string> Tags
-        {
-            get => _tags ?? (_tags = new InputList<string>());
-            set => _tags = value;
-        }
-
-        /// <summary>
-        /// Title of the dashboard.
-        /// </summary>
-        [Input("title")]
-        public Input<string>? Title { get; set; }
-
-        /// <summary>
-        /// Last update time of the dashboard.
-        /// </summary>
-        [Input("updatedAt")]
-        public Input<string>? UpdatedAt { get; set; }
-
-        /// <summary>
-        /// Last updater of the dashboard.
-        /// </summary>
-        [Input("updatedBy")]
-        public Input<string>? UpdatedBy { get; set; }
-
-        [Input("uploadedGrafana")]
-        public Input<bool>? UploadedGrafana { get; set; }
-
-        /// <summary>
-        /// Variables for the dashboard.
-        /// </summary>
-        [Input("variables")]
-        public Input<string>? Variables { get; set; }
-
-        /// <summary>
-        /// Version of the dashboard.
-        /// </summary>
-        [Input("version")]
-        public Input<string>? Version { get; set; }
-
-        /// <summary>
-        /// Widgets for the dashboard.
-        /// </summary>
-        [Input("widgets")]
-        public Input<string>? Widgets { get; set; }
+        [Input("data")]
+        public Input<string>? Data { get; set; }
 
         public DashboardState()
         {

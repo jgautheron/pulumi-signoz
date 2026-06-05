@@ -25,6 +25,12 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 		r = &Alert{}
 	case "signoz:index/dashboard:Dashboard":
 		r = &Dashboard{}
+	case "signoz:index/logPipeline:LogPipeline":
+		r = &LogPipeline{}
+	case "signoz:index/notificationChannel:NotificationChannel":
+		r = &NotificationChannel{}
+	case "signoz:index/savedView:SavedView":
+		r = &SavedView{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}
@@ -64,6 +70,21 @@ func init() {
 	pulumi.RegisterResourceModule(
 		"signoz",
 		"index/dashboard",
+		&module{version},
+	)
+	pulumi.RegisterResourceModule(
+		"signoz",
+		"index/logPipeline",
+		&module{version},
+	)
+	pulumi.RegisterResourceModule(
+		"signoz",
+		"index/notificationChannel",
+		&module{version},
+	)
+	pulumi.RegisterResourceModule(
+		"signoz",
+		"index/savedView",
 		&module{version},
 	)
 	pulumi.RegisterResourcePackage(

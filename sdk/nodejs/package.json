@@ -1,7 +1,7 @@
 {
     "name": "@jooon/pulumi-signoz",
-    "version": "0.0.0-alpha.0+dev",
-    "description": "A Pulumi provider for SigNoz, bridged from the official SigNoz Terraform provider. Manage SigNoz dashboards and alerts as code.",
+    "version": "0.2.0",
+    "description": "A Pulumi provider for SigNoz. Manage SigNoz dashboards, alerts, notification channels, saved views, and log pipelines as code.",
     "keywords": [
         "signoz",
         "observability",
@@ -25,6 +25,6 @@
     "pulumi": {
         "resource": true,
         "name": "signoz",
-        "version": "0.0.0-alpha.0+dev"
+        "version": "0.2.0"
     }
 }

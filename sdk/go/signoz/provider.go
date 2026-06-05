@@ -18,12 +18,9 @@ import (
 type Provider struct {
 	pulumi.ProviderResourceState
 
-	// Access token of the SigNoz API. You can retrieve it from SigNoz UI
-	// with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-	// Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+	// SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
 	AccessToken pulumi.StringPtrOutput `pulumi:"accessToken"`
-	// Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-	// Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+	// Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
 	Endpoint pulumi.StringPtrOutput `pulumi:"endpoint"`
 }
 
@@ -51,35 +48,25 @@ func NewProvider(ctx *pulumi.Context,
 }
 
 type providerArgs struct {
-	// Access token of the SigNoz API. You can retrieve it from SigNoz UI
-	// with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-	// Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+	// SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
 	AccessToken *string `pulumi:"accessToken"`
-	// Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-	// Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+	// Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
 	Endpoint *string `pulumi:"endpoint"`
-	// Specifies the max retry limit for the HTTP requests made to SigNoz.
-	// Also, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10.
+	// Maximum retries for transient (5xx / network) failures. Defaults to 3. May also be set via `SIGNOZ_HTTP_MAX_RETRY`.
 	HttpMaxRetry *int `pulumi:"httpMaxRetry"`
-	// Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.
-	// Also, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35.
+	// Per-request HTTP timeout in seconds. Defaults to 35. May also be set via `SIGNOZ_HTTP_TIMEOUT`.
 	HttpTimeout *int `pulumi:"httpTimeout"`
 }
 
 // The set of arguments for constructing a Provider resource.
 type ProviderArgs struct {
-	// Access token of the SigNoz API. You can retrieve it from SigNoz UI
-	// with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-	// Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+	// SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
 	AccessToken pulumi.StringPtrInput
-	// Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-	// Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+	// Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
 	Endpoint pulumi.StringPtrInput
-	// Specifies the max retry limit for the HTTP requests made to SigNoz.
-	// Also, you can set it using environment variable SIGNOZ_HTTP_MAX_RETRY. If not set, it defaults to 10.
+	// Maximum retries for transient (5xx / network) failures. Defaults to 3. May also be set via `SIGNOZ_HTTP_MAX_RETRY`.
 	HttpMaxRetry pulumi.IntPtrInput
-	// Specifies the timeout limit in seconds for the HTTP requests made to SigNoz.
-	// Also, you can set it using environment variable SIGNOZ_HTTP_TIMEOUT. If not set, it defaults to 35.
+	// Per-request HTTP timeout in seconds. Defaults to 35. May also be set via `SIGNOZ_HTTP_TIMEOUT`.
 	HttpTimeout pulumi.IntPtrInput
 }
 
@@ -143,15 +130,12 @@ func (o ProviderOutput) ToProviderOutputWithContext(ctx context.Context) Provide
 	return o
 }
 
-// Access token of the SigNoz API. You can retrieve it from SigNoz UI
-// with Admin Role ([documentation](https://signoz.io/newsroom/launch-week-1-day-5/#using-access-token)).
-// Also, you can set it using environment variable SIGNOZ_ACCESS_TOKEN.
+// SigNoz Service Account access token, sent as the `SIGNOZ-API-KEY` header. May also be set via the `SIGNOZ_ACCESS_TOKEN` environment variable. Required for any real API call.
 func (o ProviderOutput) AccessToken() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.AccessToken }).(pulumi.StringPtrOutput)
 }
 
-// Endpoint of the SigNoz. It is the root URL of the SigNoz UI.
-// Also, you can set it using environment variable SIGNOZ_ENDPOINT. If not set, it defaults to http://localhost:3301.
+// Base URL of the SigNoz query-service API (e.g. `https://signoz.example.com`). Defaults to `http://localhost:3301`. May also be set via the `SIGNOZ_ENDPOINT` environment variable.
 func (o ProviderOutput) Endpoint() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.Endpoint }).(pulumi.StringPtrOutput)
 }
