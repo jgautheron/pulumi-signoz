@@ -51,14 +51,12 @@ dotnet add package Jooon.Pulumi.Signoz
 
 ## Configuration
 
-The provider reads the same env vars as the upstream Terraform provider:
-
 | Env var                  | Pulumi config key     | Purpose                                          |
 | ------------------------ | --------------------- | ------------------------------------------------ |
-| `SIGNOZ_ACCESS_TOKEN`    | `signoz:accessToken`  | API key (sensitive, **required**)                |
+| `SIGNOZ_ACCESS_TOKEN`    | `signoz:accessToken`  | Service Account token (sensitive, **required**)  |
 | `SIGNOZ_ENDPOINT`        | `signoz:endpoint`     | SigNoz URL (default `http://localhost:3301`)     |
-| `SIGNOZ_HTTP_MAX_RETRY`  | `signoz:httpMaxRetry` | Default `10`                                     |
-| `SIGNOZ_HTTP_TIMEOUT`    | `signoz:httpTimeout`  | Default `35` seconds                             |
+| `SIGNOZ_HTTP_TIMEOUT`    | `signoz:httpTimeout`  | Per-request timeout, seconds (default `35`)      |
+| `SIGNOZ_HTTP_MAX_RETRY`  | `signoz:httpMaxRetry` | Retries on 5xx/network errors (default `3`)      |
 
 Generate an access token in the SigNoz UI: **Settings → Service Accounts → Add →
 Keys → Add Key**.
@@ -90,27 +88,26 @@ See the [`examples/`](./examples/) directory for runnable samples.
 
 ## Versioning
 
-This provider mirrors upstream `SigNoz/terraform-provider-signoz` version
-numbers (e.g. when upstream releases `v0.0.12`, this provider tags `v0.0.12`).
-Patch-suffix `+N` is reserved for bridge-only fixes between upstream releases.
-Both upstream and this wrapper are pre-1.0 — pin exact versions in consumers.
+This bridge wraps [`jgautheron/terraform-provider-signoz`](https://github.com/jgautheron/terraform-provider-signoz)
+as a Go module. Bump it when the underlying provider gains resources or fixes;
+both are pre-1.0, so pin exact versions in consumers.
 
 ## Contributing / building from source
 
 ```bash
 git clone https://github.com/jgautheron/pulumi-signoz
 cd pulumi-signoz
-make tfgen          # generate schema.json from upstream provider
-make provider       # build pulumi-resource-signoz binary
+make tfgen          # generate the Pulumi schema from the TF provider
+make provider       # build the pulumi-resource-signoz plugin binary
 make build_sdks     # generate SDKs for all supported languages
 ```
 
 ## License
 
-Apache-2.0. The upstream SigNoz Terraform provider is MPL-2.0.
+Apache-2.0.
 
 ## Related
 
-- [SigNoz Terraform Provider](https://github.com/SigNoz/terraform-provider-signoz) (upstream)
-- [SigNoz Terraform docs](https://registry.terraform.io/providers/SigNoz/signoz/latest/docs)
+- [jgautheron/terraform-provider-signoz](https://github.com/jgautheron/terraform-provider-signoz) — the bridged Terraform provider
+- [Terraform Registry: jgautheron/signoz](https://registry.terraform.io/providers/jgautheron/signoz/latest)
 - [Pulumi Terraform Bridge](https://github.com/pulumi/pulumi-terraform-bridge)
