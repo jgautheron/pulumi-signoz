@@ -15,11 +15,13 @@
 package signoz
 
 import (
-	// Allow embedding bridge-metadata.json in the provider.
-	_ "embed"
 	"path"
 
+	// Allow embedding bridge-metadata.json in the provider.
+	_ "embed"
+
 	signoz "github.com/jgautheron/terraform-provider-signoz/provider" // Our TF provider (Plugin Framework).
+
 	pftfbridge "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/pf/tfbridge"
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge"
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge/tokens"

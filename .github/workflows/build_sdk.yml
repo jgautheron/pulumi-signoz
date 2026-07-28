@@ -84,6 +84,7 @@ jobs:
           # Keep these in sync with the Renovate step below to avoid them getting checked in.
           allowed-changes: |
             sdk/**/pulumi-plugin.json
+            sdk/**/README.md
             sdk/dotnet/*.csproj
             sdk/go/**/pulumiUtilities.go
             sdk/nodejs/package.json
