@@ -10,8 +10,10 @@ upstreamProviderOrg: SigNoz
 # This should always be set by all providers as this is key to go module paths.
 # 0 while upstream + this wrapper are pre-1.0; bump to 1 alongside upstream's first stable.
 major-version: 0
-# Enable using the terraform converter for example generation.
-pulumiConvert: 1
+# Disable terraform-converter example generation. The converter plugin
+# isn't installed in CI (see PULUMI_DISABLE_AUTOMATIC_PLUGIN_ACQUISITION
+# gate in Makefile), and we don't ship registry docs anyway.
+pulumiConvert: 0
 # Set a GitHub username here for automatic upgrade PRs to be assigned to.
 # pr-assign: pulumi-bot
 
