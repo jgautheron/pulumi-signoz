@@ -1,5 +1,10 @@
 # Pulumi SigNoz Provider
 
+> **Deprecated and archived.** SigNoz now maintains an official Terraform provider,
+> [SigNoz/terraform-provider-signoz](https://github.com/SigNoz/terraform-provider-signoz)
+> (registry `signoz/signoz`). Use it from Pulumi with
+> `pulumi package add terraform-provider signoz/signoz`. `@jooon/pulumi-signoz` gets no further releases.
+
 A Pulumi provider for [SigNoz](https://signoz.io), bridged from
 [jgautheron/terraform-provider-signoz](https://github.com/jgautheron/terraform-provider-signoz)
 via [pulumi-terraform-bridge](https://github.com/pulumi/pulumi-terraform-bridge).
